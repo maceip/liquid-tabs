@@ -1,0 +1,83 @@
+<div id="pie-tab-bar-inline" aria-label="Pie interactive tab bar"></div>
+<style>
+/*__PIE_STYLES__*/
+#pie-tab-bar-inline { background: transparent; color: light-dark(#2b2c27, #deded7); }
+#pie-tab-bar-inline main { max-width: none; padding: 0; }
+#pie-tab-bar-inline .masthead,
+#pie-tab-bar-inline .intro > div:first-child,
+#pie-tab-bar-inline footer { display: none; }
+#pie-tab-bar-inline .intro { padding: 0 0 12px; justify-content: flex-end; }
+#pie-tab-bar-inline .browser { box-shadow: none; }
+#pie-tab-bar-inline .workbench { padding: 22px 0 0; border: 0; gap: 22px; }
+#pie-tab-bar-inline .scenario-panel p { display: none; }
+#pie-tab-bar-inline .scenarios { margin-top: 14px; }
+#pie-tab-bar-inline .control-heading h2 { color: light-dark(#343d2e, #deded7); }
+#pie-tab-bar-inline .scenarios button:not([aria-pressed=true]),
+#pie-tab-bar-inline .effect-control,
+#pie-tab-bar-inline .motion-control,
+#pie-tab-bar-inline .motion-control select,
+#pie-tab-bar-inline .text-button { color: light-dark(#626b57, #bbc3af); }
+#pie-tab-bar-inline .motion-control select { background-color: light-dark(#efeee9, #272a25); }
+#pie-tab-bar-inline .page-stack { height: auto; overflow: visible; }
+#pie-tab-bar-inline .demo-page { height: auto; }
+@media (max-width: 380px) {
+  #pie-tab-bar-inline .editorial-grid { grid-template-columns: 1fr; }
+  #pie-tab-bar-inline .object-scene { display: none; }
+  #pie-tab-bar-inline .effect-switches { gap: 18px; }
+  #pie-tab-bar-inline .motion-control { flex-wrap: wrap; gap: 10px; }
+  #pie-tab-bar-inline .status-hint { display: none; }
+}
+</style>
+<script>
+/*__PIE_SCRIPT__*/
+(() => {
+  const root = document.getElementById('pie-tab-bar-inline');
+  const { strip, scene } = window.tabDemo;
+  let restoring = false;
+  let lastState = '';
+  function restore(snapshot) {
+    const state = snapshot?.privateContent;
+    if (!state) return;
+    const serialized = JSON.stringify(state);
+    if (serialized === lastState) return;
+    lastState = serialized;
+    restoring = true;
+    if (['one', 'two', 'pinned', 'many'].includes(state.scene)) scene(state.scene);
+    if (['light', 'dark'].includes(state.theme)) root.querySelector(`[data-theme-button="${state.theme}"]`).click();
+    if (['fixed', 'address'].includes(state.labelMode)) {
+      const labels = root.querySelector('#label-mode');
+      labels.value = state.labelMode;
+      labels.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+    if (state.effects) {
+      for (const input of root.querySelectorAll('[data-effect]')) {
+        const value = state.effects[input.dataset.effect];
+        if (typeof value === 'boolean' && input.checked !== value) input.click();
+      }
+      if (['full', 'reduced', 'off'].includes(state.effects.motion)) {
+        const motion = root.querySelector('#motion');
+        motion.value = state.effects.motion;
+        motion.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+    }
+    restoring = false;
+  }
+  const appearance = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  root.querySelector(`[data-theme-button="${appearance}"]`).click();
+  restore(window.openai?.widgetState);
+  window.addEventListener('openai:set_globals', event => restore(event.detail?.globals?.widgetState));
+  function save() {
+    if (restoring || !window.openai?.setWidgetState) return;
+    const state = {
+      scene: root.querySelector('[data-scene][aria-pressed="true"]')?.dataset.scene || 'two',
+      theme: root.querySelector('.browser').dataset.theme,
+      labelMode: root.querySelector('#label-mode').value,
+      effects: strip.configuration,
+    };
+    lastState = JSON.stringify(state);
+    window.openai.setWidgetState({ modelContent: { preview: 'Pie tab bar', ...state }, privateContent: state }).catch(() => {});
+  }
+  root.addEventListener('click', save);
+  root.addEventListener('change', save);
+})();
+</script>

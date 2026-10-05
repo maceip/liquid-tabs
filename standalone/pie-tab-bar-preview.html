@@ -1,0 +1,4602 @@
+<!doctype html>
+<html lang="en" data-visualize-standalone>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src 'unsafe-inline' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data:; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Pie Tab Bar</title>
+<style>:root{color-scheme:light dark;background:light-dark(rgb(255 255 255), rgb(24 24 24))}html,body{margin:0}body{box-sizing:border-box;padding:1rem;background:inherit}iframe{display:block;width:100%;height:calc(100vh - 2rem);margin:0 auto;border:0}</style>
+</head>
+<body>
+<iframe id="codex-visualization" sandbox="allow-scripts" referrerpolicy="no-referrer" title="Pie Tab Bar" data-srcdoc="&lt;!doctype html&gt;
+&lt;html lang=&quot;en&quot; data-visualize-standalone&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+&lt;meta name=&quot;referrer&quot; content=&quot;no-referrer&quot;&gt;
+&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; script-src &#x27;unsafe-inline&#x27; &#x27;unsafe-eval&#x27; &#x27;wasm-unsafe-eval&#x27; blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src &#x27;unsafe-inline&#x27; blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data:; frame-src &#x27;none&#x27;; object-src &#x27;none&#x27;; base-uri &#x27;none&#x27;; form-action &#x27;none&#x27;&quot;&gt;
+&lt;title&gt;Pie Tab Bar&lt;/title&gt;
+&lt;style&gt;:root {
+  color-scheme: light dark;
+  background-color: var(
+    --background,
+    var(--color-background-primary, light-dark(rgb(255 255 255), rgb(24 24 24)))
+  ) !important;
+
+  /* Agent-facing contract; keep in sync with SKILL.md. */
+  --background: var(
+    --color-background-primary,
+    light-dark(rgb(255 255 255), rgb(24 24 24))
+  );
+  --foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --card: color-mix(in oklab, var(--foreground) 5%, var(--background));
+  --card-foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --popover: var(
+    --color-background-secondary,
+    light-dark(rgb(255 255 255), rgb(45 45 45))
+  );
+  --popover-foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --primary: var(
+    --color-text-info,
+    light-dark(rgb(51 156 255), rgb(131 195 255))
+  );
+  --primary-foreground: var(
+    --color-text-inverse,
+    light-dark(rgb(255 255 255), rgb(13 13 13))
+  );
+  --secondary: var(
+    --color-background-secondary,
+    light-dark(rgb(255 255 255 / 96%), rgb(54 54 54 / 96%))
+  );
+  --secondary-foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --muted: color-mix(in srgb, var(--foreground) 10%, transparent);
+  --muted-foreground: var(
+    --color-text-secondary,
+    light-dark(rgb(26 28 31 / 49.4%), rgb(255 255 255 / 49.8%))
+  );
+  --accent: var(
+    --color-background-info,
+    light-dark(rgb(229 242 255), rgb(13 39 63))
+  );
+  --accent-foreground: var(
+    --color-text-info,
+    light-dark(rgb(51 156 255), rgb(131 195 255))
+  );
+  --destructive: var(
+    --color-text-warning,
+    light-dark(rgb(226 85 7), rgb(255 133 73))
+  );
+  --border: var(
+    --color-border-secondary,
+    light-dark(rgb(26 28 31 / 8%), rgb(255 255 255 / 8.2%))
+  );
+  --input: var(
+    --color-border-primary,
+    light-dark(
+      rgb(26 28 31 / 11.8%),
+      color-mix(in oklab, rgb(0 0 0) 10%, transparent)
+    )
+  );
+  --ring: var(
+    --color-ring-primary,
+    light-dark(rgb(51 156 255), rgb(131 195 255 / 76%))
+  );
+  --font-size-base: var(--font-text-md-size, 14px);
+  --blue: light-dark(rgb(51 156 255), rgb(51 156 255));
+  --orange: light-dark(rgb(226 85 7), rgb(251 106 34));
+  --green: light-dark(rgb(0 162 64), rgb(64 201 119));
+  --red: light-dark(rgb(224 46 42), rgb(255 103 100));
+  --purple: light-dark(rgb(146 79 247), rgb(173 123 249));
+  --yellow: light-dark(rgb(255 195 0), rgb(255 210 64));
+  --viz-series-1: var(--primary);
+  --viz-series-2: light-dark(rgb(243 136 59), rgb(245 154 86));
+  --viz-series-3: light-dark(rgb(93 201 119), rgb(116 213 139));
+  --viz-series-4: light-dark(rgb(235 119 177), rgb(240 143 192));
+  --viz-series-5: light-dark(rgb(155 121 236), rgb(170 145 239));
+  --viz-series-6: light-dark(rgb(58 185 177), rgb(90 203 194));
+
+  /* Internal implementation variables; not part of the agent contract. */
+  --font-sans: -apple-system, system-ui, &quot;Segoe UI&quot;, sans-serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, &quot;Liberation Mono&quot;,
+    monospace;
+  --font-size-normal: max(11px, var(--font-size-base));
+  --font-size-tooltip: calc(var(--font-size-base) - 1px);
+  --font-size-small: max(11px, calc(var(--font-size-base) - 2px));
+  --font-size-h1: calc(var(--font-size-normal) * 1.7142857143);
+  --font-size-h2: calc(var(--font-size-normal) * 1.4285714286);
+  --font-size-h3: calc(var(--font-size-normal) * 1.2857142857);
+  --font-weight-normal: 430;
+  --font-weight-medium: 500;
+  --icon-size: 16px;
+  --line-height-normal: calc(var(--font-size-normal) * 1.5);
+  --line-height-tooltip: calc(var(--font-size-tooltip) * 1.4285714286);
+  --line-height-small: calc(var(--font-size-small) + 4px);
+  --corner-shape: round;
+  --radius: var(--border-radius-lg, 10px);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-2xl: calc(var(--radius) * 1.6);
+  --radius-full: 9999px;
+  --shadow-sm: 0 1px 2px -1px rgb(0 0 0 / 8%);
+  --checkmark-image: url(&quot;data:image/svg+xml,%3Csvg xmlns=&#x27;http://www.w3.org/2000/svg&#x27; viewBox=&#x27;0 0 17 17&#x27;%3E%3Cpath d=&#x27;M12.8961 3.64101C13.1297 3.41418 13.4984 3.37523 13.7779 3.56581C14.0571 3.75635 14.1554 4.11331 14.0299 4.41347L13.9615 4.53847L7.71151 13.7045C7.59411 13.8767 7.4063 13.9877 7.19881 14.0072C6.99136 14.0267 6.78564 13.9533 6.63826 13.806L2.88826 10.056L2.79842 9.9457C2.6192 9.67407 2.64927 9.30496 2.88826 9.06581C3.12738 8.82669 3.49647 8.79676 3.76815 8.97597L3.8785 9.06581L7.03084 12.2182L12.8053 3.74941L12.8961 3.64101Z&#x27;/%3E%3C/svg%3E&quot;);
+
+  /* Legacy aliases; not part of the current agent contract. */
+  --viz-bg: transparent;
+  --viz-panel: var(--card);
+  --viz-border: var(--border);
+  --viz-text: var(--foreground);
+  --viz-muted: var(--muted-foreground);
+  --viz-accent: var(--primary);
+  --viz-accent-text: var(--primary-foreground);
+  --viz-accent-bg: var(--accent);
+  --viz-font-size: var(--font-size-base);
+  --viz-warning: var(--destructive);
+}
+
+:root[data-theme=&quot;light&quot;] {
+  color-scheme: light;
+}
+
+:root[data-theme=&quot;dark&quot;] {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html &gt; body {
+  /* Preserve MCP aliases for older inline renderers without creating :root cycles. */
+  --color-background-primary: var(
+    --background,
+    light-dark(rgb(255 255 255), rgb(24 24 24))
+  );
+  --color-text-primary: var(
+    --foreground,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --color-border-secondary: var(
+    --border,
+    light-dark(rgb(26 28 31 / 8%), rgb(255 255 255 / 8.2%))
+  );
+
+  margin: 0;
+  padding: var(--visualize-paint-gutter, 0px);
+  color: var(--foreground);
+  background: transparent !important;
+  font-family: var(--font-sans) !important;
+  font-size: var(--font-size-normal);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+}
+
+.cursor-interaction {
+  cursor: var(--cursor-interaction, pointer);
+}
+
+a {
+  color: color-mix(in srgb, var(--viz-accent) 80%, var(--viz-text) 20%);
+  cursor: var(--cursor-interaction, pointer);
+  font-weight: var(--font-weight-medium, 500);
+  text-decoration: none;
+  text-underline-offset: 2px;
+}
+
+a:is(:hover, :focus-visible) {
+  text-decoration-line: underline;
+  text-decoration-style: dashed;
+  text-decoration-thickness: 0.5px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin-block: 0;
+}
+
+h1 {
+  font-size: var(--font-size-h1);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+h2 {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+h3,
+h4,
+h5,
+h6 {
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.3;
+}
+
+b,
+strong,
+th {
+  font-weight: var(--font-weight-medium);
+}
+
+code:not(pre code) {
+  display: inline;
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  corner-shape: var(--corner-shape);
+  background: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  overflow-wrap: anywhere;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  word-break: break-word;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--foreground);
+  font: inherit;
+  text-align: start;
+}
+
+.table :is(th, td) {
+  padding-block: 10px;
+  padding-inline: 0 24px;
+  overflow-wrap: anywhere;
+  border-bottom: 1px solid var(--border);
+  text-align: start;
+  vertical-align: top;
+}
+
+.table-responsive &gt; .table :is(th, td) {
+  overflow-wrap: break-word;
+}
+
+.table :is(th, td):last-child {
+  padding-inline-end: 0;
+}
+
+.table :is(caption, thead th) {
+  font-weight: 600;
+}
+
+.table thead th {
+  padding-block: 8px;
+  border-bottom-color: color-mix(in srgb, var(--foreground) 16%, transparent);
+}
+
+.table tbody tr:last-child :is(th, td) {
+  border-bottom: 0;
+}
+
+.table.table-sm :is(th, td) {
+  padding-block: 6px;
+}
+
+.table.table-sm :is(th, td):not(:last-child) {
+  padding-inline-end: 16px;
+}
+
+.table :is(.text-end, [align=&quot;right&quot;]) {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
+.table :is(.text-center, [align=&quot;center&quot;]) {
+  text-align: center;
+}
+
+.table .text-nowrap {
+  white-space: nowrap;
+}
+
+#widget {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  padding: 0;
+  background: transparent !important;
+}
+
+.card {
+  min-width: 0;
+  padding: 12px;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  border-radius: var(--radius-2xl);
+  corner-shape: var(--corner-shape);
+  color: var(--card-foreground);
+  background: var(--card);
+}
+
+.widget {
+  min-width: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--radius-lg);
+  corner-shape: var(--corner-shape);
+  box-shadow: 0 0 0 0.5px var(--border-strong, var(--border));
+  color: var(--foreground);
+  background: var(--background);
+}
+
+#widget &gt; :not(.card, .widget, .progress) {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.tooltip {
+  position: fixed;
+  z-index: 50;
+  top: 0;
+  left: 0;
+  width: max-content;
+  max-width: min(
+    20rem,
+    var(--tooltip-available-width, calc(100vw - 10px)),
+    calc(100vw - 10px)
+  );
+  max-height: min(
+    var(--tooltip-available-height, calc(100vh - 10px)),
+    calc(100vh - 10px)
+  );
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  corner-shape: var(--corner-shape);
+  color: var(--popover-foreground);
+  background: var(--popover);
+  box-shadow: none;
+  font-size: var(--font-size-tooltip);
+  line-height: var(--line-height-tooltip);
+  overflow-wrap: break-word;
+  white-space: normal;
+  pointer-events: none;
+  user-select: none;
+}
+
+.viz-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(max(180px, 24%), 1fr));
+  gap: 10px;
+}
+
+.viz-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.viz-stat-value {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+.viz-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+hr {
+  width: 100%;
+  height: 1px;
+  margin-block: 6px;
+  border: 0;
+  background: var(--border);
+}
+
+.nav {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 4px;
+}
+
+.progress {
+  display: flex;
+  height: 8px;
+  margin-block: calc((var(--line-height-normal, 1.5em) - 8px) / 2);
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--muted);
+}
+
+.progress-bar:only-child {
+  border-radius: var(--radius-full);
+}
+
+.progress-bar {
+  height: 100%;
+  flex-shrink: 0;
+  border: 0;
+  background: var(--viz-series-1);
+}
+
+.viz-badge {
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  color: var(--accent-foreground);
+  background: var(--accent);
+  font-weight: var(--font-weight-medium);
+}
+
+small,
+.text-small,
+.viz-badge {
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+}
+
+.text-muted {
+  color: var(--muted-foreground);
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.viz-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.viz-controls &gt; .form-label {
+  display: grid;
+  min-width: min(100%, 260px);
+  flex: 1 1 280px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 2px 12px;
+  margin-bottom: 0;
+}
+
+.viz-controls &gt; .form-label &gt; :is(.form-control, .form-range, .form-select) {
+  grid-column: 1 / -1;
+}
+
+.btn,
+.nav-link,
+.form-check-input,
+.form-control,
+.form-range,
+.form-select {
+  font: inherit;
+}
+
+.btn,
+.nav-link {
+  appearance: button;
+  display: inline-flex;
+  inline-size: fit-content;
+  max-inline-size: 100%;
+  min-height: 28px;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0 8px;
+  -webkit-app-region: no-drag;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: var(--corner-shape);
+  color: var(--secondary-foreground);
+  background: var(--secondary);
+  cursor: var(--cursor-interaction, pointer);
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+.btn:is(.btn-block, .viz-tile) {
+  inline-size: 100%;
+}
+
+.btn.viz-tile {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+a.btn {
+  cursor: var(--cursor-interaction, pointer);
+  text-decoration: none;
+}
+
+.btn:not(:disabled):hover,
+.nav-link:not(:disabled):not([aria-disabled=&quot;true&quot;]):hover {
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.btn-primary {
+  border-color: transparent;
+  color: var(--primary-foreground);
+  background: var(--foreground);
+  background-clip: padding-box;
+}
+
+.btn-primary .text-muted {
+  color: color-mix(in srgb, var(--primary-foreground) 50%, transparent);
+}
+
+.btn-primary:not(:disabled):hover {
+  background: color-mix(in srgb, var(--foreground) 80%, transparent);
+  background-clip: padding-box;
+}
+
+.btn-ghost {
+  border-color: transparent;
+  color: var(--muted-foreground);
+  background: transparent;
+}
+
+.btn-ghost:not(:disabled):hover {
+  color: var(--foreground);
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.nav-pills .nav-link {
+  min-width: 0;
+  border-color: transparent;
+  color: var(--muted-foreground);
+  background: transparent;
+}
+
+.nav-justified .nav-link {
+  flex: 1 1 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.nav-pills .nav-link.active {
+  color: var(--foreground);
+  background: var(--muted);
+}
+
+/* Shared preview chrome; product styles stay inside each variant. */
+.viz-dotted-background {
+  background-image: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--foreground) 14%, transparent) 0.8px,
+    transparent 0.8px
+  );
+  background-position: center;
+  background-size: 16px 16px;
+}
+
+.viz-carousel {
+  position: relative;
+  min-width: 0;
+}
+
+.viz-carousel:has(&gt; .viz-carousel-controls) {
+  min-height: calc(60px + var(--viz-carousel-picker-height, 0px));
+  padding-bottom: 60px;
+}
+
+.viz-carousel &gt; [data-variant][hidden] {
+  display: none !important;
+}
+
+.viz-carousel &gt; [data-variant] {
+  isolation: isolate;
+}
+
+.viz-carousel-controls {
+  --viz-carousel-hover: light-dark(
+    color-mix(in srgb, var(--foreground) 5.4%, transparent),
+    color-mix(in srgb, var(--foreground) 7.8%, transparent)
+  );
+  position: absolute;
+  z-index: 2;
+  bottom: 8px;
+  left: 50%;
+  display: flex;
+  width: max-content;
+  /* Leave room for the host&#x27;s design-controls launcher at the trailing edge. */
+  max-width: calc(100% - 96px);
+  align-items: center;
+  gap: 0;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  color: var(--foreground);
+  background: var(--background);
+  font-family: var(--font-sans);
+  /* Match the settings dropdown chrome independently of the content font size. */
+  font-size: 13px;
+  font-weight: var(--font-weight-normal);
+  line-height: 18px;
+  transform: translateX(-50%);
+  user-select: none;
+}
+
+/* Keep authored mockup button styles out of the shared carousel chrome. */
+.viz-carousel-controls button,
+.viz-carousel-picker &gt; summary {
+  display: flex !important;
+  height: auto !important;
+  min-height: 30px;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px;
+  padding: 0 6px !important;
+  -webkit-app-region: no-drag;
+  border: 0 !important;
+  border-radius: 14px !important;
+  color: inherit !important;
+  background: transparent !important;
+  font: inherit !important;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.viz-carousel-controls &gt; button,
+.viz-carousel-picker &gt; summary {
+  position: relative;
+  isolation: isolate;
+}
+
+.viz-carousel-controls &gt; button {
+  --icon-size: 16px;
+  width: 30px !important;
+  padding: 0 !important;
+}
+
+.viz-carousel-picker &gt; summary {
+  padding-inline: 12px !important;
+}
+
+.viz-carousel-controls .viz-carousel-caret {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  margin: 0;
+  color: inherit;
+  transform: rotate(180deg);
+}
+
+.viz-carousel-controls &gt; button &gt; svg,
+.viz-carousel-controls .viz-carousel-caret,
+.viz-carousel-count {
+  opacity: 0.5;
+}
+
+.viz-carousel-controls &gt; button::before,
+.viz-carousel-picker &gt; summary::before {
+  position: absolute;
+  z-index: -1;
+  inset: 3px;
+  border-radius: 12px;
+  content: &quot;&quot;;
+  pointer-events: none;
+}
+
+.viz-carousel-controls &gt; button:hover::before,
+.viz-carousel-picker &gt; summary:hover::before {
+  background: var(--viz-carousel-hover);
+}
+
+.viz-carousel-controls &gt; button,
+.viz-carousel-controls [data-lucide],
+.viz-carousel-controls .lucide {
+  flex-shrink: 0;
+}
+
+.viz-carousel-picker {
+  min-width: 0;
+}
+
+.viz-carousel-picker &gt; summary {
+  min-width: 0;
+  list-style: none;
+}
+
+.viz-carousel-picker &gt; summary::-webkit-details-marker {
+  display: none;
+}
+
+.viz-carousel-count {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.viz-carousel-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.viz-carousel-options {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 4px);
+  left: 0;
+  display: flex;
+  max-height: 240px;
+  flex-direction: column;
+  gap: 2px;
+  overflow: auto;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--background);
+  box-shadow: 0 4px 12px light-dark(rgb(0 0 0 / 6%), rgb(0 0 0 / 25%));
+}
+
+.viz-carousel-options &gt; button {
+  border-radius: max(0px, calc(var(--radius-lg) - 5px)) !important;
+  width: 100% !important;
+  min-height: 28px;
+  justify-content: flex-start !important;
+  padding: 4px 8px !important;
+  font-size: var(--font-size-small) !important;
+  text-align: start;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.viz-carousel-options &gt; [aria-current=&quot;true&quot;],
+.viz-carousel-options &gt; button:hover {
+  background: var(--viz-carousel-hover) !important;
+}
+
+.btn:disabled,
+.nav-link:disabled,
+.nav-link[aria-disabled=&quot;true&quot;] {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+[data-lucide] {
+  stroke-width: 1.6;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--foreground);
+}
+
+.form-control {
+  display: block;
+  width: 100%;
+  min-height: 28px;
+  padding: 0 8px;
+  outline: none;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: var(--corner-shape);
+  color: var(--foreground);
+  background: var(--secondary);
+}
+
+.form-control::placeholder {
+  color: var(--muted-foreground);
+}
+
+.form-control[type=&quot;file&quot;] {
+  padding: 0;
+  overflow: hidden;
+  cursor: var(--cursor-interaction, pointer);
+}
+
+.form-control[type=&quot;file&quot;]::file-selector-button {
+  min-height: 26px;
+  margin-right: 8px;
+  padding: 0 8px;
+  border: 0;
+  border-right: 1px solid var(--input);
+  color: var(--secondary-foreground);
+  background: var(--secondary);
+  cursor: inherit;
+  font: inherit;
+}
+
+.form-control[type=&quot;file&quot;]:not(:disabled):hover::file-selector-button {
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.form-control-color[type=&quot;color&quot;] {
+  width: 40px;
+  height: 28px;
+  padding: 3px;
+  cursor: var(--cursor-interaction, pointer);
+}
+
+.form-control-color[type=&quot;color&quot;]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.form-control-color[type=&quot;color&quot;]::-webkit-color-swatch {
+  border: 0;
+  border-radius: calc(var(--radius-lg) - 4px);
+  corner-shape: var(--corner-shape);
+}
+
+textarea.form-control {
+  height: auto;
+  min-height: 72px;
+  padding: 8px 10px;
+  resize: vertical;
+}
+
+.form-control:focus-visible {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-control:disabled,
+.form-select:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.form-select {
+  appearance: none;
+  display: block;
+  width: 100%;
+  min-height: 28px;
+  margin: 0;
+  padding: 0 32px 0 8px;
+  outline: none;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: var(--corner-shape);
+  color: var(--foreground);
+  background-color: var(--secondary);
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--muted-foreground) 50%),
+    linear-gradient(135deg, var(--muted-foreground) 50%, transparent 50%);
+  background-position:
+    calc(100% - 14px) 50%,
+    calc(100% - 10px) 50%;
+  background-repeat: no-repeat;
+  background-size: 4px 4px;
+  cursor: var(--cursor-interaction, default);
+}
+
+.form-select:not(:disabled):hover {
+  background-color: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.form-select:focus-visible {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-check {
+  display: flex;
+  min-height: 20px;
+  align-items: center;
+  gap: 6px;
+}
+
+.form-check-input {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+  margin: 0;
+  border: 1px solid var(--input);
+  color: var(--primary-foreground);
+  background-color: transparent;
+  cursor: var(--cursor-interaction, default);
+  transition:
+    background-color 150ms,
+    border-color 150ms,
+    box-shadow 150ms;
+}
+
+.form-check:not(.form-switch) .form-check-input[type=&quot;checkbox&quot;] {
+  border-color: var(--input);
+  border-radius: var(--radius-sm);
+  corner-shape: var(--corner-shape);
+  background-color: var(--secondary);
+  box-shadow: var(--shadow-sm);
+}
+
+.form-check:not(.form-switch)
+  .form-check-input:not(:disabled):not(:checked):hover {
+  background-color: var(--card);
+}
+
+.form-check:not(.form-switch) .form-check-input[type=&quot;checkbox&quot;]:checked {
+  border-color: var(--primary);
+  background-color: var(--primary);
+}
+
+.form-check:not(.form-switch)
+  .form-check-input[type=&quot;checkbox&quot;]:checked::before {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--primary-foreground);
+  content: &quot;&quot;;
+  mask: var(--checkmark-image) center / 12px 12px no-repeat;
+}
+
+.form-check-input[type=&quot;radio&quot;] {
+  width: 14px;
+  height: 14px;
+  border-radius: var(--radius-full);
+}
+
+.form-check-input[type=&quot;radio&quot;]:checked {
+  border: 2px solid var(--primary);
+  background:
+    radial-gradient(circle, var(--primary-foreground) 0 2.5px, transparent 3px),
+    var(--primary);
+}
+
+.form-check:not(.form-switch) .form-check-input:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.form-check:not(.form-switch) .form-check-input:disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.form-check:not(.form-switch) .form-check-input:disabled + .form-check-label {
+  cursor: not-allowed;
+}
+
+.form-switch .form-check-input:disabled,
+.form-switch .form-check-input:disabled + .form-check-label {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.form-check-label {
+  color: var(--foreground);
+  cursor: var(--cursor-interaction, default);
+}
+
+.form-switch .form-check-input {
+  position: relative;
+  width: 32px;
+  height: 20px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--muted);
+  box-shadow: none;
+  transition: background-color 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.form-switch .form-check-input::before {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 16px;
+  height: 16px;
+  box-sizing: border-box;
+  border: 1px solid light-dark(var(--primary-foreground), var(--foreground));
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+  box-shadow: var(--shadow-sm);
+  content: &quot;&quot;;
+  transform: translate(2px, -50%);
+  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.form-switch .form-check-input:checked {
+  background: var(--primary);
+}
+
+.form-switch .form-check-input:checked::before {
+  transform: translate(14px, -50%);
+}
+
+.form-switch .form-check-input:focus-visible {
+  box-shadow: 0 0 0 2px var(--ring);
+}
+
+.form-range {
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: 28px;
+  flex: 1;
+  margin: 0;
+  padding: 0;
+  outline: none;
+  border: 0;
+  accent-color: var(--primary);
+  background: linear-gradient(
+      color-mix(in srgb, var(--foreground) 7%, transparent),
+      color-mix(in srgb, var(--foreground) 7%, transparent)
+    )
+    center / 100% 2px no-repeat;
+}
+
+.form-range::-webkit-slider-runnable-track {
+  height: 28px;
+  background: transparent;
+}
+
+.form-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  margin-top: 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+}
+
+.form-range:focus-visible::-webkit-slider-thumb {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-range::-moz-range-track {
+  height: 28px;
+  background: transparent;
+}
+
+.form-range::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+}
+
+.form-range:focus-visible::-moz-range-thumb {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-range:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.btn:not(.btn-primary, .viz-tile):is(
+  [aria-pressed=&quot;true&quot;],
+  [aria-selected=&quot;true&quot;],
+  .is-selected
+) {
+  border-color: var(--primary);
+  color: var(--primary-foreground);
+  background: var(--primary);
+}
+
+.btn.viz-tile:is([aria-pressed=&quot;true&quot;], [aria-selected=&quot;true&quot;], .is-selected) {
+  border-color: var(--primary);
+  box-shadow: inset 0 0 0 1px var(--primary);
+}
+
+.btn:focus-visible,
+.nav-link:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.viz-carousel-controls :is(button, summary):focus-visible {
+  outline: 2px solid var(--ring) !important;
+  outline-offset: 2px !important;
+}
+
+@media (pointer: coarse) {
+  .viz-carousel:has(&gt; .viz-carousel-controls) {
+    min-height: calc(76px + var(--viz-carousel-picker-height, 0px));
+    padding-bottom: 76px;
+  }
+
+  .btn,
+  .nav-link,
+  .viz-carousel-controls button,
+  .viz-carousel-picker &gt; summary,
+  .form-control,
+  .form-select {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  /* Keep small-screen WebKit from zooming when a text field receives focus. */
+  .form-control,
+  .form-select {
+    font-size: max(16px, var(--font-size-normal));
+  }
+
+  .form-control[type=&quot;file&quot;]::file-selector-button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .form-control-color[type=&quot;color&quot;] {
+    width: 44px;
+    height: 44px;
+  }
+
+  .form-control:is(
+    [type=&quot;date&quot;],
+    [type=&quot;datetime-local&quot;],
+    [type=&quot;month&quot;],
+    [type=&quot;time&quot;],
+    [type=&quot;week&quot;]
+  ) {
+    min-width: 0;
+    max-width: 100%;
+    padding-block: 8px;
+  }
+
+  .form-check {
+    min-height: 44px;
+    padding-inline: 15px;
+  }
+
+  .form-check-input {
+    position: relative;
+  }
+
+  .form-check-input::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 44px;
+    height: 44px;
+    content: &quot;&quot;;
+    transform: translate(-50%, -50%);
+  }
+
+  .form-check-label {
+    display: inline-flex;
+    min-width: 44px;
+    min-height: 44px;
+    align-items: center;
+  }
+
+  .form-range {
+    height: 44px;
+    touch-action: pan-y;
+  }
+
+  .form-range::-webkit-slider-runnable-track {
+    height: 44px;
+  }
+
+  .form-range::-moz-range-track {
+    height: 44px;
+  }
+
+  .form-range::-webkit-slider-thumb {
+    margin-top: 12px;
+  }
+}
+
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+#widget &gt; svg {
+  width: 100%;
+}
+
+/* Model-authored chart rules can otherwise stretch icons after these styles load. */
+svg.lucide {
+  display: block;
+  width: var(--icon-size) !important;
+  height: var(--icon-size) !important;
+  flex: none;
+  margin: 0 !important;
+  stroke-width: 1.6;
+}
+
+.text-warning,
+.text-destructive {
+  color: var(--destructive);
+}
+
+html&gt;body{padding:0}&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;script type=&quot;application/json&quot; id=&quot;codex-visualization-widget-state&quot;&gt;__CODEX_VISUALIZATION_WIDGET_STATE__&lt;/script&gt;
+&lt;script&gt;(() =&gt; {
+  const root = document.documentElement;
+  const mediaQuery = globalThis.matchMedia(&quot;(prefers-color-scheme: dark)&quot;);
+  const apply = Reflect.apply;
+  const isArray = Array.isArray;
+  const hasOwn = Object.hasOwn;
+  const parentWindow = globalThis.parent;
+  const stringify = JSON.stringify;
+  const parse = JSON.parse;
+  const encode = TextEncoder.prototype.encode.bind(new TextEncoder());
+  const initialStateElement = document.getElementById(
+    &quot;codex-visualization-widget-state&quot;,
+  );
+  const initialGlobals = parse(initialStateElement?.textContent ?? &quot;{}&quot;);
+  initialStateElement?.remove();
+  /** @type {Record&lt;string, unknown&gt; | null} */
+  let state = initialGlobals.widgetState ?? null;
+  const statePersistence = initialGlobals.statePersistence ?? &quot;none&quot;;
+  let nextStateRequestId = 0;
+  /** @type {Map&lt;number, { resolve: () =&gt; void; reject: (error: Error) =&gt; void; timeout: ReturnType&lt;typeof globalThis.setTimeout&gt;; serializedState: string }&gt;} */
+  const pendingStateWrites = new Map();
+  const persistenceError = () =&gt;
+    Object.assign(
+      new Error(&quot;The host could not persist the widget state update&quot;),
+      {
+        code: -32000,
+        data: { code: &quot;widget_state_persistence_failed&quot;, retryable: false },
+      },
+    );
+  /**
+   * @param {object} prototype
+   * @param {string} property
+   */
+  const getPrototypeGetter = (prototype, property) =&gt; {
+    // oxlint-disable-next-line typescript/unbound-method -- invoked through captured Reflect.apply
+    const getter = Object.getOwnPropertyDescriptor(prototype, property)?.get;
+    if (getter == null) {
+      throw new Error(`Missing ${property} getter`);
+    }
+    return getter;
+  };
+  const getMessageData = getPrototypeGetter(MessageEvent.prototype, &quot;data&quot;);
+  const getMessagePorts = getPrototypeGetter(MessageEvent.prototype, &quot;ports&quot;);
+  const getMessageSource = getPrototypeGetter(MessageEvent.prototype, &quot;source&quot;);
+  // oxlint-disable-next-line typescript/unbound-method -- captured before the untrusted fragment runs
+  const addHostMessageListener = MessagePort.prototype.addEventListener;
+  // oxlint-disable-next-line typescript/unbound-method -- captured before the untrusted fragment runs
+  const postHostMessage = MessagePort.prototype.postMessage;
+  // oxlint-disable-next-line typescript/unbound-method -- captured before the untrusted fragment runs
+  const startHostPort = MessagePort.prototype.start;
+  // oxlint-disable-next-line typescript/unbound-method -- captured before the untrusted fragment runs
+  const stopMessagePropagation = Event.prototype.stopImmediatePropagation;
+  /** @type {MessagePort | null} */
+  let hostPort = null;
+  const postToHost = (type, payload) =&gt; {
+    if (hostPort != null) {
+      apply(postHostMessage, hostPort, [{ type, ...payload }]);
+    }
+  };
+  const openExternal = ({ href }) =&gt; {
+    if (globalThis.navigator.userActivation?.isActive === true) {
+      postToHost(&quot;open-external&quot;, { href });
+    }
+  };
+  const sendFollowUpMessage = ({ context, prompt, title }) =&gt; {
+    if (globalThis.navigator.userActivation?.isActive === true) {
+      postToHost(&quot;follow-up&quot;, { context, prompt, title });
+    }
+    return Promise.resolve();
+  };
+  /**
+   * @param {Record&lt;string, unknown&gt; | ((previous: Record&lt;string, unknown&gt; | null) =&gt; Record&lt;string, unknown&gt;)} next
+   * @returns {Promise&lt;void&gt;}
+   */
+  const setWidgetState = async (next) =&gt; {
+    const nextState = typeof next === &quot;function&quot; ? next(state) : next;
+    if (
+      nextState == null ||
+      typeof nextState !== &quot;object&quot; ||
+      isArray(nextState)
+    ) {
+      throw new TypeError(&quot;Widget state must be a JSON object&quot;);
+    }
+    const inputState = stringify(
+      nextState,
+      (_key, /** @type {unknown} */ value) =&gt; {
+        if (
+          typeof value === &quot;undefined&quot; ||
+          typeof value === &quot;function&quot; ||
+          typeof value === &quot;symbol&quot; ||
+          (typeof value === &quot;number&quot; &amp;&amp; !Number.isFinite(value))
+        ) {
+          throw new TypeError(&quot;Widget state must be a JSON object&quot;);
+        }
+        return value;
+      },
+    );
+    const parsedState = parse(inputState);
+    if (
+      parsedState == null ||
+      typeof parsedState !== &quot;object&quot; ||
+      isArray(parsedState)
+    ) {
+      throw new TypeError(&quot;Widget state must be a JSON object&quot;);
+    }
+    const storedState = {
+      modelContent: null,
+      privateContent: null,
+      ...parsedState,
+    };
+    const serializedState = stringify(storedState);
+    if (encode(serializedState).length &gt; 16 * 1024) {
+      throw new TypeError(
+        &quot;Widget state must be a JSON object of at most 16 KiB&quot;,
+      );
+    }
+    if (
+      hasOwn(storedState, &quot;imageIds&quot;) &amp;&amp;
+      (!isArray(storedState.imageIds) ||
+        storedState.imageIds.some(
+          (/** @type {unknown} */ id) =&gt; typeof id !== &quot;string&quot;,
+        ))
+    ) {
+      throw new TypeError(&quot;Widget state imageIds must be an array of strings&quot;);
+    }
+    if (storedState.imageIds?.length &gt; 0) {
+      throw Object.assign(
+        new TypeError(&quot;Visualization state does not support image attachments&quot;),
+        { code: -32602, data: { code: &quot;images_unsupported&quot; } },
+      );
+    }
+    state = storedState;
+    globalThis.openai.widgetState = state;
+    globalThis.dispatchEvent(
+      new CustomEvent(&quot;openai:set_globals&quot;, {
+        detail: { globals: { widgetState: state } },
+      }),
+    );
+    if (statePersistence === &quot;none&quot;) {
+      throw persistenceError();
+    }
+    const id = ++nextStateRequestId;
+    return new Promise((resolve, reject) =&gt; {
+      const timeout = globalThis.setTimeout(() =&gt; {
+        pendingStateWrites.delete(id);
+        reject(persistenceError());
+      }, 30_000);
+      pendingStateWrites.set(id, { resolve, reject, timeout, serializedState });
+      postToHost(&quot;widget-state-write&quot;, { id, state: serializedState });
+    });
+  };
+  const syncTheme = () =&gt; {
+    const theme = mediaQuery.matches ? &quot;dark&quot; : &quot;light&quot;;
+    root.dataset.theme = theme;
+    globalThis.openai = {
+      ...globalThis.openai,
+      openExternal,
+      sendFollowUpMessage,
+      setWidgetState,
+      theme,
+      visualizationStyleVariables: {},
+      visualizationTheme: theme,
+      widgetState: state,
+      statePersistence,
+      stateModelContext: &quot;none&quot;,
+    };
+    globalThis.dispatchEvent(
+      new CustomEvent(&quot;openai:set_globals&quot;, {
+        detail: { globals: globalThis.openai },
+      }),
+    );
+  };
+  const sendHeight = () =&gt; {
+    postToHost(&quot;height&quot;, {
+      height: Math.ceil(
+        Math.max(
+          document.body.scrollHeight,
+          document.body.getBoundingClientRect().height,
+        ),
+      ),
+    });
+  };
+
+  globalThis.addEventListener(
+    &quot;message&quot;,
+    (event) =&gt; {
+      const data = apply(getMessageData, event, []);
+      const ports = apply(getMessagePorts, event, []);
+      const source = apply(getMessageSource, event, []);
+      if (
+        hostPort != null ||
+        source !== parentWindow ||
+        typeof data !== &quot;object&quot; ||
+        data?.type !== &quot;codex-visualization-initialize&quot; ||
+        !isArray(ports) ||
+        ports.length !== 1
+      ) {
+        return;
+      }
+      apply(stopMessagePropagation, event, []);
+      const nextHostPort = ports[0];
+      try {
+        apply(addHostMessageListener, nextHostPort, [
+          &quot;message&quot;,
+          (event) =&gt; {
+            const data = apply(getMessageData, event, []);
+            if (typeof data === &quot;object&quot; &amp;&amp; data?.type === &quot;measure&quot;) {
+              sendHeight();
+            } else if (
+              typeof data === &quot;object&quot; &amp;&amp;
+              data?.type === &quot;widget-state-result&quot;
+            ) {
+              /** @type {unknown} */
+              const id = data.id;
+              if (typeof id !== &quot;number&quot;) {
+                return;
+              }
+              const pending = pendingStateWrites.get(id);
+              if (pending != null) {
+                pendingStateWrites.delete(id);
+                globalThis.clearTimeout(pending.timeout);
+                if (data.ok === true) {
+                  pending.resolve();
+                } else {
+                  pending.reject(persistenceError());
+                }
+              }
+            }
+          },
+        ]);
+        apply(startHostPort, nextHostPort, []);
+      } catch {
+        return;
+      }
+      hostPort = nextHostPort;
+      for (const [id, { serializedState }] of pendingStateWrites) {
+        postToHost(&quot;widget-state-write&quot;, { id, state: serializedState });
+      }
+      sendHeight();
+    },
+    { capture: true },
+  );
+  document.currentScript?.remove();
+  mediaQuery.addEventListener(&quot;change&quot;, syncTheme);
+  globalThis.addEventListener(&quot;click&quot;, (event) =&gt; {
+    if (event.defaultPrevented) {
+      return;
+    }
+    let element = null;
+    if (event.target instanceof globalThis.Element) {
+      element = event.target;
+    } else if (event.target instanceof globalThis.Node) {
+      element = event.target.parentElement;
+    }
+    const link = element?.closest(&quot;a[href]&quot;);
+    const href = link?.getAttribute(&quot;href&quot;);
+    if (href == null) {
+      return;
+    }
+    if (href.startsWith(&quot;#&quot;)) {
+      let id;
+      try {
+        id = decodeURIComponent(href.slice(1));
+      } catch {
+        return;
+      }
+      const target = id.length === 0 ? root : document.getElementById(id);
+      if (
+        target == null ||
+        globalThis.navigator.userActivation?.isActive !== true
+      ) {
+        return;
+      }
+      event.preventDefault();
+      postToHost(&quot;scroll-to&quot;, {
+        top: target.getBoundingClientRect().top + globalThis.scrollY,
+      });
+      return;
+    }
+    event.preventDefault();
+    openExternal({ href });
+  });
+  new ResizeObserver(sendHeight).observe(document.body);
+  syncTheme();
+})();
+&lt;/script&gt;
+&lt;div id=&quot;pie-tab-bar-inline&quot; aria-label=&quot;Pie interactive tab bar&quot;&gt;&lt;/div&gt;
+&lt;style&gt;
+.pie-tab-strip, .tab-menu {
+  --tab-text: #e3e3e5; --tab-muted: #989a9d; --tab-track: #ffffff0f;
+  --tab-selected: #ffffff24; --tab-hover: #ffffff0e; --tab-rim: #ffffff45;
+  --tab-solid: #49494a; --focus: #74a253; --close-cutout: #505052;
+  --tab-preview-background: #222223; --tab-preview-border: #515153;
+  color: var(--tab-text); font: 13px/1.2 -apple-system, BlinkMacSystemFont, &#x27;Segoe UI&#x27;, sans-serif;
+}
+.pie-tab-strip[data-theme=light], .tab-menu[data-theme=light] {
+  --tab-text: #28282a; --tab-muted: #77797b; --tab-track: #00000012;
+  --tab-selected: #ffffffb3; --tab-hover: #0000000d; --tab-rim: #ffffffd9;
+  --tab-solid: #f3f3f3; --close-cutout: #f1f1f2; --focus: #608d45;
+  --tab-preview-background: #f4f4f4; --tab-preview-border: #c7c7c9;
+}
+.pie-tab-strip { position: relative; height: 36px; flex: 1; min-width: 0; isolation: isolate; }
+.pie-tab-strip * { box-sizing: border-box; }
+.pie-tab-hover { position: fixed; inset: auto; margin: 0; z-index: 10000; pointer-events: none; display: flex; flex-direction: column; gap: 5px; width: 280px; min-height: 36px; max-height: calc(100vh - 16px); overflow: hidden; padding: 9px 14px; border: 1px solid var(--tab-preview-border); border-radius: 12px; background: var(--tab-preview-background); color: var(--tab-text); font: 13px/16px -apple-system, BlinkMacSystemFont, &#x27;Segoe UI&#x27;, sans-serif; box-shadow: 0 5px 16px #0002; text-align: left; white-space: pre-wrap; overflow-wrap: anywhere; }
+.pie-tab-hover[hidden] { display: none !important; }
+.tab-hover-title { font-weight: 600; }
+.tab-hover-subtitle, .tab-hover-detail { font-size: 11px; line-height: 15px; color: var(--tab-muted); }
+.tab-stage { position: relative; width: calc(100% - 32px); height: 36px; touch-action: none; user-select: none; -webkit-user-select: none; clip-path: inset(-32px 0); }
+.tab-track { position: absolute; top: 0; left: 0; height: 36px; border-radius: 18px; background: var(--tab-track); pointer-events: none; }
+.pie-tab { position: absolute; left: 0; top: 0; height: 36px; min-width: 0; cursor: default; outline: none; border-radius: 18px; }
+.tab-foreground { position: absolute; left: 50%; top: 50%; width: var(--foreground-width, 100%); height: 36px; transform: translate(-50%, -50%) scale(var(--foreground-scale, 1)); z-index: 2; opacity: calc(1 - var(--tear-blend, 0)); }
+.pie-tab::before { content: &#x27;&#x27;; position: absolute; inset: 0; border-radius: 18px; pointer-events: none; }
+.pie-tab[data-pinned=true]::before { background: var(--tab-track); }
+.tab-surface { position: absolute; inset: 3.5px; border-radius: 15px; border: .75px solid transparent; pointer-events: none; transition: background-color 100ms, border-color 100ms; }
+.pie-tab:hover .tab-surface { background: var(--tab-hover); }
+.pie-tab[data-selected=true] .tab-surface { background: var(--tab-selected); border-color: var(--tab-rim); }
+.pie-tab[data-selected=true]:hover .tab-surface { background: color-mix(in srgb, var(--tab-selected), #fff 3%); }
+.pie-tab:not([data-selected=true])[data-separator=true]::after { content: &#x27;&#x27;; position: absolute; right: 0; top: 9px; height: 18px; width: .5px; background: currentColor; opacity: .15; }
+.pie-tab:hover::after, .is-dragging .pie-tab::after { opacity: 0; }
+.tab-label { position: absolute; left: 27px; right: 27px; top: 0; height: 36px; display: flex; align-items: center; justify-content: center; gap: 5px; pointer-events: none; overflow: hidden; }
+.tab-icon { display: inline-flex; flex: 0 0 16px; width: 16px; height: 16px; color: var(--tab-muted); }
+.tab-icon svg, .pie-tab-strip button svg { width: 16px; height: 16px; display: block; }
+.tab-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; letter-spacing: -.2px; padding: 1px 0; }
+.pie-tab[data-selected=true] .tab-label { left: 30px; right: 49px; }
+.pie-tab[data-selected=true][data-empty=true] .tab-label { left: 12px; right: 12px; color: var(--tab-muted); font-weight: 500; }
+.pie-tab[data-pinned=true]:not([data-selected=true]) .tab-label { inset: 0; }
+.pie-tab[data-pinned=true]:not([data-selected=true]) .tab-title { display: none; }
+.pie-tab-strip button { font: inherit; color: inherit; padding: 0; background: none; border: 0; cursor: default; display: grid; place-items: center; }
+.pie-tab-strip button:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+.pie-tab-strip .tab-activate { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: inherit; z-index: 2; }
+.pie-tab-strip .tab-activate:focus-visible { outline: none; }
+.pie-tab-strip[data-keyboard=true] .tab-activate:focus-visible { outline: 1px solid var(--tab-rim); outline-offset: -1px; }
+.pie-tab.lifted .tab-activate { outline: none; }
+.pie-tab-strip button[hidden] { display: none !important; }
+.tab-close, .tab-reload, .tab-actions { position: absolute; top: 9px; width: 18px; height: 18px; z-index: 3; opacity: .9; }
+.tab-close { left: 7px; opacity: 0; pointer-events: none; }
+.pie-tab:hover .tab-close, .pie-tab-strip[data-keyboard=true] .pie-tab:focus-within .tab-close, .pie-tab.lifted .tab-close { opacity: .9; pointer-events: auto; }
+.tab-reload { right: 30px; opacity: 0; pointer-events: none; }
+.pie-tab:hover .tab-reload, .pie-tab.lifted .tab-reload, .tab-reload:focus-visible { opacity: .85; pointer-events: auto; }
+.tab-actions { right: 9px; opacity: .8; }
+.pie-tab-strip .add-tab { position: absolute; right: 1px; top: 5px; width: 26px; height: 26px; border-radius: 7px; color: var(--tab-muted); }
+.add-tab:hover { background: var(--tab-hover); }
+.tab-address { appearance: none; position: absolute; left: 34px; right: 10px; top: 8px; height: 20px; width: calc(100% - 44px); margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; color: var(--tab-text); caret-color: #d84d93; font: inherit; outline: 0; opacity: 0; pointer-events: none; z-index: 4; }
+.tab-address::placeholder { color: var(--tab-muted); }
+.editing .tab-address { opacity: 1; pointer-events: auto; }
+.editing .tab-label { left: 11px !important; right: auto !important; width: 16px; }
+.editing .tab-title { display: none; }
+.editing .tab-actions, .editing .tab-close, .editing .tab-reload { visibility: hidden; }
+.tab-focus-ring { position: absolute; inset: 0; border: 3.5px solid var(--focus); border-radius: 18px; opacity: 0; pointer-events: none; }
+.editing .tab-focus-ring { opacity: .9; animation: tab-focus-in 285ms ease-out both; }
+@keyframes tab-focus-in { from { opacity: 0; transform: scale(1.16,1.5); } to { opacity: .9; transform: scale(1); } }
+.pie-tab.lifted { z-index: 30; will-change: transform; }
+.pie-tab.lifted::before { background: color-mix(in srgb, var(--tab-solid) 38%, transparent); border-radius: 18px; }
+.pie-tab.lifted .tab-surface { inset: 0; border-radius: 18px; background: #9a9a9a26; border-color: #ffffff5c; box-shadow: inset 0 .6px 0 #ffffff4f, inset 0 -.6px 0 #00000025; }
+.pie-tab-strip[data-shadows=true] .pie-tab.lifted { filter: drop-shadow(0 3px 3px #00000035); }
+.glass-lens { position: absolute; inset: 0; width: 100%; height: 36px; pointer-events: none; opacity: .78; overflow: visible; }
+.pie-tab[popover] { position: fixed; inset: 0 auto auto 0; margin: 0; padding: 0; border: 0; overflow: visible; background: transparent; color: inherit; border-radius: var(--tear-radius, 18px); max-width: none; max-height: none; }
+.pie-tab[popover]::backdrop { background: transparent; pointer-events: none; }
+.pie-tab[popover]::before { border-radius: inherit; opacity: calc(1 - var(--tear-blend, 0)); }
+.pie-tab[popover] .tab-surface { border-radius: inherit; opacity: calc(1 - var(--tear-blend, 0)); }
+.pie-tab-strip[data-glass=true][data-blur=true] .pie-tab[popover] .tab-surface { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+.pie-tab[popover] .glass-lens { top: calc(50% - 18px); opacity: calc(.78 * (1 - var(--tear-blend, 0))); }
+.pie-tab[data-flight=detached] .glass-lens { visibility: hidden; }
+.tab-page-preview { position: absolute; inset: 0; overflow: hidden; border-radius: inherit; background: #f5f4ef; opacity: var(--tear-blend, 0); pointer-events: none; z-index: 4; contain: layout paint; }
+.tab-preview-content { position: absolute; left: 0; top: 0; transform-origin: top left; pointer-events: none; }
+.tab-preview-content *, .tab-preview-content *::before, .tab-preview-content *::after { animation-play-state: paused !important; pointer-events: none !important; }
+.pie-tab-strip[data-shadows=true] .pie-tab[popover] { filter: drop-shadow(0 4px 5px #0005); }
+.pie-tab-strip[data-glass=false] .pie-tab.lifted .tab-surface, .pie-tab-strip[data-glass=false] .pie-tab[data-selected=true] .tab-surface { background: var(--tab-solid); }
+.pie-tab-strip[data-glass=false] .glass-lens { display: none; }
+.pie-tab-strip[data-motion=off] *, .pie-tab-strip[data-motion=reduced] * { transition: none !important; animation: none !important; }
+.pie-tab-strip.is-dragging .pie-tab:not(.lifted) .tab-close { opacity: 0; pointer-events: none; }
+.tab-announcer { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.tab-menu { position: fixed; z-index: 1000; width: 228px; padding: 5px; background: #292929f5; border: 1px solid #ffffff26; border-radius: 9px; box-shadow: 0 9px 30px #0005; backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
+.tab-menu[data-theme=light] { background: #fafafaf5; border-color: #0002; }
+.tab-menu button { width: 100%; border: 0; border-radius: 5px; display: grid; grid-template-columns: 16px 1fr; gap: 9px; padding: 6px 7px; align-items: center; text-align: left; background: transparent; color: inherit; font: inherit; outline: none; }
+.tab-menu button svg { width: 14px; height: 14px; }
+.tab-menu button:hover, .tab-menu button:focus { background: #608e46; color: #fff; }
+.tab-menu hr { margin: 4px 3px; border: 0; border-top: 1px solid #8884; }
+#pie-tab-bar-inline { font-family: -apple-system, BlinkMacSystemFont, &#x27;Segoe UI&#x27;, sans-serif; color: #2b2c27; background: #efeee9; font-synthesis: none; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+button, input, select, textarea { font: inherit; }
+button, select { cursor: pointer; }
+button:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid #65864b; outline-offset: 3px; }
+.masthead { max-width: 1248px; margin: auto; height: 100px; padding: 0 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #27291e1f; }
+.brand { display: flex; gap: 12px; align-items: center; font-size: 16px; font-weight: 650; color: inherit; text-decoration: none; letter-spacing: -.3px; }
+.brand-mark { display: grid; place-items: center; width: 30px; height: 30px; background: #2b3126; color: #daedaf; font-size: 27px; line-height: 30px; font-weight: 700; border-radius: 9px; padding-bottom: 4px; }
+.brand-divider { margin: 0 9px; color: #a2a397; font-weight: 350; }
+.brand-subtitle { font-weight: 450; }
+.edition { display: flex; align-items: center; gap: 12px; font-size: 10px; letter-spacing: 1.8px; color: #818376; }
+.edition span { border: 1px solid #a5a799; border-radius: 50%; padding: 5px 4px; letter-spacing: 0; }
+main { max-width: 1248px; margin: auto; padding: 0 40px; }
+.intro { display: flex; align-items: flex-end; justify-content: space-between; padding: 42px 0 28px; }
+.eyebrow { font-size: 10px; font-weight: 600; letter-spacing: 1.9px; color: #7c806d; }
+h1 { margin: 12px 0 8px; font-size: clamp(30px, 4vw, 46px); line-height: 1.04; font-weight: 520; letter-spacing: -2px; }
+.intro p { margin: 0; font-size: 14px; color: #77796d; line-height: 1.6; }
+.appearance { display: flex; padding: 3px; border: 1px solid #d5d6cb; border-radius: 9px; margin-bottom: 3px; }
+.appearance button { display: flex; align-items: center; gap: 7px; border: 0; background: none; color: #77796d; padding: 7px 11px; border-radius: 6px; font-size: 12px; }
+.appearance button[aria-pressed=true] { color: #2b3126; background: #fffdf7; box-shadow: 0 1px 4px #2221; }
+.appearance svg { width: 14px; height: 14px; }
+.browser { position: relative; border: 1px solid #52534e; border-radius: 18px; box-shadow: 0 20px 40px -20px #20231855, 0 3px 5px #2221; overflow: hidden; background: #1d1d1e; }
+.browser-toolbar { height: 57px; padding: 0 12px 0 17px; display: flex; align-items: center; gap: 12px; background: #232324; border-bottom: 1px solid #0005; }
+.window-controls { display: flex; gap: 8px; flex: 0 0 auto; }
+.window-controls i { width: 11px; height: 11px; border-radius: 50%; background: #ff5e60; box-shadow: inset 0 0 0 .5px #0001; }
+.window-controls i:nth-child(2) { background: #ffbd2e; }.window-controls i:nth-child(3) { background: #28c840; }
+.toolbar-divider { height: 20px; width: 1px; background: #ffffff12; margin: 0 2px 0 9px; }
+.toolbar-button { border: 0; width: 28px; height: 28px; padding: 6px; color: #a1a1a3; background: transparent; border-radius: 6px; }
+.toolbar-button svg { width: 16px; height: 16px; }
+.toolbar-button:hover { background: #8882; }
+.page-stack { min-height: 388px; height: 388px; position: relative; overflow: auto; background: #f5f4ef; }
+.demo-page { min-height: 388px; color: #272923; background: #f5f4ef; }
+.demo-page[hidden] { display: none !important; }
+.browser-status { display: flex; height: 28px; align-items: center; gap: 6px; color: #9b9b9e; padding: 0 15px; font-size: 10px; background: #232324; border-top: 1px solid #ffffff09; }
+.status-dot { width: 4px; height: 4px; background: #92ad72; border-radius: 50%; }.status-hint { margin-left: auto; color: #79797d; }
+.browser[data-theme=light] { border-color: #b5b7ac; }.browser[data-theme=light] .browser-toolbar { background: #e1e1dd; border-bottom-color: #0001; }
+.browser[data-theme=light] .toolbar-divider { background: #0001; }.browser[data-theme=light] .toolbar-button { color: #73736f; }
+.browser[data-theme=light] .browser-status { background: #e9e9e4; color: #6d7266; border-top-color: #0001; }
+.editorial-nav { padding: 17px 30px 13px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #30332520; }
+.editorial-wordmark { font-size: 25px; line-height: 1; font-weight: 820; letter-spacing: -1.5px; }.editorial-wordmark span { color: #8fa76d; margin-left: 2px; }
+.editorial-nav&gt;span { font-size: 9px; letter-spacing: 1.4px; color: #7d806f; }
+.editorial-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; padding: 24px 30px 20px; }
+.article-category { display: block; font-size: 9px; letter-spacing: 1.8px; font-weight: 650; color: #7d8766; }
+.editorial-copy h2 { margin: 14px 0; font-size: clamp(24px, 3.3vw, 38px); line-height: 1.03; letter-spacing: -1.4px; font-weight: 550; }
+.editorial-copy p { margin: 0; font-size: 12px; color: #777b6b; line-height: 1.7; }
+.read-link { margin-top: 19px; padding: 0 0 5px; background: none; border: 0; border-bottom: 1px solid #383e2e70; font-size: 11px; color: #383e2e; }
+.read-link span { margin-left: 20px; }
+.object-scene { position: relative; height: 238px; border-radius: 3px; overflow: hidden; background: #dcdccf; background-image: radial-gradient(ellipse at 45% 20%, #eeeede 0, transparent 70%), linear-gradient(160deg, #e1e1d3, #bdbdac); }
+.scene-shadow { position: absolute; width: 60%; height: 28px; border-radius: 50%; background: #535c4360; bottom: 19px; left: 20%; filter: blur(12px); transform: skewX(-18deg); }
+.speaker { position: absolute; width: 115px; height: 160px; top: 32px; left: calc(50% - 57px); background: linear-gradient(90deg,#7d8178 0%,#dcddd1 12%,#cacdc0 35%,#c3c4b8 68%,#909788 100%); border-radius: 23px 23px 27px 27px; transform: rotate(-9deg); box-shadow: inset -2px 0 4px #27311d30, inset 2px 0 3px #fff8, 12px 14px 20px #4450311a; }
+.speaker-top { position: absolute; top: 0; height: 24px; width: 100%; border-radius: 50%; background: linear-gradient(160deg,#dedfd4,#bfc2b4); box-shadow: 0 1px 1px #a6ab9a; }
+.speaker-top::after { content: &#x27;&#x27;; position: absolute; width: 26px; height: 2px; background: #8b927f; border-radius: 3px; top: 11px; left: 43px; }
+.speaker-grille { position: absolute; top: 33px; left: 5px; right: 5px; height: 109px; border-radius: 9px 9px 23px 23px; background: radial-gradient(ellipse, #485140aa .6px, transparent 1px) 0 0 / 3.2px 3.2px; mask-image: linear-gradient(90deg,transparent,#000 12%,#000 80%,transparent); }
+.speaker-light { position: absolute; left: 53px; bottom: 8px; width: 10px; height: 2px; border-radius: 50%; background: #e9ffd2; box-shadow: 0 0 5px #edffd5; }
+.scene-label,.scene-index { position: absolute; bottom: 11px; font-size: 7px; letter-spacing: 1px; color: #7a806e; }.scene-label{left:14px}.scene-index{right:14px}
+.editorial-bottom { margin: 0 30px; padding: 12px 0 0; display: flex; justify-content: space-between; border-top: 1px solid #30332520; font-size: 8px; color: #909381; letter-spacing: .9px; }
+.news-nav { height: 58px; display: flex; align-items: center; padding: 0 30px; justify-content: space-between; background: #ffdd2c; }
+.news-nav strong { font-size: 32px; letter-spacing: -1.5px; font-weight: 850; }.news-nav&gt;span{font-size:10px}
+.news-content { padding: 25px 32px; }.news-content h2{font-size:36px;line-height:1.02;letter-spacing:-1.5px;margin:13px 0}.news-content p{font-size:12px;color:#787970;line-height:1.6}
+.news-cards{display:flex;gap:12px;margin-top:20px}.news-cards&gt;div{border-top:2px solid #d7d7c6;flex:1;padding-top:9px;display:flex;gap:10px;font-size:10px}.news-cards span{color:#9a9b8c}.news-cards strong{font-weight:500}
+.start-page{text-align:center;padding:60px 24px;background:#202121;color:#eee}.start-eyebrow{font-size:9px;letter-spacing:2px;color:#8d9589}.start-page h2{font-size:37px;font-weight:450;letter-spacing:-1.4px;margin:17px 0 10px}.start-page p{font-size:12px;color:#939a91}
+.favorites{display:flex;justify-content:center;gap:27px;margin-top:30px}.favorites button{display:flex;align-items:center;flex-direction:column;gap:10px;border:0;background:none;color:#c3c8bf;padding:0}.favorites button&gt;span{padding:13px;border:1px solid #ffffff12;border-radius:12px;background:#ffffff09}.favorites svg{display:block;width:25px;height:25px}.favorites strong{font-size:10px;font-weight:400}
+.browser[data-theme=light] .start-page { background:#f5f4ef;color:#292d23; }.browser[data-theme=light] .favorites button{color:#646b5b}.browser[data-theme=light] .favorites button&gt;span{background:#00000007;border-color:#0000000a}
+.notes-page{padding:30px;background:#eff0e7}.notes-page h2{font-size:30px;font-weight:500;letter-spacing:-1px;margin:16px 0 10px}.notes-page p{font-size:12px;color:#858c78}.notes-page textarea{display:block;resize:none;width:100%;height:180px;border:0;background:repeating-linear-gradient(transparent 0,transparent 29px,#7b876420 30px);line-height:30px;font-size:14px;color:#39492c;outline:0;margin-top:14px;padding:0}.notes-page textarea::placeholder{color:#a6ad9c}.notes-footer{font-size:8px;letter-spacing:1.4px;color:#909b80}
+.workbench{display:grid;grid-template-columns: .93fr 1.2fr;gap:40px;padding:33px 0 30px;border-bottom:1px solid #27291e1f}
+.control-heading{display:flex;align-items:center;gap:9px}.section-number{font-size:9px;color:#95998a;letter-spacing:1px}.control-heading h2{font-size:13px;font-weight:600;letter-spacing:-.2px;margin:0}.scenario-panel p{color:#929587;font-size:11px;margin:9px 0 14px}
+.scenarios{display:flex;gap:5px;flex-wrap:wrap}.scenarios button{background:transparent;border:1px solid #cfd2c5;border-radius:6px;padding:8px 12px;font-size:11px;color:#737968}.scenarios button[aria-pressed=true]{color:#e7efdd;background:#343d2e;border-color:#343d2e}.scenarios button:hover:not([aria-pressed=true]){background:#e4e6dc}
+.keyboard-hint{display:flex;gap:18px;margin-top:17px;font-size:10px;color:#9b9f91}.keyboard-hint&gt;span{display:flex;align-items:center;gap:4px}kbd{font:9px inherit;display:inline-block;min-width:16px;border:1px solid #d5d7cc;border-radius:3px;padding:1px 3px;text-align:center}
+.text-button{margin-left:auto;border:0;border-bottom:1px solid #b7beab;padding:0 0 2px;color:#7c896c;font-size:10px;background:none}
+.effect-switches{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:20px 0}.effect-control{display:flex;align-items:center;justify-content:space-between;position:relative;font-size:11px;color:#666e5b;gap:7px;cursor:pointer}.effect-control input{position:absolute;right:0;width:28px;height:18px;margin:0;opacity:0;cursor:pointer}.toggle-track{width:27px;height:16px;border-radius:10px;background:#c6cbbc;transition:background 120ms;pointer-events:none;flex-shrink:0}.toggle-track::after{content:&#x27;&#x27;;display:block;width:12px;height:12px;background:#fffdf6;border-radius:50%;margin:2px;box-shadow:0 1px 2px #0002;transition:transform 120ms}.effect-control input:checked+.toggle-track{background:#6b8654}.effect-control input:checked+.toggle-track::after{transform:translateX(11px)}.effect-control input:focus-visible+.toggle-track{outline:2px solid #6b8654;outline-offset:3px}
+.motion-control{display:flex;align-items:center;gap:15px;font-size:11px;color:#666e5b}.motion-control select{appearance:none;background:transparent;border:1px solid #cfd2c5;border-radius:6px;color:#626b57;font-size:11px;padding:6px 23px 6px 9px;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns=&#x27;http://www.w3.org/2000/svg&#x27; width=&#x27;8&#x27; height=&#x27;5&#x27;%3E%3Cpath d=&#x27;m1 1 3 3 3-3&#x27; fill=&#x27;none&#x27; stroke=&#x27;%23737c65&#x27;/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 9px center}.motion-control&gt;span:last-child{margin-left:auto;font-size:10px;color:#909a84}
+footer{display:flex;justify-content:space-between;padding:20px 0 25px;font-size:10px;color:#969b8b}
+.tab-overview{position:absolute;inset:57px 0 28px;background:#f3f3ebf5;backdrop-filter:blur(16px);z-index:80;padding:20px;overflow:auto;color:#353b2f}.overview-heading{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.overview-heading h2{font-size:17px;margin:0}.overview-heading button{border:0;background:none;font-size:24px;color:inherit}.overview-tab{display:flex;align-items:center;gap:12px;text-align:left;width:100%;padding:10px;border:0;border-bottom:1px solid #aaa3;background:none;color:inherit}.overview-tab:hover{background:#7e926d20}.overview-tab svg{width:20px;height:20px;display:block}.overview-tab strong{font-size:12px;font-weight:500}.overview-tab small{margin-left:auto;font-size:10px;color:#7f8875}
+@media(min-width:1400px){.intro{padding-top:56px}.page-stack,.demo-page{height:424px;min-height:424px}.editorial-grid{padding-top:30px;gap:50px}.object-scene{height:262px}.speaker{top:41px}.editorial-copy h2{font-size:42px}.editorial-bottom{padding-top:17px}.workbench{padding-top:38px}}
+@media(max-width:800px){.masthead{height:75px;padding:0 22px}main{padding:0 22px}.intro{padding-top:30px}.workbench{grid-template-columns:1fr;gap:26px}.effects-panel{border-top:1px solid #27291e1f;padding-top:24px}.editorial-nav&gt;span{display:none}.editorial-grid{gap:18px;padding:23px}.editorial-nav{padding-left:23px;padding-right:23px}.editorial-bottom{margin:0 23px}.editorial-copy h2{font-size:29px}.effect-switches{gap:30px}.page-stack,.demo-page{min-height:368px;height:368px}.browser-toolbar{gap:5px;padding-left:11px}.toolbar-divider{margin:0 5px}.window-controls{gap:5px}.window-controls i{width:9px;height:9px}.browser{border-radius:13px}}
+@media(max-width:520px){.edition{font-size:8px;letter-spacing:1px}.intro{gap:10px}.eyebrow{font-size:8px;letter-spacing:1.3px}h1{font-size:32px;letter-spacing:-1.4px}.intro p{font-size:11px}.appearance button{font-size:0;gap:0;padding:8px}.window-controls,.toolbar-divider{display:none}.browser-toolbar{padding:0 5px;gap:2px}.toolbar-button{width:22px;padding:3px}.editorial-grid{grid-template-columns:1fr 0.8fr;gap:13px;padding:21px 17px}.editorial-copy h2{font-size:24px;letter-spacing:-.8px}.editorial-copy p{font-size:10px}.object-scene{height:225px}.speaker{width:87px;height:143px;left:calc(50% - 44px);top:38px}.speaker-grille{height:95px}.speaker-top::after{left:31px}.speaker-light{left:39px}.scene-index{display:none}.editorial-bottom{margin:0 17px;font-size:7px}.editorial-bottom span:last-child{display:none}.editorial-nav{padding:19px 17px}.editorial-wordmark{font-size:23px}.workbench{padding-top:26px}.effect-switches{grid-template-columns:1fr 1fr;gap:20px 40px}.status-hint{font-size:8px}.news-nav&gt;span{display:none}.news-cards{gap:8px}.notes-page{padding:23px}.notes-page h2{font-size:25px}.text-button{font-size:9px}.brand{font-size:14px}.brand-divider{margin:0 5px}footer{font-size:8px;gap:15px}}
+.detach-mode{display:flex;align-items:center;gap:8px;margin-top:15px;font-size:11px;color:#66705b}.detach-mode input{accent-color:#6b8853;margin:0}
+.window-notice{position:fixed;right:22px;bottom:22px;z-index:1000;display:flex;align-items:center;gap:12px;max-width:min(540px,calc(100vw - 44px));padding:14px 16px;border:1px solid #c4c8b9;background:#fffef8;color:#394132;border-radius:10px;box-shadow:0 5px 25px #232b2426;font-size:12px}.window-notice[hidden]{display:none}.window-notice button{border:0;border-radius:5px;background:#526b40;color:#fff;padding:7px 10px;white-space:nowrap}.window-notice #dismiss-window{background:transparent;color:#697561;font-size:20px;padding:0 3px}
+.detached-workspace .masthead,.detached-workspace .intro,.detached-workspace .workbench,.detached-workspace footer,.detached-workspace .window-controls,.detached-workspace .toolbar-divider{display:none}.detached-workspace main{max-width:none;padding:0}.detached-workspace .browser{height:100vh;border:0;border-radius:0;box-shadow:none;display:flex;flex-direction:column}.detached-workspace .browser-toolbar{flex-shrink:0}.detached-workspace .page-stack{flex:1;min-height:0;height:auto}.detached-workspace .demo-page{min-height:100%;height:auto}.detached-workspace .browser-status{flex-shrink:0}.window-recovery{padding:40px}
+/*$vite$:1*/
+#pie-tab-bar-inline { background: transparent; color: light-dark(#2b2c27, #deded7); }
+#pie-tab-bar-inline main { max-width: none; padding: 0; }
+#pie-tab-bar-inline .masthead,
+#pie-tab-bar-inline .intro &gt; div:first-child,
+#pie-tab-bar-inline footer { display: none; }
+#pie-tab-bar-inline .intro { padding: 0 0 12px; justify-content: flex-end; }
+#pie-tab-bar-inline .browser { box-shadow: none; }
+#pie-tab-bar-inline .workbench { padding: 22px 0 0; border: 0; gap: 22px; }
+#pie-tab-bar-inline .scenario-panel p { display: none; }
+#pie-tab-bar-inline .scenarios { margin-top: 14px; }
+#pie-tab-bar-inline .control-heading h2 { color: light-dark(#343d2e, #deded7); }
+#pie-tab-bar-inline .scenarios button:not([aria-pressed=true]),
+#pie-tab-bar-inline .effect-control,
+#pie-tab-bar-inline .motion-control,
+#pie-tab-bar-inline .motion-control select,
+#pie-tab-bar-inline .text-button { color: light-dark(#626b57, #bbc3af); }
+#pie-tab-bar-inline .motion-control select { background-color: light-dark(#efeee9, #272a25); }
+#pie-tab-bar-inline .page-stack { height: auto; overflow: visible; }
+#pie-tab-bar-inline .demo-page { height: auto; }
+@media (max-width: 380px) {
+  #pie-tab-bar-inline .editorial-grid { grid-template-columns: 1fr; }
+  #pie-tab-bar-inline .object-scene { display: none; }
+  #pie-tab-bar-inline .effect-switches { gap: 18px; }
+  #pie-tab-bar-inline .motion-control { flex-wrap: wrap; gap: 10px; }
+  #pie-tab-bar-inline .status-hint { display: none; }
+}
+&lt;/style&gt;
+&lt;script&gt;
+(function() {
+	//#region src/tabs/geometry.ts
+	var geometry = {
+		min: 120,
+		max: 240,
+		pin: 36,
+		gap: 4,
+		height: 36,
+		threshold: 4,
+		hysteresis: 10
+	};
+	var clamp = (value, low, high) =&gt; Math.min(high, Math.max(low, value));
+	function restingWidths(available, count, selected, empty = false) {
+		if (!count) return [];
+		if (count === 1) return [Math.min(280, Math.max(120, available))];
+		if (count === 2 &amp;&amp; empty) {
+			const total = Math.min(520, Math.max(240, available));
+			const active = Math.min(280, total - 120);
+			return [0, 1].map((i) =&gt; i === selected ? active : total - active);
+		}
+		if (count === 2) {
+			const neighbor = clamp(available / 2, 120, 240);
+			const active = Math.min(280, Math.max(neighbor, available - neighbor));
+			return [0, 1].map((i) =&gt; i === selected ? active : neighbor);
+		}
+		return Array(count).fill(clamp((available - (count - 1) * 4) / count, 120, 240));
+	}
+	function layoutTabs(tabs, selected, available, lock, mode = &quot;fixed&quot;) {
+		const pins = tabs.filter((t) =&gt; t.pinned);
+		const normals = tabs.filter((t) =&gt; !t.pinned);
+		const selectedTab = tabs.find((t) =&gt; t.id === selected);
+		const empty = mode === &quot;address&quot; &amp;&amp; !selectedTab?.address;
+		const natural = restingWidths(available, tabs.length, tabs.findIndex((t) =&gt; t.id === selected), empty);
+		let pinX = 0;
+		const slots = pins.map((tab) =&gt; {
+			const width = tab.id === selected ? natural[tabs.indexOf(tab)] ?? 240 : 36;
+			const slot = {
+				id: tab.id,
+				x: pinX,
+				width,
+				pinned: true
+			};
+			pinX += width + 1;
+			return slot;
+		});
+		const pinExtent = pins.length ? pinX - 1 + (normals.length ? 4 : 0) : 0;
+		const room = Math.max(0, available - pinExtent);
+		const widths = selectedTab?.pinned ? Array(normals.length).fill(clamp((room - Math.max(0, normals.length - 1) * 4) / Math.max(1, normals.length), 120, 240)) : restingWidths(room, normals.length, normals.findIndex((t) =&gt; t.id === selected), empty);
+		const gap = lock?.gap ?? (normals.length &lt;= 2 ? 0 : 4);
+		const resolved = normals.map((t, i) =&gt; lock?.widths.get(t.id) ?? widths[i]);
+		const total = resolved.reduce((sum, width) =&gt; sum + width, 0) + Math.max(0, normals.length - 1) * gap;
+		const origin = lock?.origin ?? (normals.length &lt;= 2 &amp;&amp; !selectedTab?.pinned ? Math.max(0, (room - total) / 2) : 0);
+		let x = pinExtent + origin;
+		normals.forEach((tab, i) =&gt; {
+			slots.push({
+				id: tab.id,
+				x,
+				width: resolved[i],
+				pinned: false
+			});
+			x += resolved[i] + gap;
+		});
+		return {
+			slots,
+			pins: pinExtent,
+			normalOrigin: origin,
+			normalWidth: total,
+			maxScroll: Math.max(0, Math.max(total + origin, lock?.extent ?? 0) - room)
+		};
+	}
+	function destination(center, index, slots) {
+		let next = clamp(index, 0, slots.length - 1);
+		const midpoint = (i) =&gt; slots[i].x + slots[i].width / 2;
+		while (next + 1 &lt; slots.length &amp;&amp; center &gt; (midpoint(next) + midpoint(next + 1)) / 2 + 10) next++;
+		while (next &gt; 0 &amp;&amp; center &lt; (midpoint(next - 1) + midpoint(next)) / 2 - 10) next--;
+		return next;
+	}
+	function advanceSpring(axis, dt, omega = 2 * Math.PI / .25, damping = .85) {
+		const x = axis.value - axis.target;
+		const v = axis.velocity;
+		if (damping &gt;= 1) {
+			const c = v + omega * x;
+			const decay = Math.exp(-omega * dt);
+			axis.value = axis.target + (x + c * dt) * decay;
+			axis.velocity = (v - omega * c * dt) * decay;
+		} else {
+			const a = damping * omega;
+			const b = omega * Math.sqrt(1 - damping * damping);
+			const c = (v + a * x) / b;
+			const cos = Math.cos(b * dt), sin = Math.sin(b * dt), decay = Math.exp(-a * dt);
+			axis.value = axis.target + decay * (x * cos + c * sin);
+			axis.velocity = decay * (v * cos - (a * c + b * x) * sin);
+		}
+		if (Math.abs(axis.value - axis.target) &lt; .015 &amp;&amp; Math.abs(axis.velocity) &lt; .08) {
+			axis.value = axis.target;
+			axis.velocity = 0;
+		}
+	}
+	//#endregion
+	//#region src/tabs/icons.ts
+	var escapeXML = (value) =&gt; value.replace(/[&amp;&lt;&gt;&quot;&#x27;]/g, (c) =&gt; ({
+		&quot;&amp;&quot;: &quot;&amp;amp;&quot;,
+		&quot;&lt;&quot;: &quot;&amp;lt;&quot;,
+		&quot;&gt;&quot;: &quot;&amp;gt;&quot;,
+		&quot;\&quot;&quot;: &quot;&amp;quot;&quot;,
+		&quot;&#x27;&quot;: &quot;&amp;apos;&quot;
+	})[c]);
+	var symbols = {
+		plus: &quot;&lt;path d=\&quot;M8 2v12M2 8h12\&quot;/&gt;&quot;,
+		close: &quot;&lt;circle cx=\&quot;8\&quot; cy=\&quot;8\&quot; r=\&quot;7\&quot; fill=\&quot;currentColor\&quot; stroke=\&quot;none\&quot;/&gt;&lt;path d=\&quot;m5.7 5.7 4.6 4.6m0-4.6-4.6 4.6\&quot; stroke=\&quot;var(--close-cutout, #505050)\&quot; stroke-width=\&quot;1.5\&quot;/&gt;&quot;,
+		reload: &quot;&lt;path d=\&quot;M13 5a6 6 0 1 0 1 5M13 1v4H9\&quot;/&gt;&quot;,
+		actions: &quot;&lt;rect x=\&quot;2\&quot; y=\&quot;1.5\&quot; width=\&quot;12\&quot; height=\&quot;7\&quot; rx=\&quot;1.5\&quot;/&gt;&lt;path d=\&quot;M2 11.5h12M2 15h9\&quot;/&gt;&quot;,
+		search: &quot;&lt;circle cx=\&quot;6.5\&quot; cy=\&quot;6.5\&quot; r=\&quot;4.7\&quot;/&gt;&lt;path d=\&quot;m10 10 4.5 4.5\&quot;/&gt;&quot;,
+		pin: &quot;&lt;path d=\&quot;m5 1 6 0-1 5 3 3v1H3V9l3-3-1-5ZM8 10v5\&quot;/&gt;&quot;,
+		check: &quot;&lt;path d=\&quot;m3 8 3 3 7-7\&quot;/&gt;&quot;,
+		left: &quot;&lt;path d=\&quot;m10 3-5 5 5 5\&quot;/&gt;&quot;,
+		right: &quot;&lt;path d=\&quot;m6 3 5 5-5 5\&quot;/&gt;&quot;,
+		sun: &quot;&lt;circle cx=\&quot;8\&quot; cy=\&quot;8\&quot; r=\&quot;3\&quot;/&gt;&lt;path d=\&quot;M8 0v2m0 12v2M0 8h2m12 0h2M2 2l1.5 1.5m9 9L14 14M2 14l1.5-1.5m9-9L14 2\&quot;/&gt;&quot;,
+		moon: &quot;&lt;path d=\&quot;M13.8 10.1A6.5 6.5 0 0 1 5.9 2.2a6.5 6.5 0 1 0 7.9 7.9Z\&quot;/&gt;&quot;
+	};
+	function symbol(name) {
+		return `&lt;svg viewBox=&quot;0 0 16 16&quot; aria-hidden=&quot;true&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.35&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;&gt;${symbols[name]}&lt;/svg&gt;`;
+	}
+	function iconMarkup(icon) {
+		let face = `&lt;text x=&quot;8&quot; y=&quot;11.8&quot; text-anchor=&quot;middle&quot; fill=&quot;${escapeXML(icon.color)}&quot; font-family=&quot;-apple-system,BlinkMacSystemFont,Arial,sans-serif&quot; font-size=&quot;${icon.glyph.length &gt; 1 ? 6.3 : 11.5}&quot; font-weight=&quot;750&quot;&gt;${escapeXML(icon.glyph)}&lt;/text&gt;`;
+		if (icon.kind === &quot;engadget&quot;) face = &quot;&lt;path d=\&quot;M4 4h8v5H5.5v2H12v1.5H4V4Zm1.5 1.5v2H10.5v-2Z\&quot; fill=\&quot;#111\&quot;/&gt;&quot;;
+		if (icon.kind === &quot;stack&quot;) face = &quot;&lt;path d=\&quot;M3 11v3h10v-3M5 11h6M5 8.5l6 .5M6 6l5 1.5M8 3.5l4 3M11 1l2.5 4\&quot; fill=\&quot;none\&quot; stroke=\&quot;#f48024\&quot; stroke-width=\&quot;1.6\&quot;/&gt;&quot;;
+		return `&lt;svg viewBox=&quot;0 0 16 16&quot; aria-hidden=&quot;true&quot;&gt;&lt;rect x=&quot;.2&quot; y=&quot;.2&quot; width=&quot;15.6&quot; height=&quot;15.6&quot; rx=&quot;2.4&quot; fill=&quot;${escapeXML(icon.background)}&quot;/&gt;${face}&lt;/svg&gt;`;
+	}
+	//#endregion
+	//#region src/tabs/presentation.ts
+	function tabLabel(tab, selected, mode) {
+		return selected &amp;&amp; mode === &quot;address&quot; ? tab.address || &quot;Search or enter an address&quot; : tab.title;
+	}
+	//#endregion
+	//#region src/tabs/glass.ts
+	var NS = &quot;http://www.w3.org/2000/svg&quot;;
+	var nextID = 0;
+	/** A tab-sized optical layer. It mirrors only intersecting tab faces, never pages.
+	* The same SVG/filter/pool is reused for a complete gesture. This works without
+	* SVG-in-backdrop-filter support, which differs between browser engines. */
+	var GlassLens = class {
+		element;
+		id = `tab-lens-${++nextID}`;
+		map;
+		blur;
+		displacement;
+		faces;
+		pool = /* @__PURE__ */ new Map();
+		mapBucket = 0;
+		maps = /* @__PURE__ */ new Map();
+		measure = document.createElement(&quot;canvas&quot;).getContext(&quot;2d&quot;);
+		textCache = /* @__PURE__ */ new Map();
+		constructor() {
+			this.element = document.createElementNS(NS, &quot;svg&quot;);
+			this.element.classList.add(&quot;glass-lens&quot;);
+			this.element.setAttribute(&quot;aria-hidden&quot;, &quot;true&quot;);
+			this.element.innerHTML = `&lt;defs&gt;
+      &lt;filter id=&quot;${this.id}&quot; x=&quot;-10%&quot; y=&quot;-40%&quot; width=&quot;120%&quot; height=&quot;180%&quot; color-interpolation-filters=&quot;sRGB&quot;&gt;
+        &lt;feGaussianBlur in=&quot;SourceGraphic&quot; stdDeviation=&quot;0.65&quot; result=&quot;soft&quot;/&gt;
+        &lt;feImage x=&quot;0&quot; y=&quot;0&quot; width=&quot;280&quot; height=&quot;36&quot; preserveAspectRatio=&quot;none&quot; result=&quot;field&quot;/&gt;
+        &lt;feDisplacementMap in=&quot;soft&quot; in2=&quot;field&quot; scale=&quot;18&quot; xChannelSelector=&quot;R&quot; yChannelSelector=&quot;G&quot;/&gt;
+      &lt;/filter&gt;
+      &lt;clipPath id=&quot;${this.id}-clip&quot;&gt;&lt;rect x=&quot;0&quot; y=&quot;0&quot; width=&quot;280&quot; height=&quot;36&quot; rx=&quot;18&quot;/&gt;&lt;/clipPath&gt;
+    &lt;/defs&gt;&lt;g clip-path=&quot;url(#${this.id}-clip)&quot;&gt;&lt;g filter=&quot;url(#${this.id})&quot; class=&quot;lens-faces&quot;&gt;&lt;/g&gt;&lt;/g&gt;`;
+			this.map = this.element.querySelector(&quot;feImage&quot;);
+			this.blur = this.element.querySelector(&quot;feGaussianBlur&quot;);
+			this.displacement = this.element.querySelector(&quot;feDisplacementMap&quot;);
+			this.faces = this.element.querySelector(&quot;.lens-faces&quot;);
+			this.measure.font = &quot;13px -apple-system, BlinkMacSystemFont, Arial, sans-serif&quot;;
+		}
+		field(width) {
+			const cached = this.maps.get(width);
+			if (cached) return cached;
+			const canvas = document.createElement(&quot;canvas&quot;);
+			canvas.width = width * 2;
+			canvas.height = 72;
+			const context = canvas.getContext(&quot;2d&quot;);
+			const pixels = context.createImageData(canvas.width, canvas.height);
+			for (let y = 0; y &lt; canvas.height; y++) for (let x = 0; x &lt; canvas.width; x++) {
+				const px = (x + .5) / 2, py = (y + .5) / 2;
+				const qx = px - Math.max(18, Math.min(width - 18, px));
+				const qy = py - 18;
+				const length = Math.hypot(qx, qy);
+				const distance = 18 - length;
+				const edge = Math.pow(Math.max(0, 1 - Math.max(0, distance) / 11), 1.65);
+				const nx = length ? qx / length : 0, ny = length ? qy / length : 0;
+				const p = (y * canvas.width + x) * 4;
+				pixels.data[p] = Math.round(128 + nx * edge * 100 + (px / width - .5) * 17);
+				pixels.data[p + 1] = Math.round(128 + ny * edge * 100);
+				pixels.data[p + 2] = 128;
+				pixels.data[p + 3] = 255;
+			}
+			context.putImageData(pixels, 0, 0);
+			const url = canvas.toDataURL();
+			if (this.maps.size &gt;= 12) this.maps.delete(this.maps.keys().next().value);
+			this.maps.set(width, url);
+			return url;
+		}
+		truncate(text, width) {
+			const key = `${text}:${Math.round(width)}`;
+			const cached = this.textCache.get(key);
+			if (cached !== void 0) return cached;
+			let result = text;
+			if (this.measure.measureText(text).width &gt; width) {
+				let low = 0, high = text.length;
+				while (low &lt; high) {
+					const mid = Math.ceil((low + high) / 2);
+					if (this.measure.measureText(text.slice(0, mid) + &quot;…&quot;).width &lt;= width) low = mid;
+					else high = mid - 1;
+				}
+				result = text.slice(0, low) + &quot;…&quot;;
+			}
+			if (this.textCache.size &gt; 256) this.textCache.clear();
+			this.textCache.set(key, result);
+			return result;
+		}
+		render(samples, x, width, effects, dark, mode) {
+			this.element.style.display = effects.glass ? &quot;&quot; : &quot;none&quot;;
+			if (!effects.glass) return;
+			this.element.setAttribute(&quot;viewBox&quot;, `0 0 ${width} 36`);
+			this.element.querySelector(&quot;clipPath rect&quot;).setAttribute(&quot;width&quot;, String(width));
+			this.map.setAttribute(&quot;width&quot;, String(width));
+			const bucket = Math.max(36, Math.round(width / 16) * 16);
+			if (bucket !== this.mapBucket) {
+				this.mapBucket = bucket;
+				this.map.setAttribute(&quot;href&quot;, this.field(bucket));
+			}
+			this.blur.setAttribute(&quot;stdDeviation&quot;, effects.blur ? &quot;0.65&quot; : &quot;0&quot;);
+			this.displacement.setAttribute(&quot;scale&quot;, effects.refraction ? &quot;18&quot; : &quot;0&quot;);
+			const visible = /* @__PURE__ */ new Set();
+			for (const sample of samples) {
+				if (sample.x + sample.width &lt; x - 10 || sample.x &gt; x + width + 10) continue;
+				visible.add(sample.tab.id);
+				let face = this.pool.get(sample.tab.id);
+				if (!face) {
+					const group = document.createElementNS(NS, &quot;g&quot;);
+					this.faces.append(group);
+					face = {
+						group,
+						signature: &quot;&quot;
+					};
+					this.pool.set(sample.tab.id, face);
+				}
+				face.group.style.display = &quot;&quot;;
+				face.group.setAttribute(&quot;transform&quot;, `translate(${sample.x - x},0)`);
+				const w = Math.round(sample.width * 2) / 2;
+				const signature = `${sample.tab.title}|${sample.tab.address}|${w}|${sample.selected}|${sample.tab.pinned}|${dark}|${mode}|${JSON.stringify(sample.tab.icon)}`;
+				if (face.signature === signature) continue;
+				face.signature = signature;
+				const pin = sample.tab.pinned &amp;&amp; !sample.selected;
+				const text = pin ? &quot;&quot; : this.truncate(tabLabel(sample.tab, sample.selected, mode), Math.max(0, w - 64));
+				const textWidth = this.measure.measureText(text).width;
+				const groupWidth = pin ? 16 : 22 + textWidth;
+				const start = Math.max(pin ? 10 : 27, (w - groupWidth) / 2);
+				face.group.innerHTML = `${sample.selected ? `&lt;rect x=&quot;3.5&quot; y=&quot;3.5&quot; width=&quot;${Math.max(0, w - 7)}&quot; height=&quot;29&quot; rx=&quot;14.5&quot; fill=&quot;${dark ? &quot;#ffffff&quot; : &quot;#ffffff&quot;}&quot; fill-opacity=&quot;${dark ? &quot;.15&quot; : &quot;.7&quot;}&quot;/&gt;` : &quot;&quot;}
+        &lt;svg x=&quot;${start}&quot; y=&quot;10&quot; width=&quot;16&quot; height=&quot;16&quot; viewBox=&quot;0 0 16 16&quot;&gt;${iconMarkup(sample.tab.icon)}&lt;/svg&gt;
+        &lt;text x=&quot;${start + 22}&quot; y=&quot;22.5&quot; fill=&quot;${dark ? &quot;#eeeeef&quot; : &quot;#252526&quot;}&quot; font-family=&quot;-apple-system,BlinkMacSystemFont,Arial,sans-serif&quot; font-size=&quot;13&quot;&gt;${escapeXML(text)}&lt;/text&gt;`;
+			}
+			for (const [id, face] of this.pool) if (!visible.has(id)) face.group.style.display = &quot;none&quot;;
+		}
+		clear() {
+			this.element.remove();
+			this.faces.replaceChildren();
+			this.pool.clear();
+		}
+	};
+	//#endregion
+	//#region src/tabs/tear-off.ts
+	/** One inert visual copy per lift. The original page and actual tab stay mounted.
+	* The tab enters the browser&#x27;s top layer without being reparented. */
+	var TearOffPreview = class {
+		node;
+		thumbnail;
+		page = document.createElement(&quot;div&quot;);
+		content = document.createElement(&quot;div&quot;);
+		sourceWidth;
+		sourceHeight;
+		blend = 0;
+		target = 0;
+		from = 0;
+		began = 0;
+		rect;
+		constructor(node, source, rect) {
+			this.node = node;
+			this.rect = { ...rect };
+			const bounds = source?.getBoundingClientRect();
+			this.sourceWidth = Math.max(1, bounds?.width || 800);
+			this.sourceHeight = Math.max(1, bounds?.height || 500);
+			const scale = Math.min(110 / this.sourceWidth, 150 / this.sourceHeight);
+			this.thumbnail = {
+				width: this.sourceWidth * scale,
+				height: this.sourceHeight * scale
+			};
+			this.page.className = &quot;tab-page-preview&quot;;
+			this.page.inert = true;
+			this.page.setAttribute(&quot;aria-hidden&quot;, &quot;true&quot;);
+			this.content.className = &quot;tab-preview-content&quot;;
+			this.content.style.width = `${this.sourceWidth}px`;
+			this.content.style.height = `${this.sourceHeight}px`;
+			if (source) {
+				const copy = source.cloneNode(true);
+				const originals = [source, ...source.querySelectorAll(&quot;*&quot;)];
+				[copy, ...copy.querySelectorAll(&quot;*&quot;)].forEach((element, index) =&gt; {
+					element.removeAttribute(&quot;id&quot;);
+					element.removeAttribute(&quot;autofocus&quot;);
+					element.removeAttribute(&quot;name&quot;);
+					const original = originals[index];
+					if (element instanceof HTMLElement &amp;&amp; original instanceof HTMLElement) {
+						const style = getComputedStyle(original);
+						element.style.cssText = Array.from(style, (property) =&gt; `${property}:${style.getPropertyValue(property)};`).join(&quot;&quot;);
+					}
+					if (element instanceof HTMLTextAreaElement &amp;&amp; original instanceof HTMLTextAreaElement) element.value = original.value;
+					if (element instanceof HTMLInputElement &amp;&amp; original instanceof HTMLInputElement) {
+						element.value = original.value;
+						element.checked = original.checked;
+					}
+					if (element instanceof HTMLCanvasElement &amp;&amp; original instanceof HTMLCanvasElement) element.getContext(&quot;2d&quot;)?.drawImage(original, 0, 0);
+					if (element.matches(&quot;script,iframe,object,embed,audio,video&quot;)) element.remove();
+				});
+				copy.hidden = false;
+				copy.inert = true;
+				copy.style.width = `${this.sourceWidth}px`;
+				copy.style.height = `${this.sourceHeight}px`;
+				copy.style.margin = &quot;0&quot;;
+				copy.style.overflow = &quot;hidden&quot;;
+				this.content.append(copy);
+			}
+			this.page.append(this.content);
+			node.append(this.page);
+			node.setAttribute(&quot;popover&quot;, &quot;manual&quot;);
+			node.showPopover();
+			this.paint(rect, rect.width);
+		}
+		setDetached(detached, now) {
+			const target = detached ? 1 : 0;
+			if (target === this.target) return;
+			this.from = this.blend;
+			this.target = target;
+			this.began = now;
+		}
+		advance(now, animate) {
+			const t = animate ? clamp((now - this.began) / 250, 0, 1) : 1;
+			this.blend = this.from + (this.target - this.from) * t * t * (3 - 2 * t);
+		}
+		paint(rect, inlineWidth) {
+			this.rect = { ...rect };
+			const radius = 18 - 15 * this.blend;
+			this.node.style.setProperty(&quot;--tear-blend&quot;, String(this.blend));
+			this.node.style.setProperty(&quot;--tear-radius&quot;, `${radius}px`);
+			this.node.style.setProperty(&quot;--foreground-width&quot;, `${inlineWidth}px`);
+			this.node.style.setProperty(&quot;--foreground-scale&quot;, String(Math.min(1, rect.width / inlineWidth)));
+			this.node.style.transform = `translate3d(${rect.x}px,${rect.y}px,0)`;
+			this.node.style.width = `${rect.width}px`;
+			this.node.style.height = `${rect.height}px`;
+			const scale = Math.max(rect.width / this.sourceWidth, rect.height / this.sourceHeight);
+			this.content.style.transform = `translateX(${(rect.width - this.sourceWidth * scale) / 2}px) scale(${scale})`;
+		}
+		destroy() {
+			this.node.hidePopover();
+			this.node.removeAttribute(&quot;popover&quot;);
+			this.page.remove();
+			for (const property of [
+				&quot;--tear-blend&quot;,
+				&quot;--tear-radius&quot;,
+				&quot;--foreground-width&quot;,
+				&quot;--foreground-scale&quot;,
+				&quot;height&quot;
+			]) this.node.style.removeProperty(property);
+		}
+	};
+	//#endregion
+	//#region src/tabs/types.ts
+	var fullEffects = {
+		glass: true,
+		refraction: true,
+		blur: true,
+		shadows: true,
+		motion: &quot;full&quot;
+	};
+	//#endregion
+	//#region src/tabs/identity.ts
+	/** Works on localhost and ordinary HTTP demo hosts, without randomUUID&#x27;s secure-context requirement. */
+	function createTabId() {
+		return Array.from(crypto.getRandomValues(/* @__PURE__ */ new Uint32Array(4)), (n) =&gt; n.toString(16).padStart(8, &quot;0&quot;)).join(&quot;&quot;);
+	}
+	//#endregion
+	//#region src/tabs/hover-preview.ts
+	/** A noninteractive caption below the tab, after the pointer stops moving. */
+	var TabHoverPreview = class {
+		options;
+		resolve;
+		canShow;
+		card;
+		anchor;
+		id;
+		point = {
+			x: 0,
+			y: 0
+		};
+		timer;
+		visible = false;
+		constructor(root, options, resolve, canShow) {
+			this.options = options;
+			this.resolve = resolve;
+			this.canShow = canShow;
+			this.card = document.createElement(&quot;div&quot;);
+			this.card.className = &quot;pie-tab-hover&quot;;
+			this.card.id = `tab-hover-${createTabId()}`;
+			this.card.setAttribute(&quot;role&quot;, &quot;tooltip&quot;);
+			this.card.hidden = true;
+			root.append(this.card);
+		}
+		get snapshot() {
+			return {
+				visible: this.visible,
+				tabId: this.id ?? null
+			};
+		}
+		setOptions(options) {
+			this.hide();
+			this.options = options;
+		}
+		move(anchor, id, event) {
+			if (event.pointerType !== &quot;mouse&quot; || this.options === false || !this.canShow()) {
+				this.hide();
+				return;
+			}
+			if (this.anchor === anchor &amp;&amp; Math.hypot(event.clientX - this.point.x, event.clientY - this.point.y) &lt;= 2) return;
+			this.hide();
+			this.anchor = anchor;
+			this.id = id;
+			this.point = {
+				x: event.clientX,
+				y: event.clientY
+			};
+			const delay = this.options?.delayMs ?? 650;
+			this.timer = setTimeout(() =&gt; {
+				this.timer = void 0;
+				this.show();
+			}, Number.isFinite(delay) ? Math.max(0, delay) : 650);
+		}
+		leave(anchor) {
+			if (this.anchor === anchor) this.hide();
+		}
+		refresh() {
+			if (this.visible) this.show();
+		}
+		hide() {
+			if (this.timer !== void 0) clearTimeout(this.timer);
+			this.timer = void 0;
+			if (typeof this.card.hidePopover === &quot;function&quot; &amp;&amp; this.card.matches(&quot;:popover-open&quot;)) this.card.hidePopover();
+			this.card.removeAttribute(&quot;popover&quot;);
+			this.card.hidden = true;
+			if (this.anchor) {
+				const tab = this.anchor.querySelector(&quot;[role=tab]&quot;);
+				const ids = tab?.getAttribute(&quot;aria-describedby&quot;)?.split(/\s+/).filter((id) =&gt; id !== this.card.id);
+				if (ids?.length) tab?.setAttribute(&quot;aria-describedby&quot;, ids.join(&quot; &quot;));
+				else tab?.removeAttribute(&quot;aria-describedby&quot;);
+			}
+			this.anchor = void 0;
+			this.id = void 0;
+			this.visible = false;
+		}
+		show() {
+			const tab = this.id ? this.resolve(this.id) : void 0;
+			if (!tab || !this.anchor?.isConnected || this.options === false || !this.canShow()) {
+				this.hide();
+				return;
+			}
+			const content = this.options?.content ? this.options.content(tab) : tab.hoverContent ?? {
+				title: tab.title,
+				subtitle: tab.address &amp;&amp; tab.address !== tab.title ? tab.address : void 0
+			};
+			if (!content) {
+				this.hide();
+				return;
+			}
+			this.card.replaceChildren();
+			for (const name of [
+				&quot;title&quot;,
+				&quot;subtitle&quot;,
+				&quot;detail&quot;
+			]) {
+				const text = content[name];
+				if (!text) continue;
+				const line = document.createElement(name === &quot;title&quot; ? &quot;strong&quot; : &quot;span&quot;);
+				line.className = `tab-hover-${name}`;
+				line.textContent = text;
+				this.card.append(line);
+			}
+			const desired = this.options?.maximumWidth ?? 280;
+			const width = Math.min(Math.max(140, Number.isFinite(desired) ? desired : 280), Math.max(140, innerWidth - 16));
+			this.card.style.width = `${width}px`;
+			this.card.hidden = false;
+			if (typeof this.card.showPopover === &quot;function&quot;) {
+				this.card.setAttribute(&quot;popover&quot;, &quot;manual&quot;);
+				if (!this.card.matches(&quot;:popover-open&quot;)) this.card.showPopover();
+			}
+			const rect = this.anchor.getBoundingClientRect(), height = this.card.getBoundingClientRect().height;
+			const x = Math.max(8, Math.min(rect.left, innerWidth - width - 8));
+			const below = rect.bottom + 8;
+			const y = below + height &lt;= innerHeight - 8 ? below : Math.max(8, rect.top - height - 8);
+			this.card.style.left = `${x}px`;
+			this.card.style.top = `${y}px`;
+			const button = this.anchor.querySelector(&quot;[role=tab]&quot;);
+			const descriptions = button?.getAttribute(&quot;aria-describedby&quot;)?.split(/\s+/).filter(Boolean) ?? [];
+			if (!descriptions.includes(this.card.id)) descriptions.push(this.card.id);
+			button?.setAttribute(&quot;aria-describedby&quot;, descriptions.join(&quot; &quot;));
+			this.visible = true;
+		}
+		destroy() {
+			this.hide();
+			this.card.remove();
+		}
+	};
+	//#endregion
+	//#region src/tabs/tab-strip.ts
+	var axis = (value) =&gt; ({
+		value,
+		target: value,
+		velocity: 0
+	});
+	var stationary = (a) =&gt; a.value === a.target &amp;&amp; a.velocity === 0;
+	var assign = (a, value) =&gt; {
+		a.value = a.target = value;
+		a.velocity = 0;
+	};
+	var fallbackTab = () =&gt; ({
+		id: createTabId(),
+		title: &quot;New Tab&quot;,
+		address: &quot;&quot;,
+		icon: {
+			glyph: &quot;P&quot;,
+			background: &quot;#526941&quot;,
+			color: &quot;#fff&quot;
+		}
+	});
+	/** Framework-independent DOM component. Tab and page identity survive every
+	* reorder. One rAF loop owns geometry; no overlay replacement occurs on drop. */
+	var TabStrip = class {
+		root;
+		options;
+		tabs;
+		selected;
+		labelMode;
+		hover;
+		effects;
+		stage;
+		track;
+		live;
+		cells = /* @__PURE__ */ new Map();
+		resize;
+		abort = new AbortController();
+		lens = new GlassLens();
+		layout = {
+			slots: [],
+			pins: 0,
+			normalOrigin: 0,
+			normalWidth: 0,
+			maxScroll: 0
+		};
+		available = 0;
+		left = 0;
+		top = 0;
+		scroll = 0;
+		inside = false;
+		widthLock;
+		press;
+		drag;
+		menu;
+		menuAnchor;
+		frame = null;
+		inFrame = false;
+		lastTime = 0;
+		dark = true;
+		destroyed = false;
+		frameCosts = [];
+		mutation = 0;
+		detaching;
+		constructor(root, options) {
+			this.root = root;
+			this.options = options;
+			this.labelMode = options.labelMode ?? &quot;fixed&quot;;
+			this.tabs = this.normalize(options.tabs.length ? options.tabs : [fallbackTab()]);
+			this.selected = options.selectedId &amp;&amp; this.tabs.some((t) =&gt; t.id === options.selectedId) ? options.selectedId : this.tabs[0].id;
+			this.effects = {
+				...fullEffects,
+				...options.effects
+			};
+			root.classList.add(&quot;pie-tab-strip&quot;);
+			root.innerHTML = `&lt;div class=&quot;tab-stage&quot; role=&quot;tablist&quot; aria-label=&quot;Workspace tabs&quot;&gt;&lt;div class=&quot;tab-track&quot; aria-hidden=&quot;true&quot;&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;button class=&quot;add-tab&quot; type=&quot;button&quot; aria-label=&quot;New tab&quot; title=&quot;New tab&quot;&gt;${symbol(&quot;plus&quot;)}&lt;/button&gt;&lt;div class=&quot;tab-announcer&quot; aria-live=&quot;polite&quot;&gt;&lt;/div&gt;`;
+			this.stage = root.querySelector(&quot;.tab-stage&quot;);
+			this.track = root.querySelector(&quot;.tab-track&quot;);
+			this.live = root.querySelector(&quot;.tab-announcer&quot;);
+			root.dataset.labelMode = this.labelMode;
+			this.hover = new TabHoverPreview(root, options.hoverPreview, (id) =&gt; this.tabs.find((t) =&gt; t.id === id), () =&gt; !this.destroyed &amp;&amp; !this.drag &amp;&amp; !this.press &amp;&amp; !this.menu &amp;&amp; !document.hidden &amp;&amp; ![...this.cells.values()].some((cell) =&gt; document.activeElement === cell.address));
+			const signal = this.abort.signal;
+			root.querySelector(&quot;.add-tab&quot;).addEventListener(&quot;click&quot;, () =&gt; this.add(), { signal });
+			this.stage.addEventListener(&quot;pointerdown&quot;, this.pointerDown, { signal });
+			this.stage.addEventListener(&quot;pointermove&quot;, this.pointerMove, { signal });
+			this.stage.addEventListener(&quot;pointerup&quot;, this.pointerUp, { signal });
+			this.stage.addEventListener(&quot;pointercancel&quot;, () =&gt; this.returnDrag(true), { signal });
+			this.stage.addEventListener(&quot;lostpointercapture&quot;, () =&gt; {
+				if (this.press) this.returnDrag(true);
+			}, { signal });
+			root.addEventListener(&quot;pointerenter&quot;, () =&gt; {
+				this.inside = true;
+			}, { signal });
+			root.addEventListener(&quot;pointerleave&quot;, () =&gt; {
+				this.inside = false;
+				if (this.widthLock) {
+					this.widthLock = void 0;
+					this.compute();
+					this.schedule();
+				}
+			}, { signal });
+			this.stage.addEventListener(&quot;wheel&quot;, this.wheel, {
+				signal,
+				passive: false
+			});
+			this.stage.addEventListener(&quot;contextmenu&quot;, this.contextMenu, { signal });
+			this.stage.addEventListener(&quot;keydown&quot;, this.keyDown, { signal });
+			document.addEventListener(&quot;pointerdown&quot;, (event) =&gt; {
+				this.hover.hide();
+				root.dataset.keyboard = &quot;false&quot;;
+				if (this.menu &amp;&amp; !this.menu.contains(event.target)) this.closeMenu();
+				for (const cell of this.cells.values()) if (document.activeElement === cell.address &amp;&amp; !cell.node.contains(event.target)) cell.address.blur();
+			}, {
+				signal,
+				capture: true
+			});
+			document.addEventListener(&quot;keydown&quot;, (event) =&gt; {
+				this.hover.hide();
+				root.dataset.keyboard = &quot;true&quot;;
+				if (event.key === &quot;Escape&quot;) {
+					this.closeMenu(true);
+					this.detaching?.abort();
+					this.returnDrag(true);
+				}
+			}, { signal });
+			window.addEventListener(&quot;blur&quot;, () =&gt; {
+				this.hover.hide();
+				if (!this.detaching) this.returnDrag(true);
+				this.closeMenu();
+			}, { signal });
+			document.addEventListener(&quot;visibilitychange&quot;, () =&gt; {
+				if (document.hidden) {
+					this.hover.hide();
+					if (!this.detaching) this.cancelDrag();
+				}
+			}, { signal });
+			window.addEventListener(&quot;scroll&quot;, () =&gt; {
+				this.hover.hide();
+				this.readOrigin();
+			}, {
+				signal,
+				capture: true
+			});
+			this.syncCells();
+			this.available = this.stage.clientWidth;
+			this.readOrigin();
+			this.compute();
+			this.paintImmediately();
+			this.setEffects(this.effects);
+			this.resize = new ResizeObserver((entries) =&gt; {
+				const width = entries[0]?.contentRect.width ?? 0;
+				if (Math.abs(width - this.available) &lt; .1) return;
+				this.hover.hide();
+				this.cancelDrag();
+				this.widthLock = void 0;
+				this.available = width;
+				this.readOrigin();
+				this.compute();
+				this.reveal(this.selected);
+				this.schedule();
+			});
+			this.resize.observe(this.stage);
+			this.options.onChange?.(this.tabs);
+			this.options.onSelect?.(this.current);
+		}
+		get current() {
+			return this.tabs.find((t) =&gt; t.id === this.selected);
+		}
+		get configuration() {
+			return { ...this.effects };
+		}
+		get items() {
+			return this.tabs.map((t) =&gt; ({ ...t }));
+		}
+		/** Invoke from a trusted click for a menu/API detach. No window is opened by
+		* the component itself; the host&#x27;s synchronous callback owns that policy. */
+		detach(id, point = {
+			screenX: window.screenX + window.outerWidth / 2,
+			screenY: window.screenY + 100
+		}, trigger = &quot;api&quot;) {
+			const tab = this.tabs.find((t) =&gt; t.id === id), handler = this.options.onDetach;
+			if (!tab || this.tabs.length &lt; 2 || !handler || this.detaching) return Promise.resolve(false);
+			const controller = new AbortController();
+			this.detaching = controller;
+			if (this.drag?.id === id) this.drag.phase = &quot;opening&quot;;
+			let result;
+			try {
+				result = handler({
+					tab: { ...tab },
+					...point,
+					trigger,
+					signal: controller.signal
+				});
+			} catch {
+				result = false;
+			}
+			return Promise.resolve(result).catch(() =&gt; false).then((accepted) =&gt; {
+				if (this.detaching !== controller || this.destroyed) return false;
+				this.detaching = void 0;
+				if (accepted &amp;&amp; !controller.signal.aborted) {
+					this.cancelDrag();
+					this.inside = false;
+					this.widthLock = void 0;
+					this.close(id, true);
+					this.paintImmediately();
+					this.announce(`${tab.title} moved to a new window`);
+					return true;
+				}
+				if (this.drag?.phase === &quot;opening&quot;) this.drag.phase = &quot;detached&quot;;
+				this.returnDrag(false);
+				this.announce(`${tab.title} remains in this window`);
+				return false;
+			});
+		}
+		normalize(tabs) {
+			if (new Set(tabs.map((t) =&gt; t.id)).size !== tabs.length) throw new Error(&quot;Tab IDs must be unique&quot;);
+			return [...tabs.filter((t) =&gt; t.pinned), ...tabs.filter((t) =&gt; !t.pinned)].map((t) =&gt; ({ ...t }));
+		}
+		setTabs(tabs, selectedId) {
+			this.hover.hide();
+			this.cancelDrag();
+			this.closeMenu();
+			this.widthLock = void 0;
+			this.scroll = 0;
+			this.tabs = this.normalize(tabs.length ? tabs : [fallbackTab()]);
+			this.selected = selectedId &amp;&amp; this.tabs.some((t) =&gt; t.id === selectedId) ? selectedId : this.tabs[0].id;
+			this.changed(true);
+		}
+		select(id, reveal = true) {
+			if (!this.cells.has(id) || id === this.selected) return;
+			this.cells.get(this.selected)?.address.blur();
+			this.selected = id;
+			this.syncCells();
+			this.compute();
+			if (reveal &amp;&amp; !this.drag) this.reveal(id);
+			this.schedule();
+			this.options.onSelect?.(this.current);
+		}
+		add(tab = this.options.onNewTab?.() ?? fallbackTab()) {
+			this.finishSettle();
+			this.cancelDrag();
+			this.widthLock = void 0;
+			if (this.tabs.some((t) =&gt; t.id === tab.id)) throw new Error(&quot;Tab IDs must be unique&quot;);
+			const pins = this.tabs.filter((t) =&gt; t.pinned).length;
+			const index = tab.pinned ? pins : Math.max(pins, this.tabs.findIndex((t) =&gt; t.id === this.selected) + 1);
+			const previous = this.cells.get(this.selected);
+			const origin = previous ? previous.x.value + previous.width.value : 0;
+			this.tabs.splice(index, 0, { ...tab });
+			this.selected = tab.id;
+			this.syncCells();
+			this.compute();
+			const cell = this.cells.get(tab.id);
+			assign(cell.x, origin);
+			assign(cell.width, .01);
+			this.compute();
+			this.reveal(tab.id);
+			this.changed(true);
+			if (this.labelMode === &quot;address&quot; &amp;&amp; !tab.address) cell.address.focus({ preventScroll: true });
+			this.announce(&quot;New tab&quot;);
+		}
+		close(id, explicit = false) {
+			const index = this.tabs.findIndex((t) =&gt; t.id === id);
+			if (index &lt; 0) return;
+			const tab = this.tabs[index];
+			if (tab.pinned &amp;&amp; !explicit) {
+				const normal = this.tabs.find((t) =&gt; !t.pinned);
+				if (normal) this.select(normal.id);
+				else this.add();
+				return;
+			}
+			this.cancelDrag();
+			const hadFocus = this.cells.get(id)?.node.contains(document.activeElement);
+			if (this.inside &amp;&amp; !tab.pinned) this.widthLock ??= this.captureWidths();
+			else this.widthLock = void 0;
+			this.tabs.splice(index, 1);
+			if (!this.tabs.length) this.tabs = [this.options.onNewTab?.() ?? fallbackTab()];
+			const selectionChanged = this.selected === id;
+			if (selectionChanged) this.selected = this.tabs[Math.min(index, this.tabs.length - 1)].id;
+			this.changed(selectionChanged);
+			if (hadFocus) this.cells.get(this.selected)?.activate.focus({ preventScroll: true });
+			this.announce(`${tab.title} closed`);
+		}
+		pin(id, pinned = !this.tabs.find((t) =&gt; t.id === id)?.pinned) {
+			this.cancelDrag();
+			this.widthLock = void 0;
+			const index = this.tabs.findIndex((t) =&gt; t.id === id);
+			if (index &lt; 0 || !!this.tabs[index].pinned === pinned) return;
+			const [tab] = this.tabs.splice(index, 1);
+			tab.pinned = pinned;
+			this.tabs.splice(this.tabs.filter((t) =&gt; t.pinned).length, 0, tab);
+			this.changed(false);
+			this.reveal(id);
+			this.announce(`${tab.title} ${pinned ? &quot;pinned&quot; : &quot;unpinned&quot;}`);
+		}
+		update(id, update) {
+			const tab = this.tabs.find((t) =&gt; t.id === id);
+			if (tab) {
+				Object.assign(tab, update);
+				this.changed(false);
+			}
+		}
+		setEffects(effects) {
+			this.effects = {
+				...this.effects,
+				...effects
+			};
+			for (const name of [
+				&quot;glass&quot;,
+				&quot;refraction&quot;,
+				&quot;blur&quot;,
+				&quot;shadows&quot;
+			]) this.root.dataset[name] = String(this.effects[name]);
+			this.root.dataset.motion = this.effects.motion;
+			this.schedule();
+		}
+		setTheme(theme) {
+			this.dark = theme === &quot;dark&quot;;
+			this.root.dataset.theme = theme;
+			this.schedule();
+		}
+		setLabelMode(mode) {
+			if (mode === this.labelMode) return;
+			this.hover.hide();
+			this.cancelDrag();
+			this.widthLock = void 0;
+			for (const cell of this.cells.values()) cell.address.blur();
+			this.labelMode = mode;
+			this.options.labelMode = mode;
+			this.root.dataset.labelMode = mode;
+			this.syncCells();
+			this.compute();
+			this.schedule();
+		}
+		setHoverPreview(options) {
+			this.options.hoverPreview = options;
+			this.hover.setOptions(options);
+		}
+		changed(selectionChanged) {
+			this.mutation++;
+			this.syncCells();
+			this.compute();
+			this.schedule();
+			this.options.onChange?.(this.items);
+			if (selectionChanged) this.options.onSelect?.(this.current);
+		}
+		syncCells() {
+			for (const [id, cell] of this.cells) if (!this.tabs.some((t) =&gt; t.id === id)) {
+				this.hover.leave(cell.node);
+				cell.node.remove();
+				this.cells.delete(id);
+			}
+			this.root.dataset.single = String(this.tabs.length === 1);
+			for (const tab of this.tabs) {
+				let cell = this.cells.get(tab.id);
+				if (!cell) {
+					const node = document.createElement(&quot;div&quot;);
+					node.className = &quot;pie-tab&quot;;
+					node.dataset.tabId = tab.id;
+					node.innerHTML = `&lt;div class=&quot;tab-surface&quot; aria-hidden=&quot;true&quot;&gt;&lt;/div&gt;&lt;div class=&quot;tab-focus-ring&quot; aria-hidden=&quot;true&quot;&gt;&lt;/div&gt;
+          &lt;div class=&quot;tab-foreground&quot;&gt;
+          &lt;button type=&quot;button&quot; class=&quot;tab-activate&quot; role=&quot;tab&quot;&gt;&lt;span class=&quot;tab-label&quot;&gt;&lt;span class=&quot;tab-icon&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt;&lt;span class=&quot;tab-title&quot;&gt;&lt;/span&gt;&lt;/span&gt;&lt;/button&gt;
+          &lt;button type=&quot;button&quot; class=&quot;tab-close&quot; aria-label=&quot;Close tab&quot; title=&quot;Close tab&quot;&gt;${symbol(&quot;close&quot;)}&lt;/button&gt;
+          &lt;input class=&quot;tab-address&quot; type=&quot;text&quot; spellcheck=&quot;false&quot; autocomplete=&quot;off&quot; aria-label=&quot;Tab address and search&quot; placeholder=&quot;Search or enter an address&quot; tabindex=&quot;-1&quot; /&gt;
+          &lt;button type=&quot;button&quot; class=&quot;tab-reload&quot; aria-label=&quot;Reload tab&quot; title=&quot;Reload&quot;&gt;${symbol(&quot;reload&quot;)}&lt;/button&gt;
+          &lt;button type=&quot;button&quot; class=&quot;tab-actions&quot; aria-label=&quot;Tab actions&quot; title=&quot;Tab actions&quot;&gt;${symbol(&quot;actions&quot;)}&lt;/button&gt;&lt;/div&gt;`;
+					const close = node.querySelector(&quot;.tab-close&quot;);
+					const actions = node.querySelector(&quot;.tab-actions&quot;);
+					const reload = node.querySelector(&quot;.tab-reload&quot;);
+					const address = node.querySelector(&quot;.tab-address&quot;);
+					const activate = node.querySelector(&quot;.tab-activate&quot;);
+					activate.id = `tab-${tab.id}`;
+					const signal = this.abort.signal;
+					const hover = (event) =&gt; {
+						if (event.target.closest(&quot;button:not(.tab-activate),input&quot;)) this.hover.hide();
+						else this.hover.move(node, tab.id, event);
+					};
+					node.addEventListener(&quot;pointerenter&quot;, hover, { signal });
+					node.addEventListener(&quot;pointermove&quot;, hover, { signal });
+					node.addEventListener(&quot;pointerleave&quot;, () =&gt; this.hover.leave(node), { signal });
+					node.addEventListener(&quot;click&quot;, (event) =&gt; {
+						if (!this.drag &amp;&amp; !event.target.closest(&quot;button:not(.tab-activate),input&quot;)) this.select(tab.id);
+					}, { signal });
+					close.addEventListener(&quot;click&quot;, (e) =&gt; {
+						e.stopPropagation();
+						this.close(tab.id);
+					}, { signal });
+					actions.addEventListener(&quot;click&quot;, () =&gt; {
+						const rect = actions.getBoundingClientRect();
+						this.showMenu(tab.id, rect.right, rect.bottom + 5, actions);
+					}, { signal });
+					reload.addEventListener(&quot;click&quot;, () =&gt; {
+						if (this.effects.motion !== &quot;off&quot;) reload.animate([{ transform: &quot;rotate(0)&quot; }, { transform: &quot;rotate(360deg)&quot; }], { duration: 380 });
+						this.announce(`${this.tabs.find((t) =&gt; t.id === tab.id)?.title} refreshed`);
+					}, { signal });
+					address.addEventListener(&quot;focus&quot;, () =&gt; {
+						if (this.labelMode !== &quot;address&quot;) {
+							address.blur();
+							return;
+						}
+						this.hover.hide();
+						node.classList.add(&quot;editing&quot;);
+						address.value = this.tabs.find((t) =&gt; t.id === tab.id)?.address ?? &quot;&quot;;
+						address.setSelectionRange(address.value.length, address.value.length);
+					}, { signal });
+					address.addEventListener(&quot;blur&quot;, () =&gt; {
+						node.classList.remove(&quot;editing&quot;);
+					}, { signal });
+					address.addEventListener(&quot;keydown&quot;, (e) =&gt; {
+						if (e.key === &quot;Enter&quot;) {
+							const current = this.tabs.find((t) =&gt; t.id === tab.id);
+							this.options.onNavigate?.(current, address.value.trim());
+							address.blur();
+						} else if (e.key === &quot;Escape&quot;) {
+							address.blur();
+							activate.focus({ preventScroll: true });
+						}
+						e.stopPropagation();
+					}, { signal });
+					this.stage.append(node);
+					cell = {
+						node,
+						activate,
+						close,
+						actions,
+						reload,
+						address,
+						icon: node.querySelector(&quot;.tab-icon&quot;),
+						title: node.querySelector(&quot;.tab-title&quot;),
+						x: axis(0),
+						width: axis(0),
+						drawnX: NaN,
+						drawnWidth: NaN
+					};
+					this.cells.set(tab.id, cell);
+				}
+				const selected = tab.id === this.selected;
+				cell.node.dataset.selected = String(selected);
+				cell.node.dataset.pinned = String(!!tab.pinned);
+				const next = this.tabs[this.tabs.indexOf(tab) + 1];
+				cell.node.dataset.separator = String(!tab.pinned &amp;&amp; !!next &amp;&amp; !next.pinned &amp;&amp; next.id !== this.selected);
+				cell.node.dataset.empty = String(this.labelMode === &quot;address&quot; &amp;&amp; !tab.address);
+				cell.activate.tabIndex = selected ? 0 : -1;
+				cell.activate.setAttribute(&quot;aria-selected&quot;, String(selected));
+				cell.activate.setAttribute(&quot;aria-label&quot;, `${tab.title}${tab.pinned ? &quot;, pinned&quot; : &quot;&quot;}`);
+				cell.activate.setAttribute(&quot;aria-controls&quot;, `panel-${tab.id}`);
+				cell.node.removeAttribute(&quot;title&quot;);
+				cell.icon.innerHTML = selected &amp;&amp; this.labelMode === &quot;address&quot; &amp;&amp; !tab.address ? symbol(&quot;search&quot;) : iconMarkup(tab.icon);
+				cell.title.textContent = tabLabel(tab, selected, this.labelMode);
+				cell.close.hidden = !!tab.pinned || this.tabs.length === 1;
+				cell.actions.hidden = !selected || this.labelMode === &quot;address&quot; &amp;&amp; !tab.address;
+				cell.reload.hidden = !selected || !tab.address;
+				const editable = selected &amp;&amp; this.labelMode === &quot;address&quot;;
+				cell.address.tabIndex = editable ? 0 : -1;
+				cell.address.hidden = !editable;
+				cell.address.disabled = !editable;
+				if (!editable &amp;&amp; document.activeElement === cell.address) cell.address.blur();
+			}
+			this.hover.refresh();
+		}
+		ordered() {
+			return this.drag ? this.drag.order.filter((id) =&gt; ![&quot;detached&quot;, &quot;opening&quot;].includes(this.drag.phase) || id !== this.drag.id).map((id) =&gt; this.tabs.find((t) =&gt; t.id === id)).filter(Boolean) : this.tabs;
+		}
+		readOrigin() {
+			const bounds = this.stage.getBoundingClientRect();
+			this.left = bounds.left;
+			this.top = bounds.top;
+		}
+		compute() {
+			this.layout = layoutTabs(this.ordered(), this.selected, this.available, this.drag &amp;&amp; [&quot;detached&quot;, &quot;opening&quot;].includes(this.drag.phase) ? void 0 : this.drag?.lock ?? this.widthLock, this.labelMode);
+			this.scroll = clamp(this.scroll, 0, this.layout.maxScroll);
+			for (const slot of this.layout.slots) {
+				const cell = this.cells.get(slot.id);
+				const target = slot.x - (slot.pinned ? 0 : this.scroll);
+				if (this.drag &amp;&amp; target !== cell.x.target) cell.x.velocity = 0;
+				cell.x.target = target;
+				cell.width.target = slot.width;
+				if (cell.width.value === 0) {
+					assign(cell.width, slot.width);
+					assign(cell.x, cell.x.target);
+				}
+			}
+		}
+		captureWidths() {
+			const normalSlots = this.layout.slots.filter((s) =&gt; !s.pinned);
+			return {
+				widths: new Map(this.layout.slots.map((s) =&gt; [s.id, s.width])),
+				origin: this.layout.normalOrigin,
+				gap: normalSlots.length &gt; 1 ? normalSlots[1].x - normalSlots[0].x - normalSlots[0].width : 0,
+				extent: this.layout.normalWidth + this.layout.normalOrigin
+			};
+		}
+		reveal(id) {
+			const slot = this.layout.slots.find((s) =&gt; s.id === id);
+			if (!slot || slot.pinned) return;
+			if (slot.x - this.scroll &lt; this.layout.pins) this.scroll = slot.x - this.layout.pins;
+			if (slot.x + slot.width - this.scroll &gt; this.available) this.scroll = slot.x + slot.width - this.available;
+			this.compute();
+			this.schedule();
+		}
+		schedule() {
+			if (this.destroyed || this.inFrame || this.frame !== null) return;
+			this.lastTime = performance.now();
+			this.frame = requestAnimationFrame(this.tick);
+		}
+		tick = (now) =&gt; {
+			this.frame = null;
+			this.inFrame = true;
+			const started = performance.now();
+			const dt = Math.min(.05, Math.max(0, (now - this.lastTime) / 1e3));
+			this.lastTime = now;
+			if (this.drag?.phase === &quot;dragging&quot;) {
+				if (!this.tabs.find((t) =&gt; t.id === this.drag.id)?.pinned &amp;&amp; this.layout.maxScroll &gt; 0) {
+					const local = this.drag.cursor - this.left;
+					const speed = local &gt; this.available - 32 ? 320 : local &lt; this.layout.pins + 32 ? -320 : 0;
+					const next = clamp(this.scroll + speed * dt, 0, this.layout.maxScroll);
+					if (next !== this.scroll) {
+						this.scroll = next;
+						this.compute();
+						this.updateSlot();
+					}
+				}
+			}
+			let moving = false;
+			for (const [id, cell] of this.cells) {
+				const held = this.drag?.id === id &amp;&amp; this.drag.phase !== &quot;settling&quot;;
+				const settling = this.drag?.id === id &amp;&amp; this.drag.phase === &quot;settling&quot;;
+				if (this.drag?.id === id &amp;&amp; this.drag.flight) continue;
+				if (this.effects.motion === &quot;off&quot; || this.effects.motion === &quot;reduced&quot; &amp;&amp; !held) {
+					assign(cell.x, cell.x.target);
+					assign(cell.width, cell.width.target);
+				} else {
+					if (!held) advanceSpring(cell.x, dt, settling ? 30 : void 0, settling ? 1 : void 0);
+					advanceSpring(cell.width, dt, settling ? 30 : void 0, settling ? 1 : void 0);
+				}
+				if (held) {
+					cell.x.value = this.drag.cursor - this.left - cell.width.value * this.drag.fraction;
+					cell.x.velocity = 0;
+				}
+				moving ||= !stationary(cell.x) || !stationary(cell.width);
+			}
+			this.paintFlight(now);
+			if (this.drag?.phase === &quot;settling&quot; &amp;&amp; (now - this.drag.began &gt;= 300 || this.effects.motion !== &quot;full&quot;)) this.finishSettle();
+			this.paint();
+			this.frameCosts.push(performance.now() - started);
+			if (this.frameCosts.length &gt; 360) this.frameCosts.shift();
+			this.inFrame = false;
+			if (moving || this.drag) this.frame = requestAnimationFrame(this.tick);
+		};
+		paintImmediately() {
+			for (const cell of this.cells.values()) {
+				assign(cell.x, cell.x.target);
+				assign(cell.width, cell.width.target);
+			}
+			this.paint();
+		}
+		paint() {
+			const left = Math.max(this.layout.pins, this.layout.pins + this.layout.normalOrigin - this.scroll);
+			const right = Math.min(this.available, this.layout.pins + this.layout.normalOrigin + this.layout.normalWidth - this.scroll);
+			this.track.style.transform = `translateX(${left}px)`;
+			this.track.style.width = `${Math.max(0, right - left)}px`;
+			for (const [id, cell] of this.cells) {
+				if (this.drag?.id === id &amp;&amp; this.drag.flight) continue;
+				const { value: x } = cell.x, { value: width } = cell.width;
+				if (x !== cell.drawnX) {
+					cell.node.style.transform = `translate3d(${x}px,0,0)`;
+					cell.drawnX = x;
+				}
+				if (width !== cell.drawnWidth) {
+					cell.node.style.width = `${Math.max(.01, width)}px`;
+					cell.drawnWidth = width;
+				}
+				const pin = this.tabs.find((t) =&gt; t.id === id)?.pinned;
+				const raised = this.drag?.id === id;
+				const clipLeft = raised || pin ? 0 : Math.max(0, this.layout.pins - x);
+				const clipRight = raised ? 0 : Math.max(0, x + width - this.available);
+				cell.node.style.clipPath = clipLeft || clipRight ? `inset(-30px ${clipRight}px -30px ${clipLeft}px)` : &quot;&quot;;
+				cell.node.style.pointerEvents = width &lt; 1 || clipLeft + clipRight &gt;= width ? &quot;none&quot; : &quot;&quot;;
+				cell.node.dataset.clipped = String(clipLeft + clipRight &gt;= width);
+			}
+			if (this.drag) {
+				const cell = this.cells.get(this.drag.id);
+				this.lens.render(this.tabs.filter((t) =&gt; t.id !== this.drag.id).map((tab) =&gt; {
+					const c = this.cells.get(tab.id);
+					return {
+						tab,
+						x: c.x.value,
+						width: c.width.value,
+						selected: tab.id === this.selected
+					};
+				}), cell.x.value, cell.width.value, this.effects, this.dark, this.labelMode);
+			}
+		}
+		pointerDown = (event) =&gt; {
+			if (event.button !== 0 || this.detaching) return;
+			if (this.drag?.flight &amp;&amp; this.drag.phase === &quot;settling&quot;) return;
+			const target = event.target;
+			if (target.closest(&quot;button:not(.tab-activate)&quot;) || target.matches(&quot;input&quot;)) return;
+			const node = target.closest(&quot;[data-tab-id]&quot;);
+			if (!node) return;
+			this.closeMenu();
+			this.finishSettle(true);
+			const id = node.dataset.tabId;
+			const cell = this.cells.get(id);
+			cell.address.blur();
+			this.readOrigin();
+			this.press = {
+				id,
+				pointer: event.pointerId,
+				startX: event.clientX,
+				startY: event.clientY,
+				fraction: clamp((event.clientX - this.left - cell.x.value) / cell.width.value, 0, 1),
+				grabY: clamp((event.clientY - this.top) / 36, 0, 1),
+				wasSelected: id === this.selected
+			};
+			this.select(id, false);
+			this.stage.setPointerCapture(event.pointerId);
+			cell.activate.focus({ preventScroll: true });
+			event.preventDefault();
+		};
+		pointerMove = (event) =&gt; {
+			if (!this.press || event.pointerId !== this.press.pointer || this.tabs.length &lt; 2) return;
+			if (!this.drag &amp;&amp; Math.hypot(event.clientX - this.press.startX, event.clientY - this.press.startY) &lt; geometry.threshold) return;
+			if (!this.drag) {
+				const cell = this.cells.get(this.press.id);
+				cell.address.blur();
+				this.widthLock = void 0;
+				this.drag = {
+					id: this.press.id,
+					phase: &quot;dragging&quot;,
+					order: this.tabs.map((t) =&gt; t.id),
+					fraction: this.press.fraction,
+					grabY: this.press.grabY,
+					cursor: event.clientX,
+					cursorY: event.clientY,
+					horizontal: Math.abs(event.clientX - this.press.startX) &gt;= Math.abs(event.clientY - this.press.startY),
+					inlineWidth: cell.width.target,
+					began: performance.now(),
+					lock: this.captureWidths()
+				};
+				cell.node.classList.add(&quot;lifted&quot;);
+				this.root.classList.add(&quot;is-dragging&quot;);
+				cell.node.prepend(this.lens.element);
+				if (!this.drag.horizontal) this.beginFlight(performance.now());
+			}
+			this.moveDrag(event.clientX, event.clientY);
+			this.schedule();
+			event.preventDefault();
+		};
+		beginFlight(now) {
+			const drag = this.drag;
+			if (drag.flight) return;
+			const cell = this.cells.get(drag.id);
+			const source = this.options.previewContent?.(this.current) ?? document.getElementById(`panel-${drag.id}`);
+			cell.node.style.clipPath = &quot;&quot;;
+			cell.node.style.pointerEvents = &quot;&quot;;
+			drag.flight = new TearOffPreview(cell.node, source, {
+				x: this.left + cell.x.value,
+				y: this.top,
+				width: cell.width.value,
+				height: 36
+			});
+			drag.recenterBegan = now;
+		}
+		moveDrag(x, y) {
+			const drag = this.drag;
+			if (!drag || drag.phase === &quot;settling&quot;) return;
+			drag.cursor = x;
+			drag.cursorY = y;
+			const band = drag.horizontal &amp;&amp; !drag.flight ? 100 : 0;
+			const attached = x &gt;= this.left &amp;&amp; x &lt;= this.left + this.available &amp;&amp; y &gt;= this.top - band &amp;&amp; y &lt;= this.top + 36 + band;
+			if (attached !== (drag.phase === &quot;dragging&quot;)) {
+				const now = performance.now();
+				if (!attached) {
+					drag.resumeScroll = this.scroll;
+					this.beginFlight(now);
+				} else if (drag.resumeScroll !== void 0) this.scroll = drag.resumeScroll;
+				drag.phase = attached ? &quot;dragging&quot; : &quot;detached&quot;;
+				drag.flight?.setDetached(!attached, now);
+				this.cells.get(drag.id).node.dataset.flight = drag.phase;
+				this.compute();
+			}
+			if (attached) this.updateSlot();
+		}
+		grabFraction(now) {
+			const drag = this.drag;
+			if (drag.recenterBegan === void 0) return drag.fraction;
+			const t = clamp((now - drag.recenterBegan) / 120, 0, 1);
+			return drag.fraction + (.5 - drag.fraction) * (1 - (1 - t) ** 3);
+		}
+		paintFlight(now) {
+			const drag = this.drag, flight = drag?.flight;
+			if (!drag || !flight) return;
+			let rect;
+			const cell = this.cells.get(drag.id);
+			if (drag.phase === &quot;settling&quot; &amp;&amp; drag.settleFrom) {
+				const phase = Math.max(0, (now - drag.began) / 1e3) * 30;
+				const progress = this.effects.motion === &quot;full&quot; ? 1 - (1 + phase) * Math.exp(-phase) : 1;
+				const from = drag.settleFrom;
+				const mix = (a, b) =&gt; a + (b - a) * progress;
+				rect = {
+					x: mix(from.x, this.left + cell.x.target),
+					y: mix(from.y, this.top),
+					width: mix(from.width, cell.width.target),
+					height: mix(from.height, 36)
+				};
+				flight.blend = (drag.settleBlend ?? 0) * (1 - progress);
+			} else {
+				flight.advance(now, this.effects.motion === &quot;full&quot;);
+				const blend = flight.blend;
+				const width = drag.inlineWidth + (flight.thumbnail.width - drag.inlineWidth) * blend;
+				const height = 36 + (flight.thumbnail.height - 36) * blend;
+				const inlineY = drag.horizontal ? this.top : drag.cursorY - 36 * drag.grabY;
+				const freeY = drag.cursorY - height * drag.grabY;
+				rect = {
+					x: drag.cursor - width * this.grabFraction(now),
+					y: inlineY + (freeY - inlineY) * blend,
+					width,
+					height
+				};
+			}
+			flight.paint(rect, drag.inlineWidth);
+			cell.x.value = rect.x - this.left;
+			cell.width.value = rect.width;
+		}
+		updateSlot() {
+			const drag = this.drag;
+			if (!drag || drag.phase !== &quot;dragging&quot;) return;
+			const tab = this.tabs.find((t) =&gt; t.id === drag.id);
+			const group = this.layout.slots.filter((s) =&gt; s.pinned === !!tab.pinned).map((s) =&gt; ({
+				...s,
+				x: s.x - (s.pinned ? 0 : this.scroll)
+			}));
+			const localIndex = group.findIndex((s) =&gt; s.id === drag.id);
+			const next = destination(drag.cursor - this.left + (.5 - this.grabFraction(performance.now())) * drag.inlineWidth, localIndex, group);
+			if (next === localIndex) return;
+			const groupOffset = tab.pinned ? 0 : this.tabs.filter((t) =&gt; t.pinned).length;
+			drag.order.splice(drag.order.indexOf(drag.id), 1);
+			drag.order.splice(groupOffset + next, 0, drag.id);
+			this.compute();
+		}
+		pointerUp = (event) =&gt; {
+			if (!this.press || event.pointerId !== this.press.pointer) return;
+			const press = this.press;
+			if (!this.drag) {
+				this.press = void 0;
+				if (this.stage.hasPointerCapture(event.pointerId)) this.stage.releasePointerCapture(event.pointerId);
+				if (press.wasSelected &amp;&amp; this.labelMode === &quot;address&quot;) this.cells.get(press.id)?.address.focus({ preventScroll: true });
+				return;
+			}
+			this.moveDrag(event.clientX, event.clientY);
+			if (this.drag.phase === &quot;detached&quot; &amp;&amp; this.options.onDetach) {
+				this.press = void 0;
+				if (this.stage.hasPointerCapture(event.pointerId)) this.stage.releasePointerCapture(event.pointerId);
+				this.detach(this.drag.id, {
+					screenX: event.screenX,
+					screenY: event.screenY
+				}, &quot;drag&quot;);
+			} else this.returnDrag(false);
+		};
+		returnDrag(cancelled) {
+			const pointer = this.press?.pointer;
+			this.press = void 0;
+			if (pointer !== void 0 &amp;&amp; this.stage.hasPointerCapture(pointer)) this.stage.releasePointerCapture(pointer);
+			const drag = this.drag;
+			if (!drag || drag.phase === &quot;settling&quot;) return;
+			if (cancelled) drag.order = this.tabs.map((t) =&gt; t.id);
+			const now = performance.now(), cell = this.cells.get(drag.id);
+			if (drag.flight) {
+				this.paintFlight(now);
+				drag.settleFrom = { ...drag.flight.rect };
+				drag.settleBlend = drag.flight.blend;
+				drag.flight.setDetached(false, now);
+			} else cell.x.value = drag.cursor - this.left - cell.width.value * drag.fraction;
+			if (drag.phase === &quot;detached&quot; &amp;&amp; drag.resumeScroll !== void 0) this.scroll = drag.resumeScroll;
+			cell.x.velocity = 0;
+			drag.phase = &quot;settling&quot;;
+			drag.began = now;
+			cell.node.dataset.flight = &quot;settling&quot;;
+			this.compute();
+			this.schedule();
+		}
+		finishSettle(preservePosition = false) {
+			if (!this.drag || this.drag.phase !== &quot;settling&quot;) return;
+			const { id, order } = this.drag;
+			const cell = this.cells.get(id);
+			this.drag.flight?.destroy();
+			delete cell.node.dataset.flight;
+			cell.drawnX = cell.drawnWidth = NaN;
+			if (!preservePosition) {
+				assign(cell.x, cell.x.target);
+				assign(cell.width, cell.width.target);
+			}
+			this.tabs = order.map((id) =&gt; this.tabs.find((t) =&gt; t.id === id));
+			this.drag = void 0;
+			cell.node.classList.remove(&quot;lifted&quot;);
+			this.root.classList.remove(&quot;is-dragging&quot;);
+			this.lens.clear();
+			this.changed(false);
+			this.paint();
+			this.announce(`${this.current.title}, tab ${this.tabs.findIndex((t) =&gt; t.id === id) + 1} of ${this.tabs.length}`);
+		}
+		cancelDrag() {
+			this.detaching?.abort();
+			this.detaching = void 0;
+			const pointer = this.press?.pointer;
+			this.press = void 0;
+			if (pointer !== void 0 &amp;&amp; this.stage.hasPointerCapture(pointer)) this.stage.releasePointerCapture(pointer);
+			if (this.drag) {
+				const cell = this.cells.get(this.drag.id);
+				this.drag.flight?.destroy();
+				if (cell) {
+					cell.node.classList.remove(&quot;lifted&quot;);
+					delete cell.node.dataset.flight;
+					cell.drawnX = cell.drawnWidth = NaN;
+				}
+				this.drag = void 0;
+				this.root.classList.remove(&quot;is-dragging&quot;);
+				this.lens.clear();
+				this.compute();
+				this.schedule();
+			}
+		}
+		wheel = (event) =&gt; {
+			if (!this.layout.maxScroll || this.drag) return;
+			this.scroll = clamp(this.scroll + (Math.abs(event.deltaX) &gt; Math.abs(event.deltaY) ? event.deltaX : event.deltaY), 0, this.layout.maxScroll);
+			this.compute();
+			this.paintImmediately();
+			event.preventDefault();
+		};
+		keyDown = (event) =&gt; {
+			if (event.target.matches(&quot;input&quot;)) return;
+			const index = this.tabs.findIndex((t) =&gt; t.id === this.selected);
+			let next = index;
+			if (event.key === &quot;ArrowRight&quot;) next = (index + 1) % this.tabs.length;
+			else if (event.key === &quot;ArrowLeft&quot;) next = (index - 1 + this.tabs.length) % this.tabs.length;
+			else if (event.key === &quot;Home&quot;) next = 0;
+			else if (event.key === &quot;End&quot;) next = this.tabs.length - 1;
+			else if (event.key === &quot;Delete&quot; || event.key === &quot;Backspace&quot;) {
+				this.close(this.selected);
+				event.preventDefault();
+				return;
+			} else if (event.key === &quot;F2&quot; &amp;&amp; this.labelMode === &quot;address&quot;) {
+				this.cells.get(this.selected)?.address.focus({ preventScroll: true });
+				event.preventDefault();
+				return;
+			} else if (event.key === &quot;ContextMenu&quot; || event.shiftKey &amp;&amp; event.key === &quot;F10&quot;) {
+				const node = this.cells.get(this.selected).activate, rect = node.getBoundingClientRect();
+				this.showMenu(this.selected, rect.left + 12, rect.bottom + 4, node);
+				event.preventDefault();
+				return;
+			} else return;
+			event.preventDefault();
+			this.cancelDrag();
+			if ((event.metaKey || event.ctrlKey) &amp;&amp; event.shiftKey &amp;&amp; next !== index) {
+				const tab = this.tabs[index], neighbor = this.tabs[next];
+				if (!!tab.pinned === !!neighbor.pinned) {
+					this.tabs.splice(index, 1);
+					this.tabs.splice(next, 0, tab);
+					this.changed(false);
+				}
+			} else this.select(this.tabs[next].id);
+			this.cells.get(this.selected)?.activate.focus({ preventScroll: true });
+		};
+		contextMenu = (event) =&gt; {
+			const node = event.target.closest(&quot;[data-tab-id]&quot;);
+			if (!node || event.target.matches(&quot;input&quot;)) return;
+			event.preventDefault();
+			this.showMenu(node.dataset.tabId, event.clientX, event.clientY, this.cells.get(node.dataset.tabId).activate);
+		};
+		showMenu(id, x, y, anchor) {
+			this.closeMenu();
+			this.cancelDrag();
+			const tab = this.tabs.find((t) =&gt; t.id === id);
+			const menu = document.createElement(&quot;div&quot;);
+			menu.className = &quot;tab-menu&quot;;
+			menu.role = &quot;menu&quot;;
+			menu.dataset.theme = this.dark ? &quot;dark&quot; : &quot;light&quot;;
+			this.menu = menu;
+			this.menuAnchor = anchor;
+			const add = (label, action, icon) =&gt; {
+				const button = document.createElement(&quot;button&quot;);
+				button.type = &quot;button&quot;;
+				button.role = &quot;menuitem&quot;;
+				button.innerHTML = `${icon ?? &quot;&lt;span&gt;&lt;/span&gt;&quot;}&lt;span&gt;&lt;/span&gt;`;
+				button.lastElementChild.textContent = label;
+				button.addEventListener(&quot;click&quot;, () =&gt; {
+					this.closeMenu(true);
+					action();
+				});
+				menu.append(button);
+			};
+			add(tab.pinned ? &quot;Unpin Tab&quot; : &quot;Pin Tab&quot;, () =&gt; this.pin(id), symbol(&quot;pin&quot;));
+			add(&quot;Duplicate Tab&quot;, () =&gt; this.add({
+				...tab,
+				id: createTabId(),
+				pinned: false
+			}));
+			if (this.options.onDetach &amp;&amp; this.tabs.length &gt; 1) add(&quot;Move Tab to New Window&quot;, () =&gt; {
+				this.detach(id, void 0, &quot;menu&quot;);
+			});
+			menu.append(document.createElement(&quot;hr&quot;));
+			add(&quot;Close Tab&quot;, () =&gt; this.close(id, true), symbol(&quot;close&quot;));
+			add(&quot;Close Other Tabs&quot;, () =&gt; {
+				this.widthLock = void 0;
+				this.tabs = this.tabs.filter((t) =&gt; t.id === id || t.pinned);
+				this.selected = id;
+				this.changed(true);
+			});
+			menu.addEventListener(&quot;keydown&quot;, (event) =&gt; {
+				const buttons = [...menu.querySelectorAll(&quot;button&quot;)];
+				const index = buttons.indexOf(document.activeElement);
+				if (event.key === &quot;ArrowDown&quot; || event.key === &quot;ArrowUp&quot;) {
+					event.preventDefault();
+					buttons[(index + (event.key === &quot;ArrowDown&quot; ? 1 : -1) + buttons.length) % buttons.length].focus();
+				} else if (event.key === &quot;Tab&quot;) this.closeMenu(true);
+			});
+			document.body.append(menu);
+			const rect = menu.getBoundingClientRect();
+			menu.style.left = `${clamp(x, 8, window.innerWidth - rect.width - 8)}px`;
+			menu.style.top = `${clamp(y, 8, window.innerHeight - rect.height - 8)}px`;
+			menu.querySelector(&quot;button&quot;).focus({ preventScroll: true });
+		}
+		closeMenu(restore = false) {
+			this.menu?.remove();
+			this.menu = void 0;
+			if (restore &amp;&amp; this.menuAnchor?.isConnected) this.menuAnchor.focus({ preventScroll: true });
+			this.menuAnchor = void 0;
+		}
+		announce(message) {
+			this.live.textContent = message;
+		}
+		/** Read-only diagnostics for deterministic gesture tests and performance review. */
+		snapshot() {
+			const costs = [...this.frameCosts].sort((a, b) =&gt; a - b);
+			return {
+				selected: this.selected,
+				order: this.tabs.map((t) =&gt; t.id),
+				visualOrder: this.drag?.order ?? this.tabs.map((t) =&gt; t.id),
+				phase: this.drag?.phase ?? &quot;idle&quot;,
+				scroll: this.scroll,
+				maxScroll: this.layout.maxScroll,
+				running: this.frame !== null,
+				mutation: this.mutation,
+				effects: this.configuration,
+				labelMode: this.labelMode,
+				hoverPreview: this.hover.snapshot,
+				frameCostP95: costs[Math.floor(costs.length * .95)] ?? 0,
+				flight: this.drag?.flight ? {
+					...this.drag.flight.rect,
+					blend: this.drag.flight.blend,
+					target: this.drag.flight.target
+				} : null,
+				cells: [...this.cells].map(([id, c]) =&gt; ({
+					id,
+					x: c.x.value,
+					width: c.width.value,
+					velocity: c.x.velocity,
+					targetX: c.x.target,
+					targetWidth: c.width.target
+				}))
+			};
+		}
+		destroy() {
+			this.hover.destroy();
+			this.destroyed = true;
+			this.abort.abort();
+			this.resize.disconnect();
+			this.closeMenu();
+			this.cancelDrag();
+			if (this.frame !== null) cancelAnimationFrame(this.frame);
+			this.frame = null;
+			this.root.replaceChildren();
+			this.cells.clear();
+		}
+	};
+	//#endregion
+	//#region src/tabs/window-detach.ts
+	var channel = &quot;pie-tab-window-v1&quot;;
+	var detachedWindowParameter = &quot;pie-window&quot;;
+	/** Calls window.open synchronously, before returning its promise. Only reports
+	* success after the receiving app explicitly acknowledges a completed mount. */
+	function openTabWindow(request, options) {
+		const url = new URL(options.url, location.href);
+		if (url.origin !== location.origin) throw new Error(&quot;Tab windows must use the same origin&quot;);
+		const token = createTabId();
+		url.searchParams.set(detachedWindowParameter, token);
+		const width = Math.round(options.width ?? 960), height = Math.round(options.height ?? 680);
+		return new Promise((resolve) =&gt; {
+			let child = null, finished = false;
+			let timeout, closed;
+			const finish = (result) =&gt; {
+				if (finished) return;
+				finished = true;
+				clearTimeout(timeout);
+				clearInterval(closed);
+				window.removeEventListener(&quot;message&quot;, message);
+				request.signal.removeEventListener(&quot;abort&quot;, abort);
+				if (!result.opened &amp;&amp; child &amp;&amp; !child.closed) child.close();
+				resolve(result);
+			};
+			const abort = () =&gt; finish({
+				opened: false,
+				reason: &quot;cancelled&quot;
+			});
+			const message = (event) =&gt; {
+				if (event.origin !== url.origin || event.source !== child || event.data?.channel !== channel || event.data?.token !== token) return;
+				if (event.data.type === &quot;ready&quot;) try {
+					child.postMessage({
+						channel,
+						token,
+						type: &quot;payload&quot;,
+						data: options.data
+					}, url.origin);
+				} catch {
+					finish({
+						opened: false,
+						reason: &quot;failed&quot;
+					});
+				}
+				else if (event.data.type === &quot;mounted&quot;) finish({
+					opened: true,
+					window: child
+				});
+				else if (event.data.type === &quot;rejected&quot;) finish({
+					opened: false,
+					reason: &quot;failed&quot;
+				});
+			};
+			if (request.signal.aborted) {
+				abort();
+				return;
+			}
+			window.addEventListener(&quot;message&quot;, message);
+			request.signal.addEventListener(&quot;abort&quot;, abort, { once: true });
+			try {
+				child = window.open(url.href, `pie-tab-${token}`, `popup=yes,width=${width},height=${height},left=${Math.round(request.screenX - width / 2)},top=${Math.round(request.screenY - 28)}`);
+			} catch {
+				finish({
+					opened: false,
+					reason: &quot;failed&quot;
+				});
+				return;
+			}
+			if (!child) {
+				finish({
+					opened: false,
+					reason: &quot;blocked&quot;
+				});
+				return;
+			}
+			if (child.closed) {
+				finish({
+					opened: false,
+					reason: &quot;failed&quot;
+				});
+				return;
+			}
+			timeout = setTimeout(() =&gt; finish({
+				opened: false,
+				reason: &quot;timeout&quot;
+			}), options.timeout ?? 8e3);
+			closed = setInterval(() =&gt; {
+				if (child.closed) finish({
+					opened: false,
+					reason: &quot;closed&quot;
+				});
+			}, 150);
+		});
+	}
+	/** Child-side handshake. Call accept only after the tab and its content exist.
+	* This protocol transfers application data, never HTML or code to execute. */
+	function receiveTabWindow(timeout = 8e3) {
+		const token = new URL(location.href).searchParams.get(detachedWindowParameter);
+		if (!token || !window.opener) return Promise.resolve(null);
+		const opener = window.opener, origin = location.origin;
+		return new Promise((resolve) =&gt; {
+			const timer = setTimeout(() =&gt; {
+				window.removeEventListener(&quot;message&quot;, message);
+				resolve(null);
+			}, timeout);
+			const message = (event) =&gt; {
+				if (event.origin !== origin || event.source !== opener || event.data?.channel !== channel || event.data?.token !== token || event.data.type !== &quot;payload&quot;) return;
+				clearTimeout(timer);
+				window.removeEventListener(&quot;message&quot;, message);
+				let answered = false;
+				const answer = (type) =&gt; {
+					if (answered) return;
+					answered = true;
+					if (!opener.closed) opener.postMessage({
+						channel,
+						token,
+						type
+					}, origin);
+				};
+				resolve({
+					data: event.data.data,
+					accept: () =&gt; answer(&quot;mounted&quot;),
+					reject: () =&gt; answer(&quot;rejected&quot;)
+				});
+			};
+			window.addEventListener(&quot;message&quot;, message);
+			opener.postMessage({
+				channel,
+				token,
+				type: &quot;ready&quot;
+			}, origin);
+		});
+	}
+	//#endregion
+	//#region src/main.ts
+	async function start() {
+		const windowToken = new URL(location.href).searchParams.get(detachedWindowParameter);
+		const windowStorage = `pie-web-tabs-window-${windowToken}`;
+		let saved = null;
+		if (windowToken) {
+			document.getElementById(&quot;pie-tab-bar-inline&quot;).textContent = &quot;Opening your tab…&quot;;
+			try {
+				saved = JSON.parse(sessionStorage.getItem(windowStorage) || &quot;null&quot;);
+			} catch {}
+		}
+		const incoming = windowToken &amp;&amp; !saved ? await receiveTabWindow() : null;
+		const boot = saved ?? incoming?.data;
+		if (windowToken &amp;&amp; (!boot || boot.version !== 1 || !Array.isArray(boot.tabs) || !boot.tabs.length)) {
+			incoming?.reject();
+			document.getElementById(&quot;pie-tab-bar-inline&quot;).innerHTML = &quot;&lt;main class=\&quot;window-recovery\&quot;&gt;&lt;h1&gt;This tab could not be opened.&lt;/h1&gt;&lt;p&gt;Your original tab stays in its window.&lt;/p&gt;&lt;a href=\&quot;./\&quot;&gt;Open Pie Web Tabs&lt;/a&gt;&lt;/main&gt;&quot;;
+			return;
+		}
+		if (windowToken) document.body.classList.add(&quot;detached-workspace&quot;);
+		const icons = {
+			engadget: {
+				glyph: &quot;e&quot;,
+				background: &quot;#fff&quot;,
+				color: &quot;#111&quot;,
+				kind: &quot;engadget&quot;
+			},
+			aol: {
+				glyph: &quot;AOL&quot;,
+				background: &quot;#ffda28&quot;,
+				color: &quot;#101010&quot;
+			},
+			stack: {
+				glyph: &quot;&quot;,
+				background: &quot;#fff&quot;,
+				color: &quot;#f48024&quot;,
+				kind: &quot;stack&quot;
+			},
+			field: {
+				glyph: &quot;F&quot;,
+				background: &quot;#b4ca87&quot;,
+				color: &quot;#263a22&quot;
+			},
+			blank: {
+				glyph: &quot;P&quot;,
+				background: &quot;#526941&quot;,
+				color: &quot;#f0f5e9&quot;
+			}
+		};
+		let next = 0;
+		const blank = () =&gt; ({
+			id: `new-${createTabId()}`,
+			title: &quot;New Tab&quot;,
+			address: &quot;&quot;,
+			icon: icons.blank
+		});
+		const samples = () =&gt; [
+			{
+				id: `engadget-${++next}`,
+				title: &quot;Engadget — Technology news and reviews&quot;,
+				address: &quot;engadget.com&quot;,
+				icon: icons.engadget
+			},
+			{
+				id: `aol-${++next}`,
+				title: &quot;News, Politics, Sports, Mail &amp; Latest Headlines&quot;,
+				address: &quot;aol.com&quot;,
+				icon: icons.aol
+			},
+			{
+				id: `field-${++next}`,
+				title: &quot;Field Notes — a place for your thoughts&quot;,
+				address: &quot;fieldnotes.local&quot;,
+				icon: icons.field
+			},
+			{
+				id: `stack-${++next}`,
+				title: &quot;Stack Overflow — Questions and answers&quot;,
+				address: &quot;stackoverflow.com&quot;,
+				icon: icons.stack
+			}
+		];
+		document.getElementById(&quot;pie-tab-bar-inline&quot;).innerHTML = `
+  &lt;header class=&quot;masthead&quot;&gt;&lt;a class=&quot;brand&quot; href=&quot;./&quot; aria-label=&quot;Pie web tabs home&quot;&gt;&lt;span class=&quot;brand-mark&quot;&gt;p&lt;/span&gt;&lt;span&gt;Pie &lt;span class=&quot;brand-divider&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;brand-subtitle&quot;&gt;Web Tabs&lt;/span&gt;&lt;/span&gt;&lt;/a&gt;&lt;span class=&quot;edition&quot;&gt;INTERACTION STUDY &lt;span&gt;01&lt;/span&gt;&lt;/span&gt;&lt;/header&gt;
+  &lt;main&gt;
+    &lt;section class=&quot;intro&quot;&gt;&lt;div&gt;&lt;span class=&quot;eyebrow&quot;&gt;NATIVE FEEL. WEB CANVAS.&lt;/span&gt;&lt;h1&gt;A little more fluid.&lt;/h1&gt;&lt;p&gt;Pick a tab. Move it around. Feel it settle.&lt;/p&gt;&lt;/div&gt;
+      &lt;div class=&quot;appearance&quot; aria-label=&quot;Preview appearance&quot;&gt;&lt;button type=&quot;button&quot; data-theme-button=&quot;light&quot; aria-pressed=&quot;false&quot;&gt;${symbol(&quot;sun&quot;)}Light&lt;/button&gt;&lt;button type=&quot;button&quot; data-theme-button=&quot;dark&quot; aria-pressed=&quot;true&quot;&gt;${symbol(&quot;moon&quot;)}Dark&lt;/button&gt;&lt;/div&gt;
+    &lt;/section&gt;
+    &lt;section class=&quot;browser&quot; data-theme=&quot;dark&quot; aria-label=&quot;Interactive tab preview&quot;&gt;
+      &lt;div class=&quot;browser-toolbar&quot;&gt;&lt;div class=&quot;window-controls&quot; aria-hidden=&quot;true&quot;&gt;&lt;i&gt;&lt;/i&gt;&lt;i&gt;&lt;/i&gt;&lt;i&gt;&lt;/i&gt;&lt;/div&gt;&lt;div class=&quot;toolbar-divider&quot;&gt;&lt;/div&gt;&lt;div id=&quot;tabs&quot;&gt;&lt;/div&gt;&lt;button type=&quot;button&quot; class=&quot;toolbar-button&quot; id=&quot;all-tabs&quot; aria-label=&quot;Show tab list&quot; title=&quot;Show tab list&quot;&gt;${symbol(&quot;actions&quot;)}&lt;/button&gt;&lt;/div&gt;
+      &lt;div class=&quot;page-stack&quot; id=&quot;pages&quot;&gt;&lt;/div&gt;
+      &lt;div class=&quot;browser-status&quot;&gt;&lt;span class=&quot;status-dot&quot;&gt;&lt;/span&gt;&lt;span id=&quot;page-status&quot;&gt;Local demo&lt;/span&gt;&lt;span class=&quot;status-hint&quot;&gt;Right-click a tab to pin it&lt;/span&gt;&lt;/div&gt;
+    &lt;/section&gt;
+    &lt;section class=&quot;workbench&quot; aria-label=&quot;Demo configuration&quot;&gt;
+      &lt;div class=&quot;scenario-panel&quot;&gt;&lt;div class=&quot;control-heading&quot;&gt;&lt;span class=&quot;section-number&quot;&gt;01&lt;/span&gt;&lt;h2&gt;Set the scene&lt;/h2&gt;&lt;/div&gt;&lt;p&gt;A few starting points to explore.&lt;/p&gt;&lt;div class=&quot;scenarios&quot;&gt;&lt;button type=&quot;button&quot; data-scene=&quot;one&quot;&gt;One tab&lt;/button&gt;&lt;button type=&quot;button&quot; data-scene=&quot;two&quot; aria-pressed=&quot;true&quot;&gt;Two tabs&lt;/button&gt;&lt;button type=&quot;button&quot; data-scene=&quot;pinned&quot;&gt;Pinned tabs&lt;/button&gt;&lt;button type=&quot;button&quot; data-scene=&quot;many&quot;&gt;Many tabs&lt;/button&gt;&lt;/div&gt;&lt;div class=&quot;keyboard-hint&quot;&gt;&lt;span&gt;&lt;kbd&gt;←&lt;/kbd&gt;&lt;kbd&gt;→&lt;/kbd&gt; switch tabs&lt;/span&gt;&lt;span&gt;&lt;kbd&gt;esc&lt;/kbd&gt; cancel drag&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;div class=&quot;effects-panel&quot;&gt;&lt;div class=&quot;control-heading&quot;&gt;&lt;span class=&quot;section-number&quot;&gt;02&lt;/span&gt;&lt;h2&gt;Make it yours&lt;/h2&gt;&lt;button type=&quot;button&quot; class=&quot;text-button&quot; id=&quot;restore-effects&quot;&gt;Restore full effects&lt;/button&gt;&lt;/div&gt;
+        &lt;div class=&quot;effect-switches&quot;&gt;${[
+			&quot;glass&quot;,
+			&quot;refraction&quot;,
+			&quot;blur&quot;,
+			&quot;shadows&quot;
+		].map((key) =&gt; `&lt;label class=&quot;effect-control&quot;&gt;&lt;span&gt;${key[0].toUpperCase() + key.slice(1)}&lt;/span&gt;&lt;input type=&quot;checkbox&quot; data-effect=&quot;${key}&quot; checked role=&quot;switch&quot; aria-label=&quot;${key[0].toUpperCase() + key.slice(1)}&quot;/&gt;&lt;span class=&quot;toggle-track&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt;&lt;/label&gt;`).join(&quot;&quot;)}&lt;/div&gt;
+        &lt;label class=&quot;motion-control&quot;&gt;&lt;span&gt;Motion&lt;/span&gt;&lt;select id=&quot;motion&quot; aria-label=&quot;Motion&quot;&gt;&lt;option value=&quot;full&quot;&gt;Full animation&lt;/option&gt;&lt;option value=&quot;reduced&quot;&gt;Reduced motion&lt;/option&gt;&lt;option value=&quot;off&quot;&gt;Off&lt;/option&gt;&lt;/select&gt;&lt;span id=&quot;quality-status&quot;&gt;All effects on&lt;/span&gt;&lt;/label&gt;
+        &lt;label class=&quot;motion-control&quot;&gt;&lt;span&gt;Tab labels&lt;/span&gt;&lt;select id=&quot;label-mode&quot; aria-label=&quot;Tab labels&quot;&gt;&lt;option value=&quot;fixed&quot;&gt;Application titles&lt;/option&gt;&lt;option value=&quot;address&quot;&gt;Editable addresses&lt;/option&gt;&lt;/select&gt;&lt;/label&gt;
+        &lt;label class=&quot;detach-mode&quot;&gt;&lt;input id=&quot;window-detach&quot; type=&quot;checkbox&quot; role=&quot;switch&quot; checked /&gt;Open windows on drop&lt;/label&gt;
+      &lt;/div&gt;
+    &lt;/section&gt;
+    &lt;footer&gt;&lt;span&gt;Built for the details.&lt;/span&gt;&lt;span&gt;Standalone · Demo pages stay local&lt;/span&gt;&lt;/footer&gt;
+  &lt;/main&gt;&lt;div class=&quot;window-notice&quot; id=&quot;window-notice&quot; role=&quot;status&quot; hidden&gt;&lt;span&gt;&lt;/span&gt;&lt;button type=&quot;button&quot; id=&quot;retry-window&quot;&gt;Open window&lt;/button&gt;&lt;button type=&quot;button&quot; id=&quot;dismiss-window&quot; aria-label=&quot;Dismiss window message&quot;&gt;×&lt;/button&gt;&lt;/div&gt;`;
+		const pages = document.querySelector(&quot;#pages&quot;);
+		const panels = /* @__PURE__ */ new Map();
+		const initial = boot?.tabs ?? samples().slice(0, 2);
+		const pageStates = new Map(Object.entries(boot?.pages ?? {}));
+		const defaults = /* @__PURE__ */ new Map();
+		let mounted = false;
+		let theme = boot?.theme ?? &quot;dark&quot;;
+		let labelMode = boot?.labelMode === &quot;fixed&quot; ? &quot;fixed&quot; : &quot;address&quot;;
+		if (!boot) try {
+			const savedMode = localStorage.getItem(&quot;pie-web-tabs-label-mode&quot;);
+			if (savedMode === &quot;fixed&quot; || savedMode === &quot;address&quot;) labelMode = savedMode;
+		} catch {}
+		let failedTab;
+		const notice = document.querySelector(&quot;#window-notice&quot;);
+		const windowToggle = document.querySelector(&quot;#window-detach&quot;);
+		try {
+			windowToggle.checked = localStorage.getItem(&quot;pie-web-tabs-detach-windows&quot;) !== &quot;false&quot;;
+		} catch {}
+		windowToggle.addEventListener(&quot;change&quot;, () =&gt; {
+			try {
+				localStorage.setItem(&quot;pie-web-tabs-detach-windows&quot;, String(windowToggle.checked));
+			} catch {}
+		});
+		function pageState(id) {
+			const panel = panels.get(id);
+			const heading = panel.querySelector(&quot;h2&quot;), description = panel.querySelector(&quot;p&quot;);
+			return {
+				kind: panel.dataset.pageKind,
+				...heading?.innerHTML !== defaults.get(id)?.heading ? { heading: heading?.textContent ?? &quot;&quot; } : {},
+				...description?.innerHTML !== defaults.get(id)?.description ? { description: description?.textContent ?? &quot;&quot; } : {},
+				...panel.querySelector(&quot;textarea&quot;) ? { notes: panel.querySelector(&quot;textarea&quot;).value } : {}
+			};
+		}
+		function workspaceState(tabs = strip.items) {
+			return {
+				version: 1,
+				tabs: [...tabs],
+				selectedId: tabs.some((t) =&gt; t.id === strip.current.id) ? strip.current.id : tabs[0].id,
+				pages: Object.fromEntries(tabs.map((tab) =&gt; [tab.id, pageState(tab.id)])),
+				effects: strip.configuration,
+				theme,
+				labelMode
+			};
+		}
+		function saveWorkspace() {
+			if (!mounted || !windowToken) return;
+			try {
+				sessionStorage.setItem(windowStorage, JSON.stringify(workspaceState()));
+			} catch {}
+		}
+		function ensurePages(tabs) {
+			for (const [id, panel] of panels) if (!tabs.some((t) =&gt; t.id === id)) {
+				panel.remove();
+				panels.delete(id);
+				defaults.delete(id);
+				pageStates.delete(id);
+			}
+			for (const tab of tabs) {
+				if (panels.has(tab.id)) continue;
+				const panel = document.createElement(&quot;article&quot;);
+				panel.id = `panel-${tab.id}`;
+				panel.className = &quot;demo-page&quot;;
+				panel.role = &quot;tabpanel&quot;;
+				panel.setAttribute(&quot;aria-labelledby&quot;, `tab-${tab.id}`);
+				panel.hidden = true;
+				const memory = pageStates.get(tab.id);
+				const kind = memory?.kind ?? (tab.icon.kind === &quot;engadget&quot; ? &quot;editorial&quot; : tab.address === &quot;aol.com&quot; ? &quot;news&quot; : !tab.address ? &quot;start&quot; : &quot;notes&quot;);
+				panel.dataset.pageKind = kind;
+				if (kind === &quot;editorial&quot;) {
+					panel.classList.add(&quot;editorial-page&quot;);
+					panel.innerHTML = `&lt;div class=&quot;editorial-nav&quot;&gt;&lt;div class=&quot;editorial-wordmark&quot;&gt;engadget&lt;span&gt;·&lt;/span&gt;&lt;/div&gt;&lt;span&gt;TECHNOLOGY &amp; THE EVERYDAY&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;editorial-grid&quot;&gt;&lt;div class=&quot;editorial-copy&quot;&gt;&lt;span class=&quot;article-category&quot;&gt;THE DESIGN EDIT&lt;/span&gt;&lt;h2&gt;The details&lt;br&gt;make the difference.&lt;/h2&gt;&lt;p&gt;Small interactions. Considered movement.&lt;br&gt;A space that feels good to spend time in.&lt;/p&gt;&lt;button type=&quot;button&quot; class=&quot;read-link&quot;&gt;Keep reading &lt;span&gt;↗&lt;/span&gt;&lt;/button&gt;&lt;/div&gt;&lt;div class=&quot;object-scene&quot; aria-label=&quot;Sculptural silver speaker illustration&quot;&gt;&lt;div class=&quot;scene-shadow&quot;&gt;&lt;/div&gt;&lt;div class=&quot;speaker&quot;&gt;&lt;div class=&quot;speaker-top&quot;&gt;&lt;/div&gt;&lt;div class=&quot;speaker-grille&quot;&gt;&lt;/div&gt;&lt;div class=&quot;speaker-light&quot;&gt;&lt;/div&gt;&lt;/div&gt;&lt;span class=&quot;scene-label&quot;&gt;FORM / FUNCTION&lt;/span&gt;&lt;span class=&quot;scene-index&quot;&gt;2026 — 09&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;editorial-bottom&quot;&gt;&lt;span&gt;01 / OBJECTS OF INTEREST&lt;/span&gt;&lt;span&gt;Thoughtfully put together.&lt;/span&gt;&lt;/div&gt;`;
+					panel.querySelector(&quot;.read-link&quot;).addEventListener(&quot;click&quot;, () =&gt; {
+						const copy = panel.querySelector(&quot;.editorial-copy p&quot;);
+						copy.textContent = &quot;You can switch, reorder, and pin tabs without losing your place. This page stays exactly where you left it.&quot;;
+						saveWorkspace();
+					});
+				} else if (kind === &quot;news&quot;) {
+					panel.classList.add(&quot;news-page&quot;);
+					panel.innerHTML = `&lt;div class=&quot;news-nav&quot;&gt;&lt;strong&gt;AOL&lt;span&gt;.&lt;/span&gt;&lt;/strong&gt;&lt;span&gt;News&amp;nbsp;&amp;nbsp; Life&amp;nbsp;&amp;nbsp; Entertainment&amp;nbsp;&amp;nbsp; Finance&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;news-content&quot;&gt;&lt;span class=&quot;article-category&quot;&gt;A FRESH PERSPECTIVE&lt;/span&gt;&lt;h2&gt;Make room&lt;br&gt;for something good.&lt;/h2&gt;&lt;p&gt;Your daily collection of ideas, discoveries,&lt;br&gt;and things worth a closer look.&lt;/p&gt;&lt;div class=&quot;news-cards&quot;&gt;&lt;div&gt;&lt;span&gt;01&lt;/span&gt;&lt;strong&gt;A slower morning&lt;/strong&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;02&lt;/span&gt;&lt;strong&gt;Out of the ordinary&lt;/strong&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;03&lt;/span&gt;&lt;strong&gt;The week ahead&lt;/strong&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;`;
+				} else if (kind === &quot;start&quot;) {
+					panel.classList.add(&quot;start-page&quot;);
+					panel.innerHTML = `&lt;span class=&quot;start-eyebrow&quot;&gt;A NEW BEGINNING&lt;/span&gt;&lt;h2&gt;Where to next?&lt;/h2&gt;&lt;p&gt;A little room for your next idea.&lt;/p&gt;&lt;div class=&quot;favorites&quot;&gt;${samples().slice(0, 3).map((t) =&gt; `&lt;button type=&quot;button&quot; data-destination=&quot;${t.address}&quot;&gt;&lt;span&gt;${iconMarkup(t.icon)}&lt;/span&gt;&lt;strong&gt;${t.address.split(&quot;.&quot;)[0]}&lt;/strong&gt;&lt;/button&gt;`).join(&quot;&quot;)}&lt;/div&gt;`;
+					panel.querySelectorAll(&quot;[data-destination]&quot;).forEach((button) =&gt; button.addEventListener(&quot;click&quot;, () =&gt; {
+						const address = button.dataset.destination;
+						strip.update(tab.id, {
+							address,
+							title: address
+						});
+						panel.querySelector(&quot;h2&quot;).textContent = address;
+						panel.querySelector(&quot;p&quot;).textContent = &quot;Your demo workspace is ready.&quot;;
+						saveWorkspace();
+					}));
+				} else {
+					panel.classList.add(&quot;notes-page&quot;);
+					panel.innerHTML = `&lt;span class=&quot;article-category&quot;&gt;FIELD NOTES&lt;/span&gt;&lt;h2&gt;A place to leave a thought.&lt;/h2&gt;&lt;p&gt;Your writing stays here as you move between tabs.&lt;/p&gt;&lt;textarea aria-label=&quot;Notes&quot; placeholder=&quot;Start with a thought…&quot; spellcheck=&quot;false&quot;&gt;&lt;/textarea&gt;&lt;span class=&quot;notes-footer&quot;&gt;YOURS TO REARRANGE.&lt;/span&gt;`;
+				}
+				defaults.set(tab.id, {
+					heading: panel.querySelector(&quot;h2&quot;)?.innerHTML,
+					description: panel.querySelector(&quot;p&quot;)?.innerHTML
+				});
+				if (memory?.heading !== void 0 &amp;&amp; panel.querySelector(&quot;h2&quot;)) panel.querySelector(&quot;h2&quot;).textContent = memory.heading;
+				if (memory?.description !== void 0 &amp;&amp; panel.querySelector(&quot;p&quot;)) panel.querySelector(&quot;p&quot;).textContent = memory.description;
+				if (memory?.notes !== void 0 &amp;&amp; panel.querySelector(&quot;textarea&quot;)) panel.querySelector(&quot;textarea&quot;).value = memory.notes;
+				panels.set(tab.id, panel);
+				pages.append(panel);
+			}
+			if (mounted) queueMicrotask(saveWorkspace);
+		}
+		function selectPage(tab) {
+			for (const [id, panel] of panels) {
+				panel.hidden = id !== tab.id;
+				panel.inert = id !== tab.id;
+			}
+			document.querySelector(&quot;#page-status&quot;).textContent = tab.address || &quot;New tab&quot;;
+			if (windowToken) document.title = `${tab.title} — Pie`;
+			saveWorkspace();
+		}
+		const strip = new TabStrip(document.querySelector(&quot;#tabs&quot;), {
+			labelMode,
+			tabs: initial,
+			selectedId: boot?.selectedId ?? initial[0].id,
+			onNewTab: blank,
+			onChange: ensurePages,
+			onSelect: selectPage,
+			onDetach: async (request) =&gt; {
+				if (request.trigger === &quot;drag&quot; &amp;&amp; !windowToggle.checked) return false;
+				notice.hidden = true;
+				const result = await openTabWindow(request, {
+					url: location.href,
+					data: workspaceState([request.tab])
+				});
+				if (!result.opened &amp;&amp; result.reason !== &quot;cancelled&quot;) {
+					failedTab = request.tab.id;
+					notice.querySelector(&quot;span&quot;).textContent = result.reason === &quot;blocked&quot; ? &quot;Your browser blocked the new window. The tab stayed here.&quot; : &quot;The new window did not finish opening. Your tab stayed here.&quot;;
+					notice.hidden = false;
+				}
+				return result.opened;
+			},
+			onNavigate: (tab, address) =&gt; {
+				if (!address) return;
+				strip.update(tab.id, {
+					address,
+					title: address
+				});
+				const title = panels.get(tab.id).querySelector(&quot;h2&quot;);
+				if (title) title.textContent = address;
+				selectPage(strip.current);
+				saveWorkspace();
+			}
+		});
+		mounted = true;
+		const labelControl = document.querySelector(&quot;#label-mode&quot;);
+		labelControl.value = labelMode;
+		labelControl.addEventListener(&quot;change&quot;, () =&gt; {
+			labelMode = labelControl.value;
+			strip.setLabelMode(labelMode);
+			try {
+				localStorage.setItem(&quot;pie-web-tabs-label-mode&quot;, labelMode);
+			} catch {}
+			saveWorkspace();
+		});
+		pages.addEventListener(&quot;input&quot;, saveWorkspace);
+		window.addEventListener(&quot;pagehide&quot;, saveWorkspace);
+		document.querySelector(&quot;#retry-window&quot;).addEventListener(&quot;click&quot;, () =&gt; {
+			if (failedTab &amp;&amp; strip.items.some((tab) =&gt; tab.id === failedTab)) strip.detach(failedTab);
+		});
+		document.querySelector(&quot;#dismiss-window&quot;).addEventListener(&quot;click&quot;, () =&gt; {
+			notice.hidden = true;
+		});
+		function scene(name) {
+			const set = samples();
+			let tabs;
+			if (name === &quot;one&quot;) tabs = [set[0]];
+			else if (name === &quot;pinned&quot;) {
+				set[2].pinned = true;
+				tabs = [
+					set[2],
+					set[0],
+					set[1]
+				];
+			} else if (name === &quot;many&quot;) tabs = [...set, ...Array.from({ length: 8 }, (_, i) =&gt; ({
+				...set[i % 4],
+				id: `extra-${++next}`,
+				title: `${set[i % 4].title} ${i + 1}`
+			}))];
+			else tabs = set.slice(0, 2);
+			strip.setTabs(tabs, set[0].id);
+			document.querySelectorAll(&quot;[data-scene]&quot;).forEach((button) =&gt; button.setAttribute(&quot;aria-pressed&quot;, String(button.dataset.scene === name)));
+		}
+		document.querySelectorAll(&quot;[data-scene]&quot;).forEach((button) =&gt; button.addEventListener(&quot;click&quot;, () =&gt; scene(button.dataset.scene)));
+		document.querySelectorAll(&quot;[data-theme-button]&quot;).forEach((button) =&gt; button.addEventListener(&quot;click&quot;, () =&gt; {
+			theme = button.dataset.themeButton;
+			strip.setTheme(theme);
+			document.querySelector(&quot;.browser&quot;).dataset.theme = theme;
+			document.querySelectorAll(&quot;[data-theme-button]&quot;).forEach((item) =&gt; item.setAttribute(&quot;aria-pressed&quot;, String(item === button)));
+			saveWorkspace();
+		}));
+		const storageKey = &quot;pie-web-tabs-effects-v1&quot;;
+		function applyEffects(effects, save = true) {
+			strip.setEffects(effects);
+			const configuration = strip.configuration;
+			document.querySelectorAll(&quot;[data-effect]&quot;).forEach((input) =&gt; {
+				input.checked = configuration[input.dataset.effect];
+			});
+			document.querySelector(&quot;#motion&quot;).value = configuration.motion;
+			const enabled = [
+				&quot;glass&quot;,
+				&quot;refraction&quot;,
+				&quot;blur&quot;,
+				&quot;shadows&quot;
+			].filter((key) =&gt; configuration[key]).length;
+			document.querySelector(&quot;#quality-status&quot;).textContent = enabled === 4 &amp;&amp; configuration.motion === &quot;full&quot; ? &quot;All effects on&quot; : &quot;Custom settings&quot;;
+			if (save) try {
+				localStorage.setItem(storageKey, JSON.stringify(configuration));
+			} catch {}
+			saveWorkspace();
+		}
+		document.querySelectorAll(&quot;[data-effect]&quot;).forEach((input) =&gt; input.addEventListener(&quot;change&quot;, () =&gt; applyEffects({ [input.dataset.effect]: input.checked })));
+		document.querySelector(&quot;#motion&quot;).addEventListener(&quot;change&quot;, (event) =&gt; applyEffects({ motion: event.target.value }));
+		document.querySelector(&quot;#restore-effects&quot;).addEventListener(&quot;click&quot;, () =&gt; applyEffects(fullEffects));
+		try {
+			const saved = JSON.parse(localStorage.getItem(storageKey) || &quot;null&quot;);
+			if (saved) {
+				const checked = {};
+				for (const key of [
+					&quot;glass&quot;,
+					&quot;refraction&quot;,
+					&quot;blur&quot;,
+					&quot;shadows&quot;
+				]) if (typeof saved[key] === &quot;boolean&quot;) checked[key] = saved[key];
+				if ([
+					&quot;full&quot;,
+					&quot;reduced&quot;,
+					&quot;off&quot;
+				].includes(saved.motion)) checked.motion = saved.motion;
+				applyEffects(checked, false);
+			}
+		} catch {}
+		document.querySelector(&quot;#all-tabs&quot;).addEventListener(&quot;click&quot;, () =&gt; {
+			const existing = document.querySelector(&quot;.tab-overview&quot;);
+			if (existing) {
+				existing.remove();
+				return;
+			}
+			const overlay = document.createElement(&quot;div&quot;);
+			overlay.className = &quot;tab-overview&quot;;
+			overlay.role = &quot;dialog&quot;;
+			overlay.setAttribute(&quot;aria-label&quot;, &quot;Open tabs&quot;);
+			const heading = document.createElement(&quot;div&quot;);
+			heading.className = &quot;overview-heading&quot;;
+			heading.innerHTML = &quot;&lt;h2&gt;Open tabs&lt;/h2&gt;&lt;button type=\&quot;button\&quot; aria-label=\&quot;Close tab list\&quot;&gt;×&lt;/button&gt;&quot;;
+			heading.querySelector(&quot;button&quot;).onclick = () =&gt; overlay.remove();
+			overlay.append(heading);
+			for (const tab of strip.items) {
+				const button = document.createElement(&quot;button&quot;);
+				button.type = &quot;button&quot;;
+				button.className = &quot;overview-tab&quot;;
+				button.innerHTML = `&lt;span&gt;${iconMarkup(tab.icon)}&lt;/span&gt;&lt;strong&gt;&lt;/strong&gt;&lt;small&gt;&lt;/small&gt;`;
+				button.querySelector(&quot;strong&quot;).textContent = tab.title;
+				button.querySelector(&quot;small&quot;).textContent = tab.pinned ? &quot;Pinned&quot; : tab.address;
+				button.onclick = () =&gt; {
+					strip.select(tab.id);
+					overlay.remove();
+				};
+				overlay.append(button);
+			}
+			overlay.addEventListener(&quot;keydown&quot;, (e) =&gt; {
+				if (e.key === &quot;Escape&quot;) overlay.remove();
+			});
+			document.querySelector(&quot;.browser&quot;).append(overlay);
+			heading.querySelector(&quot;button&quot;).focus();
+		});
+		Object.assign(window, { tabDemo: {
+			strip,
+			scene
+		} });
+		if (boot) applyEffects(boot.effects, false);
+		strip.setTheme(theme);
+		document.querySelector(&quot;.browser&quot;).dataset.theme = theme;
+		document.querySelectorAll(&quot;[data-theme-button]&quot;).forEach((button) =&gt; button.setAttribute(&quot;aria-pressed&quot;, String(button.dataset.themeButton === theme)));
+		saveWorkspace();
+		incoming?.accept();
+	}
+	start();
+	//#endregion
+})();
+
+(() =&gt; {
+  const root = document.getElementById(&#x27;pie-tab-bar-inline&#x27;);
+  const { strip, scene } = window.tabDemo;
+  let restoring = false;
+  let lastState = &#x27;&#x27;;
+  function restore(snapshot) {
+    const state = snapshot?.privateContent;
+    if (!state) return;
+    const serialized = JSON.stringify(state);
+    if (serialized === lastState) return;
+    lastState = serialized;
+    restoring = true;
+    if ([&#x27;one&#x27;, &#x27;two&#x27;, &#x27;pinned&#x27;, &#x27;many&#x27;].includes(state.scene)) scene(state.scene);
+    if ([&#x27;light&#x27;, &#x27;dark&#x27;].includes(state.theme)) root.querySelector(`[data-theme-button=&quot;${state.theme}&quot;]`).click();
+    if ([&#x27;fixed&#x27;, &#x27;address&#x27;].includes(state.labelMode)) {
+      const labels = root.querySelector(&#x27;#label-mode&#x27;);
+      labels.value = state.labelMode;
+      labels.dispatchEvent(new Event(&#x27;change&#x27;, { bubbles: true }));
+    }
+    if (state.effects) {
+      for (const input of root.querySelectorAll(&#x27;[data-effect]&#x27;)) {
+        const value = state.effects[input.dataset.effect];
+        if (typeof value === &#x27;boolean&#x27; &amp;&amp; input.checked !== value) input.click();
+      }
+      if ([&#x27;full&#x27;, &#x27;reduced&#x27;, &#x27;off&#x27;].includes(state.effects.motion)) {
+        const motion = root.querySelector(&#x27;#motion&#x27;);
+        motion.value = state.effects.motion;
+        motion.dispatchEvent(new Event(&#x27;change&#x27;, { bubbles: true }));
+      }
+    }
+    restoring = false;
+  }
+  const appearance = matchMedia(&#x27;(prefers-color-scheme: dark)&#x27;).matches ? &#x27;dark&#x27; : &#x27;light&#x27;;
+  root.querySelector(`[data-theme-button=&quot;${appearance}&quot;]`).click();
+  restore(window.openai?.widgetState);
+  window.addEventListener(&#x27;openai:set_globals&#x27;, event =&gt; restore(event.detail?.globals?.widgetState));
+  function save() {
+    if (restoring || !window.openai?.setWidgetState) return;
+    const state = {
+      scene: root.querySelector(&#x27;[data-scene][aria-pressed=&quot;true&quot;]&#x27;)?.dataset.scene || &#x27;two&#x27;,
+      theme: root.querySelector(&#x27;.browser&#x27;).dataset.theme,
+      labelMode: root.querySelector(&#x27;#label-mode&#x27;).value,
+      effects: strip.configuration,
+    };
+    lastState = JSON.stringify(state);
+    window.openai.setWidgetState({ modelContent: { preview: &#x27;Pie tab bar&#x27;, ...state }, privateContent: state }).catch(() =&gt; {});
+  }
+  root.addEventListener(&#x27;click&#x27;, save);
+  root.addEventListener(&#x27;change&#x27;, save);
+})();
+&lt;/script&gt;
+
+&lt;script src=&quot;https://unpkg.com/@floating-ui/core@1.7.3/dist/floating-ui.core.umd.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;https://unpkg.com/@floating-ui/dom@1.7.4/dist/floating-ui.dom.umd.min.js&quot;&gt;&lt;/script&gt;
+&lt;script&gt;
+(() =&gt; {
+  if (window.FloatingUIDOM == null) {
+    return;
+  }
+  const { autoUpdate, computePosition, flip, offset, shift, size } =
+    window.FloatingUIDOM;
+  const tooltipPlacements = new Set([&quot;top&quot;, &quot;right&quot;, &quot;bottom&quot;, &quot;left&quot;]);
+  const tooltipId = `codex-visualization-tooltip-${
+    window.crypto?.randomUUID?.() ?? Date.now().toString(36)
+  }`;
+  const tooltipGap = 5;
+  const hoverDelay = 700;
+  const skipDelay = 300;
+  let activeTrigger = null;
+  let pendingTrigger = null;
+  let tooltip = null;
+  let openTimeout = null;
+  let autoUpdateCleanup = null;
+  let positionRequest = 0;
+  let skipDelayUntil = 0;
+  let lastPointerWasTouch = false;
+  let pinnedByTouch = false;
+
+  const getTrigger = (event) =&gt; {
+    for (const target of event.composedPath()) {
+      if (target?.nodeType === Node.ELEMENT_NODE) {
+        const trigger = target.closest(&quot;[data-tooltip]&quot;);
+        if (trigger) return trigger;
+      }
+    }
+    return null;
+  };
+  const containsTarget = (trigger, target) =&gt;
+    target?.nodeType != null &amp;&amp; trigger.contains(target);
+  const getContent = (trigger) =&gt;
+    trigger.getAttribute(&quot;data-tooltip&quot;)?.trim() ?? &quot;&quot;;
+  const getPlacement = (trigger) =&gt; {
+    const placement = trigger.getAttribute(&quot;data-tooltip-placement&quot;);
+    return tooltipPlacements.has(placement) ? placement : &quot;top&quot;;
+  };
+  const getTooltip = () =&gt; {
+    if (tooltip == null) {
+      tooltip = document.createElement(&quot;div&quot;);
+      tooltip.id = tooltipId;
+      tooltip.className = &quot;tooltip&quot;;
+      tooltip.setAttribute(&quot;role&quot;, &quot;tooltip&quot;);
+    }
+    return tooltip;
+  };
+  const setDescribedBy = (trigger, described) =&gt; {
+    const ids = new Set(
+      (trigger.getAttribute(&quot;aria-describedby&quot;) ?? &quot;&quot;)
+        .split(/\s+/)
+        .filter(Boolean),
+    );
+    if (described) {
+      ids.add(tooltipId);
+    } else {
+      ids.delete(tooltipId);
+    }
+    if (ids.size === 0) {
+      trigger.removeAttribute(&quot;aria-describedby&quot;);
+    } else {
+      trigger.setAttribute(&quot;aria-describedby&quot;, [...ids].join(&quot; &quot;));
+    }
+  };
+  const clearOpenTimeout = () =&gt; {
+    if (openTimeout != null) {
+      window.clearTimeout(openTimeout);
+      openTimeout = null;
+    }
+    pendingTrigger = null;
+  };
+  const closeTooltip = (activateSkipDelay = true) =&gt; {
+    clearOpenTimeout();
+    pinnedByTouch = false;
+    positionRequest += 1;
+    autoUpdateCleanup?.();
+    autoUpdateCleanup = null;
+    if (activeTrigger == null) {
+      return;
+    }
+    setDescribedBy(activeTrigger, false);
+    activeTrigger = null;
+    tooltip?.remove();
+    if (activateSkipDelay) {
+      skipDelayUntil = Date.now() + skipDelay;
+    }
+  };
+  const updatePosition = (trigger, floating) =&gt; {
+    const request = ++positionRequest;
+    void computePosition(trigger, floating, {
+      middleware: [
+        offset(tooltipGap),
+        flip({ padding: tooltipGap }),
+        shift({ padding: tooltipGap }),
+        size({
+          padding: tooltipGap,
+          apply({ availableHeight, availableWidth, elements }) {
+            elements.floating.style.setProperty(
+              &quot;--tooltip-available-width&quot;,
+              `${Math.max(0, availableWidth)}px`,
+            );
+            elements.floating.style.setProperty(
+              &quot;--tooltip-available-height&quot;,
+              `${Math.max(0, availableHeight)}px`,
+            );
+          },
+        }),
+      ],
+      placement: getPlacement(trigger),
+      strategy: &quot;fixed&quot;,
+    })
+      .then(({ x, y }) =&gt; {
+        if (activeTrigger !== trigger || request !== positionRequest) {
+          return;
+        }
+        const scale = window.devicePixelRatio || 1;
+        floating.style.transform = `translate(${Math.round(x * scale) / scale}px, ${Math.round(y * scale) / scale}px)`;
+        floating.style.visibility = &quot;visible&quot;;
+      })
+      .catch(() =&gt; {
+        if (activeTrigger === trigger &amp;&amp; request === positionRequest) {
+          closeTooltip(false);
+        }
+      });
+  };
+  const openTooltip = (trigger) =&gt; {
+    const content = getContent(trigger);
+    if (!trigger.isConnected || content.length === 0) {
+      return;
+    }
+    clearOpenTimeout();
+    if (activeTrigger === trigger) {
+      return;
+    }
+    closeTooltip();
+    const floating = getTooltip();
+    floating.textContent = content;
+    floating.style.visibility = &quot;hidden&quot;;
+    floating.style.transform = &quot;translate(0, 0)&quot;;
+    document.body.appendChild(floating);
+    activeTrigger = trigger;
+    setDescribedBy(trigger, true);
+    autoUpdateCleanup = autoUpdate(trigger, floating, () =&gt; {
+      updatePosition(trigger, floating);
+    });
+  };
+  const requestOpen = (trigger, immediate = false) =&gt; {
+    if (
+      getContent(trigger).length === 0 ||
+      activeTrigger === trigger ||
+      pendingTrigger === trigger
+    ) {
+      return;
+    }
+    clearOpenTimeout();
+    pendingTrigger = trigger;
+    const delay =
+      immediate || activeTrigger != null || Date.now() &lt; skipDelayUntil
+        ? 0
+        : hoverDelay;
+    if (delay === 0) {
+      openTooltip(trigger);
+      return;
+    }
+    openTimeout = window.setTimeout(() =&gt; {
+      openTimeout = null;
+      pendingTrigger = null;
+      openTooltip(trigger);
+    }, delay);
+  };
+  const handlePointerOpen = (event) =&gt; {
+    if (event.pointerType === &quot;touch&quot;) {
+      return;
+    }
+    const trigger = getTrigger(event);
+    if (trigger == null || containsTarget(trigger, event.relatedTarget)) {
+      return;
+    }
+    requestOpen(trigger);
+  };
+  const handlePointer = (event) =&gt; {
+    lastPointerWasTouch =
+      event.type === &quot;pointerdown&quot; &amp;&amp; event.pointerType === &quot;touch&quot;;
+  };
+  const handleTouchClick = (event) =&gt; {
+    const isTouch = event.pointerType === &quot;touch&quot; || lastPointerWasTouch;
+    lastPointerWasTouch = false;
+    if (!isTouch || event.detail === 0) {
+      return;
+    }
+    const trigger = getTrigger(event);
+    if (
+      trigger == null ||
+      !trigger.isConnected ||
+      getContent(trigger).length === 0 ||
+      (pinnedByTouch &amp;&amp; activeTrigger === trigger)
+    ) {
+      if (pinnedByTouch) {
+        closeTooltip();
+      }
+      return;
+    }
+    openTooltip(trigger);
+    pinnedByTouch = activeTrigger === trigger;
+    window.setTimeout(() =&gt; {
+      if (activeTrigger === trigger &amp;&amp; !trigger.isConnected) {
+        closeTooltip(false);
+      }
+    }, 0);
+  };
+  const handleLeave = (event) =&gt; {
+    if (pinnedByTouch) {
+      return;
+    }
+    const trigger = getTrigger(event);
+    if (trigger == null || containsTarget(trigger, event.relatedTarget)) {
+      return;
+    }
+    if (activeTrigger === trigger || pendingTrigger === trigger) {
+      closeTooltip();
+    }
+  };
+  const handleFocusIn = (event) =&gt; {
+    const trigger = getTrigger(event);
+    if (trigger?.matches(&quot;:focus-visible&quot;)) {
+      requestOpen(trigger, true);
+    }
+  };
+  const handleKeyDown = (event) =&gt; {
+    if (event.key === &quot;Escape&quot;) {
+      closeTooltip();
+    }
+  };
+  const handleContextMenu = (event) =&gt; {
+    lastPointerWasTouch = false;
+    const trigger = getTrigger(event);
+    if (activeTrigger === trigger || pendingTrigger === trigger) {
+      closeTooltip();
+    }
+  };
+  const handlers = {
+    pointerover: handlePointerOpen,
+    pointerdown: handlePointer,
+    pointercancel: handlePointer,
+    click: handleTouchClick,
+    pointerout: handleLeave,
+    focusin: handleFocusIn,
+    focusout: handleLeave,
+    keydown: handleKeyDown,
+    contextmenu: handleContextMenu,
+  };
+  const roots = new Map();
+  const handledEvents = new WeakSet();
+  const handleEvent = (event) =&gt; {
+    if (handledEvents.has(event)) return;
+    handledEvents.add(event);
+    handlers[event.type](event);
+  };
+  const discoverRoots = (node) =&gt; {
+    if (node.shadowRoot) listen(node.shadowRoot);
+    for (const element of node.querySelectorAll(&quot;*&quot;)) {
+      if (element.shadowRoot) listen(element.shadowRoot);
+    }
+  };
+  const listen = (root) =&gt; {
+    if (roots.has(root)) return;
+    for (const type of Object.keys(handlers)) root.addEventListener(type, handleEvent);
+    const observer = new window.MutationObserver((records) =&gt; {
+      for (const { addedNodes } of records) {
+        for (const node of addedNodes) {
+          if (node.nodeType === Node.ELEMENT_NODE) discoverRoots(node);
+        }
+      }
+      for (const [root, cleanup] of roots) {
+        if (root.host &amp;&amp; !root.host.isConnected) {
+          cleanup();
+          roots.delete(root);
+        }
+      }
+      if (activeTrigger &amp;&amp; !activeTrigger.isConnected) closeTooltip(false);
+    });
+    observer.observe(root, { childList: true, subtree: true });
+    roots.set(root, () =&gt; {
+      observer.disconnect();
+      for (const type of Object.keys(handlers)) root.removeEventListener(type, handleEvent);
+    });
+    discoverRoots(root);
+  };
+  const destroy = () =&gt; {
+    closeTooltip(false);
+    lastPointerWasTouch = false;
+    for (const cleanup of roots.values()) cleanup();
+    roots.clear();
+    tooltip = null;
+  };
+
+  // Events between children of one shadow root never reach the document.
+  listen(document);
+  window.addEventListener(&quot;pagehide&quot;, destroy, { once: true });
+})();
+&lt;/script&gt;
+&lt;script id=&quot;codex-visualization-tabs&quot;&gt;
+(() =&gt; {
+  const selector = &#x27;.nav[role=&quot;tablist&quot;] [role=&quot;tab&quot;]&#x27;;
+  const disabled = &#x27;:disabled,[aria-disabled=&quot;true&quot;]&#x27;;
+  const selectTab = (selected) =&gt; {
+    const panelId = selected.getAttribute(&quot;aria-controls&quot;);
+    for (const tab of selected.closest(&#x27;[role=&quot;tablist&quot;]&#x27;).querySelectorAll(&#x27;[role=&quot;tab&quot;]&#x27;)) {
+      const active = tab === selected;
+      tab.classList.toggle(&quot;active&quot;, active);
+      tab.setAttribute(&quot;aria-selected&quot;, String(active));
+      const id = tab.getAttribute(&quot;aria-controls&quot;);
+      const panel = id &amp;&amp; document.getElementById(id);
+      if (panel != null) {
+        panel.hidden = id !== panelId;
+        if (!panel.hidden &amp;&amp; selected.id) {
+          panel.setAttribute(&quot;aria-labelledby&quot;, selected.id);
+        }
+      }
+    }
+  };
+  const interact = (event) =&gt; {
+    const tab = event.target?.closest?.(selector);
+    if (event.defaultPrevented || tab == null || tab.matches(disabled)) {
+      return;
+    }
+    if (event.type === &quot;click&quot;) {
+      selectTab(tab);
+      return;
+    }
+    const tabs = Array.from(
+      tab.closest(&#x27;[role=&quot;tablist&quot;]&#x27;).querySelectorAll(&#x27;[role=&quot;tab&quot;]&#x27;),
+    ).filter((candidate) =&gt; !candidate.matches(disabled));
+    const current = tabs.indexOf(tab);
+    let next;
+    if (event.key === &quot;ArrowRight&quot; || event.key === &quot;ArrowDown&quot;) {
+      next = (current + 1) % tabs.length;
+    } else if (event.key === &quot;ArrowLeft&quot; || event.key === &quot;ArrowUp&quot;) {
+      next = (current + tabs.length - 1) % tabs.length;
+    } else if (event.key === &quot;Home&quot;) {
+      next = 0;
+    } else if (event.key === &quot;End&quot;) {
+      next = tabs.length - 1;
+    } else {
+      return;
+    }
+    event.preventDefault();
+    tabs[next].focus();
+    selectTab(tabs[next]);
+  };
+
+  for (const list of document.querySelectorAll(&#x27;.nav[role=&quot;tablist&quot;]&#x27;)) {
+    const selected =
+      list.querySelector(&#x27;[role=&quot;tab&quot;][aria-selected=&quot;true&quot;]&#x27;) ??
+      list.querySelector(&#x27;[role=&quot;tab&quot;].active&#x27;) ??
+      list.querySelector(&#x27;[role=&quot;tab&quot;]&#x27;);
+    if (selected != null) {
+      selectTab(selected);
+    }
+  }
+  document.addEventListener(&quot;click&quot;, interact);
+  document.addEventListener(&quot;keydown&quot;, interact);
+  window.addEventListener(&quot;pagehide&quot;, () =&gt; {
+    document.removeEventListener(&quot;click&quot;, interact);
+    document.removeEventListener(&quot;keydown&quot;, interact);
+  }, { once: true });
+})();
+&lt;/script&gt;
+&lt;script id=&quot;codex-visualization-carousel&quot;&gt;
+  (() =&gt; {
+    for (const root of document.querySelectorAll(&quot;.viz-carousel&quot;)) {
+      const panels = Array.from(
+        root.querySelectorAll(&quot;:scope &gt; [data-variant]&quot;),
+      );
+      if (panels.length === 0) {
+        continue;
+      }
+      root.setAttribute(&quot;role&quot;, &quot;group&quot;);
+      panels.forEach((panel, index) =&gt; {
+        panel.hidden = index !== 0;
+        panel.setAttribute(&quot;role&quot;, &quot;group&quot;);
+        if (!panel.hasAttribute(&quot;aria-label&quot;)) {
+          panel.setAttribute(&quot;aria-label&quot;, panel.dataset.variant);
+        }
+      });
+      root.dataset.activeVariant = panels[0].dataset.variant;
+      if (panels.length === 1) {
+        continue;
+      }
+
+      const controls = document.createElement(&quot;div&quot;);
+      controls.className = &quot;viz-carousel-controls&quot;;
+      // Portable copy of the settings dropdown&#x27;s legacy glyph; no 14px icon-package preset matches it.
+      // https://github.com/openai/openai/blob/master/codex/codex-apps/webview/src/icons/chevron.svg
+      controls.innerHTML = `
+      &lt;button type=&quot;button&quot; class=&quot;viz-carousel-previous cursor-interaction&quot;&gt;&lt;i data-lucide=&quot;chevron-left&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;/button&gt;
+      &lt;details class=&quot;viz-carousel-picker&quot;&gt;
+        &lt;summary class=&quot;cursor-interaction&quot;&gt;
+          &lt;span class=&quot;viz-carousel-count tabular-nums&quot;&gt;&lt;/span&gt;
+          &lt;span class=&quot;viz-carousel-name&quot;&gt;&lt;/span&gt;
+          &lt;svg class=&quot;viz-carousel-caret&quot; width=&quot;14&quot; height=&quot;14&quot; viewBox=&quot;0 0 20 21&quot; fill=&quot;none&quot; aria-hidden=&quot;true&quot; focusable=&quot;false&quot;&gt;
+            &lt;path d=&quot;M15.2793 7.71101C15.539 7.45131 15.961 7.45131 16.2207 7.71101C16.4804 7.97071 16.4804 8.39272 16.2207 8.65242L10.4707 14.4024C10.211 14.6621 9.78902 14.6621 9.52932 14.4024L3.77932 8.65242L3.69436 8.54792C3.52385 8.28979 3.55205 7.93828 3.77932 7.71101C4.00659 7.48374 4.3581 7.45554 4.61623 7.62605L4.72073 7.71101L10 12.9903L15.2793 7.71101Z&quot; fill=&quot;currentColor&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;0.6&quot; /&gt;
+          &lt;/svg&gt;
+        &lt;/summary&gt;
+        &lt;div class=&quot;viz-carousel-options&quot;&gt;&lt;/div&gt;
+      &lt;/details&gt;
+      &lt;button type=&quot;button&quot; class=&quot;viz-carousel-next cursor-interaction&quot;&gt;&lt;i data-lucide=&quot;chevron-right&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;/button&gt;`;
+      const previous = controls.querySelector(&quot;.viz-carousel-previous&quot;);
+      const next = controls.querySelector(&quot;.viz-carousel-next&quot;);
+      const picker = controls.querySelector(&quot;.viz-carousel-picker&quot;);
+      const summary = picker.querySelector(&quot;summary&quot;);
+      const count = controls.querySelector(&quot;.viz-carousel-count&quot;);
+      const name = controls.querySelector(&quot;.viz-carousel-name&quot;);
+      const options = controls.querySelector(&quot;.viz-carousel-options&quot;);
+      const status = document.createElement(&quot;span&quot;);
+      status.className = &quot;sr-only&quot;;
+      status.setAttribute(&quot;role&quot;, &quot;status&quot;);
+      status.setAttribute(&quot;aria-live&quot;, &quot;polite&quot;);
+      status.setAttribute(&quot;aria-atomic&quot;, &quot;true&quot;);
+      previous.setAttribute(
+        &quot;aria-label&quot;,
+        root.dataset.previousLabel ?? &quot;Previous variant&quot;,
+      );
+      next.setAttribute(&quot;aria-label&quot;, root.dataset.nextLabel ?? &quot;Next variant&quot;);
+
+      let active = 0;
+      let mousePointerId = null;
+      let summaryPointerHandled = false;
+      summary.addEventListener(&quot;pointerdown&quot;, (event) =&gt; {
+        summaryPointerHandled =
+          event.pointerType === &quot;mouse&quot; &amp;&amp; event.button === 0 &amp;&amp; !event.ctrlKey;
+        if (!summaryPointerHandled) {
+          return;
+        }
+        event.preventDefault();
+        summary.focus({ preventScroll: true });
+        picker.open = !picker.open;
+        mousePointerId = picker.open ? event.pointerId : null;
+      });
+      summary.addEventListener(&quot;click&quot;, (event) =&gt; {
+        if (summaryPointerHandled &amp;&amp; event.detail &gt; 0) {
+          event.preventDefault();
+        }
+      });
+      const choices = panels.map((panel, index) =&gt; {
+        const choice = document.createElement(&quot;button&quot;);
+        choice.type = &quot;button&quot;;
+        choice.className = &quot;cursor-interaction&quot;;
+        choice.textContent = panel.dataset.variant;
+        choice.addEventListener(&quot;click&quot;, () =&gt; {
+          select(index);
+          summary.focus();
+        });
+        choice.addEventListener(&quot;pointerup&quot;, (event) =&gt; {
+          if (
+            picker.open &amp;&amp;
+            event.pointerType === &quot;mouse&quot; &amp;&amp;
+            event.button === 0 &amp;&amp;
+            event.pointerId === mousePointerId
+          ) {
+            choice.click();
+          }
+        });
+        options.appendChild(choice);
+        return choice;
+      });
+      const select = (index) =&gt; {
+        const changed = active !== index;
+        active = index;
+        panels.forEach((panel, position) =&gt; {
+          panel.hidden = position !== active;
+          choices[position].setAttribute(
+            &quot;aria-current&quot;,
+            String(position === active),
+          );
+        });
+        root.dataset.activeVariant = panels[active].dataset.variant;
+        count.textContent = `${active + 1} / ${panels.length}`;
+        name.textContent = panels[active].dataset.variant;
+        picker.open = false;
+        mousePointerId = null;
+        if (changed) {
+          status.textContent = `${count.textContent}: ${name.textContent}`;
+        }
+      };
+      previous.addEventListener(&quot;click&quot;, () =&gt;
+        select((active + panels.length - 1) % panels.length),
+      );
+      next.addEventListener(&quot;click&quot;, () =&gt;
+        select((active + 1) % panels.length),
+      );
+      picker.addEventListener(&quot;keydown&quot;, (event) =&gt; {
+        if (event.key === &quot;Escape&quot; &amp;&amp; picker.open) {
+          event.preventDefault();
+          picker.open = false;
+          mousePointerId = null;
+          summary.focus();
+          return;
+        }
+        if (event.altKey || event.ctrlKey || event.metaKey) {
+          return;
+        }
+        const index = choices.indexOf(document.activeElement);
+        let nextIndex;
+        if (event.key === &quot;ArrowDown&quot;) {
+          nextIndex = index &lt; 0 ? active : (index + 1) % choices.length;
+        } else if (event.key === &quot;ArrowUp&quot;) {
+          nextIndex = index &lt; 0 ? active : (index + choices.length - 1) % choices.length;
+        } else if (picker.open &amp;&amp; event.key === &quot;Home&quot;) {
+          nextIndex = 0;
+        } else if (picker.open &amp;&amp; event.key === &quot;End&quot;) {
+          nextIndex = choices.length - 1;
+        } else {
+          return;
+        }
+        event.preventDefault();
+        picker.open = true;
+        choices[nextIndex].focus();
+      });
+      picker.addEventListener(&quot;focusout&quot;, (event) =&gt; {
+        if (!picker.contains(event.relatedTarget)) {
+          picker.open = false;
+          mousePointerId = null;
+        }
+      });
+      const dismiss = (event) =&gt; {
+        if (!summary.contains(event.target)) {
+          mousePointerId = null;
+        }
+        if (!picker.contains(event.target)) {
+          picker.open = false;
+        }
+      };
+      const endPointerSelection = () =&gt; {
+        mousePointerId = null;
+      };
+      const sizePicker = () =&gt; {
+        root.style.setProperty(
+          &quot;--viz-carousel-picker-height&quot;,
+          `${picker.open ? options.offsetHeight : 0}px`,
+        );
+      };
+      picker.addEventListener(&quot;toggle&quot;, sizePicker);
+      window.addEventListener(&quot;resize&quot;, sizePicker);
+      document.addEventListener(&quot;pointerdown&quot;, dismiss);
+      document.addEventListener(&quot;pointerup&quot;, endPointerSelection);
+      document.addEventListener(&quot;pointercancel&quot;, endPointerSelection);
+      window.addEventListener(&quot;blur&quot;, endPointerSelection);
+      window.addEventListener(
+        &quot;pagehide&quot;,
+        () =&gt; {
+          document.removeEventListener(&quot;pointerdown&quot;, dismiss);
+          document.removeEventListener(&quot;pointerup&quot;, endPointerSelection);
+          document.removeEventListener(&quot;pointercancel&quot;, endPointerSelection);
+          window.removeEventListener(&quot;blur&quot;, endPointerSelection);
+          window.removeEventListener(&quot;resize&quot;, sizePicker);
+        },
+        { once: true },
+      );
+      root.append(controls, status);
+      select(0);
+    }
+  })();
+&lt;/script&gt;
+&lt;script id=&quot;codex-visualization-lucide&quot; async src=&quot;https://unpkg.com/lucide@1.17.0/dist/umd/lucide.js&quot;&gt;&lt;/script&gt;
+&lt;script&gt;
+(() =&gt; {
+  const initialize = () =&gt; {
+    globalThis.lucide?.createIcons({ attrs: { width: 16, height: 16 } });
+  };
+  if (globalThis.lucide != null) {
+    initialize();
+    return;
+  }
+  document
+    .getElementById(&quot;codex-visualization-lucide&quot;)
+    ?.addEventListener(&quot;load&quot;, initialize, { once: true });
+})();
+&lt;/script&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
+"></iframe>
+<script>(() => {
+  const frame = document.getElementById("codex-visualization");
+  if (!(frame instanceof HTMLIFrameElement)) {
+    return;
+  }
+  let viewportHeight = globalThis.innerHeight;
+  const storageKey = `codex:visualization-widget-state-v2:${JSON.stringify([
+    globalThis.location.pathname,
+    globalThis.location.search,
+  ])}`;
+  const parseState = (serializedState) => {
+    if (
+      typeof serializedState !== "string" ||
+      new TextEncoder().encode(serializedState).length > 16 * 1024
+    ) {
+      throw new TypeError(
+        "Widget state must be a JSON object of at most 16 KiB",
+      );
+    }
+    /** @type {unknown} */
+    const state = JSON.parse(serializedState);
+    if (
+      state == null ||
+      typeof state !== "object" ||
+      Array.isArray(state) ||
+      ("imageIds" in state &&
+        (!Array.isArray(state.imageIds) || state.imageIds.length > 0))
+    ) {
+      throw new TypeError("Widget state must be a JSON object");
+    }
+    const storedState = { modelContent: null, privateContent: null, ...state };
+    const canonicalState = JSON.stringify(
+      storedState,
+      (_key, /** @type {unknown} */ value) => {
+        if (typeof value === "number" && !Number.isFinite(value)) {
+          throw new TypeError("Widget state must contain finite numbers");
+        }
+        return value;
+      },
+    );
+    if (new TextEncoder().encode(canonicalState).length > 16 * 1024) {
+      throw new TypeError(
+        "Widget state must be a JSON object of at most 16 KiB",
+      );
+    }
+    return storedState;
+  };
+  let storage = null;
+  let state = null;
+  try {
+    const localStorage = globalThis.localStorage;
+    const probeKey = `${storageKey}:probe`;
+    localStorage.setItem(probeKey, "1");
+    localStorage.removeItem(probeKey);
+    storage = localStorage;
+    const savedState = storage.getItem(storageKey);
+    if (savedState != null) {
+      try {
+        state = parseState(savedState);
+      } catch {
+        // Invalid saved state does not disable future writes.
+      }
+    }
+  } catch {
+    storage = null;
+  }
+  const initialGlobals = {
+    widgetState: state,
+    statePersistence: storage == null ? "none" : "local",
+  };
+
+  const channel = new MessageChannel();
+  channel.port1.addEventListener("message", (event) => {
+    const data = event.data;
+    if (typeof data !== "object" || data == null) {
+      return;
+    }
+    if (data.type === "widget-state-write") {
+      if (!Number.isSafeInteger(data.id) || data.id <= 0) {
+        return;
+      }
+      let ok = false;
+      try {
+        if (storage != null) {
+          const state = parseState(data.state);
+          storage.setItem(storageKey, JSON.stringify(state));
+          ok = true;
+        }
+      } catch {
+        // Storage denial, quota limits, and invalid state return a failed receipt.
+      }
+      channel.port1.postMessage({
+        type: "widget-state-result",
+        id: data.id,
+        ok,
+      });
+      return;
+    }
+    if (data.type === "height") {
+      const height = data.height;
+      if (
+        typeof height === "number" &&
+        Number.isFinite(height) &&
+        height >= 0 &&
+        height <= 10_000
+      ) {
+        frame.style.height = Math.ceil(height) + "px";
+      }
+      return;
+    }
+    if (data.type === "scroll-to") {
+      const top = data.top;
+      if (
+        typeof top === "number" &&
+        Number.isFinite(top) &&
+        top >= 0 &&
+        globalThis.navigator.userActivation?.isActive === true
+      ) {
+        globalThis.scrollTo({
+          top: Math.ceil(
+            globalThis.scrollY + frame.getBoundingClientRect().top + top,
+          ),
+        });
+      }
+      return;
+    }
+    if (data.type === "open-external") {
+      const rawHref = data.href;
+      if (typeof rawHref !== "string") {
+        return;
+      }
+      let href;
+      try {
+        const url = new URL(rawHref, document.baseURI);
+        if (url.protocol !== "https:") {
+          return;
+        }
+        href = url.href;
+      } catch {
+        return;
+      }
+      if (globalThis.navigator.userActivation?.isActive === true) {
+        const anchor = document.createElement("a");
+        anchor.href = href;
+        anchor.rel = "noopener noreferrer";
+        anchor.target = "_blank";
+        document.body.appendChild(anchor);
+        anchor.click();
+        anchor.remove();
+      }
+      return;
+    }
+    if (data.type === "follow-up") {
+      const prompt = data.prompt;
+      if (
+        typeof prompt !== "string" ||
+        globalThis.navigator.userActivation?.isActive !== true
+      ) {
+        return;
+      }
+      const title = data.title;
+      globalThis.prompt(typeof title === "string" ? title : prompt, prompt);
+    }
+  });
+  channel.port1.start();
+  const srcdoc = frame.dataset.srcdoc;
+  if (srcdoc == null) {
+    return;
+  }
+  globalThis.addEventListener("resize", () => {
+    const height = Number.parseFloat(frame.style.height);
+    if (!Number.isFinite(height) || height <= viewportHeight) {
+      frame.style.removeProperty("height");
+    }
+    viewportHeight = globalThis.innerHeight;
+    channel.port1.postMessage({ type: "measure" });
+  });
+  frame.addEventListener(
+    "load",
+    () => {
+      frame.contentWindow?.postMessage(
+        { type: "codex-visualization-initialize" },
+        "*",
+        [channel.port2],
+      );
+    },
+    { once: true },
+  );
+  // Match the trusted bootstrap element, not the same text in an authored title.
+  frame.srcdoc = srcdoc.replace(
+    '<script type="application/json" id="codex-visualization-widget-state">__CODEX_VISUALIZATION_WIDGET_STATE__<\/script>',
+    () =>
+      '<script type="application/json" id="codex-visualization-widget-state">' +
+      JSON.stringify(initialGlobals).replaceAll("<", "\\u003c") +
+      "<\/script>",
+  );
+  delete frame.dataset.srcdoc;
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,2273 @@
+<div id="pie-tab-bar-inline" aria-label="Pie interactive tab bar"></div>
+<style>
+.pie-tab-strip, .tab-menu {
+  --tab-text: #e3e3e5; --tab-muted: #989a9d; --tab-track: #ffffff0f;
+  --tab-selected: #ffffff24; --tab-hover: #ffffff0e; --tab-rim: #ffffff45;
+  --tab-solid: #49494a; --focus: #74a253; --close-cutout: #505052;
+  --tab-preview-background: #222223; --tab-preview-border: #515153;
+  color: var(--tab-text); font: 13px/1.2 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+.pie-tab-strip[data-theme=light], .tab-menu[data-theme=light] {
+  --tab-text: #28282a; --tab-muted: #77797b; --tab-track: #00000012;
+  --tab-selected: #ffffffb3; --tab-hover: #0000000d; --tab-rim: #ffffffd9;
+  --tab-solid: #f3f3f3; --close-cutout: #f1f1f2; --focus: #608d45;
+  --tab-preview-background: #f4f4f4; --tab-preview-border: #c7c7c9;
+}
+.pie-tab-strip { position: relative; height: 36px; flex: 1; min-width: 0; isolation: isolate; }
+.pie-tab-strip * { box-sizing: border-box; }
+.pie-tab-hover { position: fixed; inset: auto; margin: 0; z-index: 10000; pointer-events: none; display: flex; flex-direction: column; gap: 5px; width: 280px; min-height: 36px; max-height: calc(100vh - 16px); overflow: hidden; padding: 9px 14px; border: 1px solid var(--tab-preview-border); border-radius: 12px; background: var(--tab-preview-background); color: var(--tab-text); font: 13px/16px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; box-shadow: 0 5px 16px #0002; text-align: left; white-space: pre-wrap; overflow-wrap: anywhere; }
+.pie-tab-hover[hidden] { display: none !important; }
+.tab-hover-title { font-weight: 600; }
+.tab-hover-subtitle, .tab-hover-detail { font-size: 11px; line-height: 15px; color: var(--tab-muted); }
+.tab-stage { position: relative; width: calc(100% - 32px); height: 36px; touch-action: none; user-select: none; -webkit-user-select: none; clip-path: inset(-32px 0); }
+.tab-track { position: absolute; top: 0; left: 0; height: 36px; border-radius: 18px; background: var(--tab-track); pointer-events: none; }
+.pie-tab { position: absolute; left: 0; top: 0; height: 36px; min-width: 0; cursor: default; outline: none; border-radius: 18px; }
+.tab-foreground { position: absolute; left: 50%; top: 50%; width: var(--foreground-width, 100%); height: 36px; transform: translate(-50%, -50%) scale(var(--foreground-scale, 1)); z-index: 2; opacity: calc(1 - var(--tear-blend, 0)); }
+.pie-tab::before { content: ''; position: absolute; inset: 0; border-radius: 18px; pointer-events: none; }
+.pie-tab[data-pinned=true]::before { background: var(--tab-track); }
+.tab-surface { position: absolute; inset: 3.5px; border-radius: 15px; border: .75px solid transparent; pointer-events: none; transition: background-color 100ms, border-color 100ms; }
+.pie-tab:hover .tab-surface { background: var(--tab-hover); }
+.pie-tab[data-selected=true] .tab-surface { background: var(--tab-selected); border-color: var(--tab-rim); }
+.pie-tab[data-selected=true]:hover .tab-surface { background: color-mix(in srgb, var(--tab-selected), #fff 3%); }
+.pie-tab:not([data-selected=true])[data-separator=true]::after { content: ''; position: absolute; right: 0; top: 9px; height: 18px; width: .5px; background: currentColor; opacity: .15; }
+.pie-tab:hover::after, .is-dragging .pie-tab::after { opacity: 0; }
+.tab-label { position: absolute; left: 27px; right: 27px; top: 0; height: 36px; display: flex; align-items: center; justify-content: center; gap: 5px; pointer-events: none; overflow: hidden; }
+.tab-icon { display: inline-flex; flex: 0 0 16px; width: 16px; height: 16px; color: var(--tab-muted); }
+.tab-icon svg, .pie-tab-strip button svg { width: 16px; height: 16px; display: block; }
+.tab-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; letter-spacing: -.2px; padding: 1px 0; }
+.pie-tab[data-selected=true] .tab-label { left: 30px; right: 49px; }
+.pie-tab[data-selected=true][data-empty=true] .tab-label { left: 12px; right: 12px; color: var(--tab-muted); font-weight: 500; }
+.pie-tab[data-pinned=true]:not([data-selected=true]) .tab-label { inset: 0; }
+.pie-tab[data-pinned=true]:not([data-selected=true]) .tab-title { display: none; }
+.pie-tab-strip button { font: inherit; color: inherit; padding: 0; background: none; border: 0; cursor: default; display: grid; place-items: center; }
+.pie-tab-strip button:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+.pie-tab-strip .tab-activate { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: inherit; z-index: 2; }
+.pie-tab-strip .tab-activate:focus-visible { outline: none; }
+.pie-tab-strip[data-keyboard=true] .tab-activate:focus-visible { outline: 1px solid var(--tab-rim); outline-offset: -1px; }
+.pie-tab.lifted .tab-activate { outline: none; }
+.pie-tab-strip button[hidden] { display: none !important; }
+.tab-close, .tab-reload, .tab-actions { position: absolute; top: 9px; width: 18px; height: 18px; z-index: 3; opacity: .9; }
+.tab-close { left: 7px; opacity: 0; pointer-events: none; }
+.pie-tab:hover .tab-close, .pie-tab-strip[data-keyboard=true] .pie-tab:focus-within .tab-close, .pie-tab.lifted .tab-close { opacity: .9; pointer-events: auto; }
+.tab-reload { right: 30px; opacity: 0; pointer-events: none; }
+.pie-tab:hover .tab-reload, .pie-tab.lifted .tab-reload, .tab-reload:focus-visible { opacity: .85; pointer-events: auto; }
+.tab-actions { right: 9px; opacity: .8; }
+.pie-tab-strip .add-tab { position: absolute; right: 1px; top: 5px; width: 26px; height: 26px; border-radius: 7px; color: var(--tab-muted); }
+.add-tab:hover { background: var(--tab-hover); }
+.tab-address { appearance: none; position: absolute; left: 34px; right: 10px; top: 8px; height: 20px; width: calc(100% - 44px); margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; color: var(--tab-text); caret-color: #d84d93; font: inherit; outline: 0; opacity: 0; pointer-events: none; z-index: 4; }
+.tab-address::placeholder { color: var(--tab-muted); }
+.editing .tab-address { opacity: 1; pointer-events: auto; }
+.editing .tab-label { left: 11px !important; right: auto !important; width: 16px; }
+.editing .tab-title { display: none; }
+.editing .tab-actions, .editing .tab-close, .editing .tab-reload { visibility: hidden; }
+.tab-focus-ring { position: absolute; inset: 0; border: 3.5px solid var(--focus); border-radius: 18px; opacity: 0; pointer-events: none; }
+.editing .tab-focus-ring { opacity: .9; animation: tab-focus-in 285ms ease-out both; }
+@keyframes tab-focus-in { from { opacity: 0; transform: scale(1.16,1.5); } to { opacity: .9; transform: scale(1); } }
+.pie-tab.lifted { z-index: 30; will-change: transform; }
+.pie-tab.lifted::before { background: color-mix(in srgb, var(--tab-solid) 38%, transparent); border-radius: 18px; }
+.pie-tab.lifted .tab-surface { inset: 0; border-radius: 18px; background: #9a9a9a26; border-color: #ffffff5c; box-shadow: inset 0 .6px 0 #ffffff4f, inset 0 -.6px 0 #00000025; }
+.pie-tab-strip[data-shadows=true] .pie-tab.lifted { filter: drop-shadow(0 3px 3px #00000035); }
+.glass-lens { position: absolute; inset: 0; width: 100%; height: 36px; pointer-events: none; opacity: .78; overflow: visible; }
+.pie-tab[popover] { position: fixed; inset: 0 auto auto 0; margin: 0; padding: 0; border: 0; overflow: visible; background: transparent; color: inherit; border-radius: var(--tear-radius, 18px); max-width: none; max-height: none; }
+.pie-tab[popover]::backdrop { background: transparent; pointer-events: none; }
+.pie-tab[popover]::before { border-radius: inherit; opacity: calc(1 - var(--tear-blend, 0)); }
+.pie-tab[popover] .tab-surface { border-radius: inherit; opacity: calc(1 - var(--tear-blend, 0)); }
+.pie-tab-strip[data-glass=true][data-blur=true] .pie-tab[popover] .tab-surface { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+.pie-tab[popover] .glass-lens { top: calc(50% - 18px); opacity: calc(.78 * (1 - var(--tear-blend, 0))); }
+.pie-tab[data-flight=detached] .glass-lens { visibility: hidden; }
+.tab-page-preview { position: absolute; inset: 0; overflow: hidden; border-radius: inherit; background: #f5f4ef; opacity: var(--tear-blend, 0); pointer-events: none; z-index: 4; contain: layout paint; }
+.tab-preview-content { position: absolute; left: 0; top: 0; transform-origin: top left; pointer-events: none; }
+.tab-preview-content *, .tab-preview-content *::before, .tab-preview-content *::after { animation-play-state: paused !important; pointer-events: none !important; }
+.pie-tab-strip[data-shadows=true] .pie-tab[popover] { filter: drop-shadow(0 4px 5px #0005); }
+.pie-tab-strip[data-glass=false] .pie-tab.lifted .tab-surface, .pie-tab-strip[data-glass=false] .pie-tab[data-selected=true] .tab-surface { background: var(--tab-solid); }
+.pie-tab-strip[data-glass=false] .glass-lens { display: none; }
+.pie-tab-strip[data-motion=off] *, .pie-tab-strip[data-motion=reduced] * { transition: none !important; animation: none !important; }
+.pie-tab-strip.is-dragging .pie-tab:not(.lifted) .tab-close { opacity: 0; pointer-events: none; }
+.tab-announcer { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.tab-menu { position: fixed; z-index: 1000; width: 228px; padding: 5px; background: #292929f5; border: 1px solid #ffffff26; border-radius: 9px; box-shadow: 0 9px 30px #0005; backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
+.tab-menu[data-theme=light] { background: #fafafaf5; border-color: #0002; }
+.tab-menu button { width: 100%; border: 0; border-radius: 5px; display: grid; grid-template-columns: 16px 1fr; gap: 9px; padding: 6px 7px; align-items: center; text-align: left; background: transparent; color: inherit; font: inherit; outline: none; }
+.tab-menu button svg { width: 14px; height: 14px; }
+.tab-menu button:hover, .tab-menu button:focus { background: #608e46; color: #fff; }
+.tab-menu hr { margin: 4px 3px; border: 0; border-top: 1px solid #8884; }
+#pie-tab-bar-inline { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #2b2c27; background: #efeee9; font-synthesis: none; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+button, input, select, textarea { font: inherit; }
+button, select { cursor: pointer; }
+button:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid #65864b; outline-offset: 3px; }
+.masthead { max-width: 1248px; margin: auto; height: 100px; padding: 0 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #27291e1f; }
+.brand { display: flex; gap: 12px; align-items: center; font-size: 16px; font-weight: 650; color: inherit; text-decoration: none; letter-spacing: -.3px; }
+.brand-mark { display: grid; place-items: center; width: 30px; height: 30px; background: #2b3126; color: #daedaf; font-size: 27px; line-height: 30px; font-weight: 700; border-radius: 9px; padding-bottom: 4px; }
+.brand-divider { margin: 0 9px; color: #a2a397; font-weight: 350; }
+.brand-subtitle { font-weight: 450; }
+.edition { display: flex; align-items: center; gap: 12px; font-size: 10px; letter-spacing: 1.8px; color: #818376; }
+.edition span { border: 1px solid #a5a799; border-radius: 50%; padding: 5px 4px; letter-spacing: 0; }
+main { max-width: 1248px; margin: auto; padding: 0 40px; }
+.intro { display: flex; align-items: flex-end; justify-content: space-between; padding: 42px 0 28px; }
+.eyebrow { font-size: 10px; font-weight: 600; letter-spacing: 1.9px; color: #7c806d; }
+h1 { margin: 12px 0 8px; font-size: clamp(30px, 4vw, 46px); line-height: 1.04; font-weight: 520; letter-spacing: -2px; }
+.intro p { margin: 0; font-size: 14px; color: #77796d; line-height: 1.6; }
+.appearance { display: flex; padding: 3px; border: 1px solid #d5d6cb; border-radius: 9px; margin-bottom: 3px; }
+.appearance button { display: flex; align-items: center; gap: 7px; border: 0; background: none; color: #77796d; padding: 7px 11px; border-radius: 6px; font-size: 12px; }
+.appearance button[aria-pressed=true] { color: #2b3126; background: #fffdf7; box-shadow: 0 1px 4px #2221; }
+.appearance svg { width: 14px; height: 14px; }
+.browser { position: relative; border: 1px solid #52534e; border-radius: 18px; box-shadow: 0 20px 40px -20px #20231855, 0 3px 5px #2221; overflow: hidden; background: #1d1d1e; }
+.browser-toolbar { height: 57px; padding: 0 12px 0 17px; display: flex; align-items: center; gap: 12px; background: #232324; border-bottom: 1px solid #0005; }
+.window-controls { display: flex; gap: 8px; flex: 0 0 auto; }
+.window-controls i { width: 11px; height: 11px; border-radius: 50%; background: #ff5e60; box-shadow: inset 0 0 0 .5px #0001; }
+.window-controls i:nth-child(2) { background: #ffbd2e; }.window-controls i:nth-child(3) { background: #28c840; }
+.toolbar-divider { height: 20px; width: 1px; background: #ffffff12; margin: 0 2px 0 9px; }
+.toolbar-button { border: 0; width: 28px; height: 28px; padding: 6px; color: #a1a1a3; background: transparent; border-radius: 6px; }
+.toolbar-button svg { width: 16px; height: 16px; }
+.toolbar-button:hover { background: #8882; }
+.page-stack { min-height: 388px; height: 388px; position: relative; overflow: auto; background: #f5f4ef; }
+.demo-page { min-height: 388px; color: #272923; background: #f5f4ef; }
+.demo-page[hidden] { display: none !important; }
+.browser-status { display: flex; height: 28px; align-items: center; gap: 6px; color: #9b9b9e; padding: 0 15px; font-size: 10px; background: #232324; border-top: 1px solid #ffffff09; }
+.status-dot { width: 4px; height: 4px; background: #92ad72; border-radius: 50%; }.status-hint { margin-left: auto; color: #79797d; }
+.browser[data-theme=light] { border-color: #b5b7ac; }.browser[data-theme=light] .browser-toolbar { background: #e1e1dd; border-bottom-color: #0001; }
+.browser[data-theme=light] .toolbar-divider { background: #0001; }.browser[data-theme=light] .toolbar-button { color: #73736f; }
+.browser[data-theme=light] .browser-status { background: #e9e9e4; color: #6d7266; border-top-color: #0001; }
+.editorial-nav { padding: 17px 30px 13px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #30332520; }
+.editorial-wordmark { font-size: 25px; line-height: 1; font-weight: 820; letter-spacing: -1.5px; }.editorial-wordmark span { color: #8fa76d; margin-left: 2px; }
+.editorial-nav>span { font-size: 9px; letter-spacing: 1.4px; color: #7d806f; }
+.editorial-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; padding: 24px 30px 20px; }
+.article-category { display: block; font-size: 9px; letter-spacing: 1.8px; font-weight: 650; color: #7d8766; }
+.editorial-copy h2 { margin: 14px 0; font-size: clamp(24px, 3.3vw, 38px); line-height: 1.03; letter-spacing: -1.4px; font-weight: 550; }
+.editorial-copy p { margin: 0; font-size: 12px; color: #777b6b; line-height: 1.7; }
+.read-link { margin-top: 19px; padding: 0 0 5px; background: none; border: 0; border-bottom: 1px solid #383e2e70; font-size: 11px; color: #383e2e; }
+.read-link span { margin-left: 20px; }
+.object-scene { position: relative; height: 238px; border-radius: 3px; overflow: hidden; background: #dcdccf; background-image: radial-gradient(ellipse at 45% 20%, #eeeede 0, transparent 70%), linear-gradient(160deg, #e1e1d3, #bdbdac); }
+.scene-shadow { position: absolute; width: 60%; height: 28px; border-radius: 50%; background: #535c4360; bottom: 19px; left: 20%; filter: blur(12px); transform: skewX(-18deg); }
+.speaker { position: absolute; width: 115px; height: 160px; top: 32px; left: calc(50% - 57px); background: linear-gradient(90deg,#7d8178 0%,#dcddd1 12%,#cacdc0 35%,#c3c4b8 68%,#909788 100%); border-radius: 23px 23px 27px 27px; transform: rotate(-9deg); box-shadow: inset -2px 0 4px #27311d30, inset 2px 0 3px #fff8, 12px 14px 20px #4450311a; }
+.speaker-top { position: absolute; top: 0; height: 24px; width: 100%; border-radius: 50%; background: linear-gradient(160deg,#dedfd4,#bfc2b4); box-shadow: 0 1px 1px #a6ab9a; }
+.speaker-top::after { content: ''; position: absolute; width: 26px; height: 2px; background: #8b927f; border-radius: 3px; top: 11px; left: 43px; }
+.speaker-grille { position: absolute; top: 33px; left: 5px; right: 5px; height: 109px; border-radius: 9px 9px 23px 23px; background: radial-gradient(ellipse, #485140aa .6px, transparent 1px) 0 0 / 3.2px 3.2px; mask-image: linear-gradient(90deg,transparent,#000 12%,#000 80%,transparent); }
+.speaker-light { position: absolute; left: 53px; bottom: 8px; width: 10px; height: 2px; border-radius: 50%; background: #e9ffd2; box-shadow: 0 0 5px #edffd5; }
+.scene-label,.scene-index { position: absolute; bottom: 11px; font-size: 7px; letter-spacing: 1px; color: #7a806e; }.scene-label{left:14px}.scene-index{right:14px}
+.editorial-bottom { margin: 0 30px; padding: 12px 0 0; display: flex; justify-content: space-between; border-top: 1px solid #30332520; font-size: 8px; color: #909381; letter-spacing: .9px; }
+.news-nav { height: 58px; display: flex; align-items: center; padding: 0 30px; justify-content: space-between; background: #ffdd2c; }
+.news-nav strong { font-size: 32px; letter-spacing: -1.5px; font-weight: 850; }.news-nav>span{font-size:10px}
+.news-content { padding: 25px 32px; }.news-content h2{font-size:36px;line-height:1.02;letter-spacing:-1.5px;margin:13px 0}.news-content p{font-size:12px;color:#787970;line-height:1.6}
+.news-cards{display:flex;gap:12px;margin-top:20px}.news-cards>div{border-top:2px solid #d7d7c6;flex:1;padding-top:9px;display:flex;gap:10px;font-size:10px}.news-cards span{color:#9a9b8c}.news-cards strong{font-weight:500}
+.start-page{text-align:center;padding:60px 24px;background:#202121;color:#eee}.start-eyebrow{font-size:9px;letter-spacing:2px;color:#8d9589}.start-page h2{font-size:37px;font-weight:450;letter-spacing:-1.4px;margin:17px 0 10px}.start-page p{font-size:12px;color:#939a91}
+.favorites{display:flex;justify-content:center;gap:27px;margin-top:30px}.favorites button{display:flex;align-items:center;flex-direction:column;gap:10px;border:0;background:none;color:#c3c8bf;padding:0}.favorites button>span{padding:13px;border:1px solid #ffffff12;border-radius:12px;background:#ffffff09}.favorites svg{display:block;width:25px;height:25px}.favorites strong{font-size:10px;font-weight:400}
+.browser[data-theme=light] .start-page { background:#f5f4ef;color:#292d23; }.browser[data-theme=light] .favorites button{color:#646b5b}.browser[data-theme=light] .favorites button>span{background:#00000007;border-color:#0000000a}
+.notes-page{padding:30px;background:#eff0e7}.notes-page h2{font-size:30px;font-weight:500;letter-spacing:-1px;margin:16px 0 10px}.notes-page p{font-size:12px;color:#858c78}.notes-page textarea{display:block;resize:none;width:100%;height:180px;border:0;background:repeating-linear-gradient(transparent 0,transparent 29px,#7b876420 30px);line-height:30px;font-size:14px;color:#39492c;outline:0;margin-top:14px;padding:0}.notes-page textarea::placeholder{color:#a6ad9c}.notes-footer{font-size:8px;letter-spacing:1.4px;color:#909b80}
+.workbench{display:grid;grid-template-columns: .93fr 1.2fr;gap:40px;padding:33px 0 30px;border-bottom:1px solid #27291e1f}
+.control-heading{display:flex;align-items:center;gap:9px}.section-number{font-size:9px;color:#95998a;letter-spacing:1px}.control-heading h2{font-size:13px;font-weight:600;letter-spacing:-.2px;margin:0}.scenario-panel p{color:#929587;font-size:11px;margin:9px 0 14px}
+.scenarios{display:flex;gap:5px;flex-wrap:wrap}.scenarios button{background:transparent;border:1px solid #cfd2c5;border-radius:6px;padding:8px 12px;font-size:11px;color:#737968}.scenarios button[aria-pressed=true]{color:#e7efdd;background:#343d2e;border-color:#343d2e}.scenarios button:hover:not([aria-pressed=true]){background:#e4e6dc}
+.keyboard-hint{display:flex;gap:18px;margin-top:17px;font-size:10px;color:#9b9f91}.keyboard-hint>span{display:flex;align-items:center;gap:4px}kbd{font:9px inherit;display:inline-block;min-width:16px;border:1px solid #d5d7cc;border-radius:3px;padding:1px 3px;text-align:center}
+.text-button{margin-left:auto;border:0;border-bottom:1px solid #b7beab;padding:0 0 2px;color:#7c896c;font-size:10px;background:none}
+.effect-switches{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:20px 0}.effect-control{display:flex;align-items:center;justify-content:space-between;position:relative;font-size:11px;color:#666e5b;gap:7px;cursor:pointer}.effect-control input{position:absolute;right:0;width:28px;height:18px;margin:0;opacity:0;cursor:pointer}.toggle-track{width:27px;height:16px;border-radius:10px;background:#c6cbbc;transition:background 120ms;pointer-events:none;flex-shrink:0}.toggle-track::after{content:'';display:block;width:12px;height:12px;background:#fffdf6;border-radius:50%;margin:2px;box-shadow:0 1px 2px #0002;transition:transform 120ms}.effect-control input:checked+.toggle-track{background:#6b8654}.effect-control input:checked+.toggle-track::after{transform:translateX(11px)}.effect-control input:focus-visible+.toggle-track{outline:2px solid #6b8654;outline-offset:3px}
+.motion-control{display:flex;align-items:center;gap:15px;font-size:11px;color:#666e5b}.motion-control select{appearance:none;background:transparent;border:1px solid #cfd2c5;border-radius:6px;color:#626b57;font-size:11px;padding:6px 23px 6px 9px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='m1 1 3 3 3-3' fill='none' stroke='%23737c65'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center}.motion-control>span:last-child{margin-left:auto;font-size:10px;color:#909a84}
+footer{display:flex;justify-content:space-between;padding:20px 0 25px;font-size:10px;color:#969b8b}
+.tab-overview{position:absolute;inset:57px 0 28px;background:#f3f3ebf5;backdrop-filter:blur(16px);z-index:80;padding:20px;overflow:auto;color:#353b2f}.overview-heading{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.overview-heading h2{font-size:17px;margin:0}.overview-heading button{border:0;background:none;font-size:24px;color:inherit}.overview-tab{display:flex;align-items:center;gap:12px;text-align:left;width:100%;padding:10px;border:0;border-bottom:1px solid #aaa3;background:none;color:inherit}.overview-tab:hover{background:#7e926d20}.overview-tab svg{width:20px;height:20px;display:block}.overview-tab strong{font-size:12px;font-weight:500}.overview-tab small{margin-left:auto;font-size:10px;color:#7f8875}
+@media(min-width:1400px){.intro{padding-top:56px}.page-stack,.demo-page{height:424px;min-height:424px}.editorial-grid{padding-top:30px;gap:50px}.object-scene{height:262px}.speaker{top:41px}.editorial-copy h2{font-size:42px}.editorial-bottom{padding-top:17px}.workbench{padding-top:38px}}
+@media(max-width:800px){.masthead{height:75px;padding:0 22px}main{padding:0 22px}.intro{padding-top:30px}.workbench{grid-template-columns:1fr;gap:26px}.effects-panel{border-top:1px solid #27291e1f;padding-top:24px}.editorial-nav>span{display:none}.editorial-grid{gap:18px;padding:23px}.editorial-nav{padding-left:23px;padding-right:23px}.editorial-bottom{margin:0 23px}.editorial-copy h2{font-size:29px}.effect-switches{gap:30px}.page-stack,.demo-page{min-height:368px;height:368px}.browser-toolbar{gap:5px;padding-left:11px}.toolbar-divider{margin:0 5px}.window-controls{gap:5px}.window-controls i{width:9px;height:9px}.browser{border-radius:13px}}
+@media(max-width:520px){.edition{font-size:8px;letter-spacing:1px}.intro{gap:10px}.eyebrow{font-size:8px;letter-spacing:1.3px}h1{font-size:32px;letter-spacing:-1.4px}.intro p{font-size:11px}.appearance button{font-size:0;gap:0;padding:8px}.window-controls,.toolbar-divider{display:none}.browser-toolbar{padding:0 5px;gap:2px}.toolbar-button{width:22px;padding:3px}.editorial-grid{grid-template-columns:1fr 0.8fr;gap:13px;padding:21px 17px}.editorial-copy h2{font-size:24px;letter-spacing:-.8px}.editorial-copy p{font-size:10px}.object-scene{height:225px}.speaker{width:87px;height:143px;left:calc(50% - 44px);top:38px}.speaker-grille{height:95px}.speaker-top::after{left:31px}.speaker-light{left:39px}.scene-index{display:none}.editorial-bottom{margin:0 17px;font-size:7px}.editorial-bottom span:last-child{display:none}.editorial-nav{padding:19px 17px}.editorial-wordmark{font-size:23px}.workbench{padding-top:26px}.effect-switches{grid-template-columns:1fr 1fr;gap:20px 40px}.status-hint{font-size:8px}.news-nav>span{display:none}.news-cards{gap:8px}.notes-page{padding:23px}.notes-page h2{font-size:25px}.text-button{font-size:9px}.brand{font-size:14px}.brand-divider{margin:0 5px}footer{font-size:8px;gap:15px}}
+.detach-mode{display:flex;align-items:center;gap:8px;margin-top:15px;font-size:11px;color:#66705b}.detach-mode input{accent-color:#6b8853;margin:0}
+.window-notice{position:fixed;right:22px;bottom:22px;z-index:1000;display:flex;align-items:center;gap:12px;max-width:min(540px,calc(100vw - 44px));padding:14px 16px;border:1px solid #c4c8b9;background:#fffef8;color:#394132;border-radius:10px;box-shadow:0 5px 25px #232b2426;font-size:12px}.window-notice[hidden]{display:none}.window-notice button{border:0;border-radius:5px;background:#526b40;color:#fff;padding:7px 10px;white-space:nowrap}.window-notice #dismiss-window{background:transparent;color:#697561;font-size:20px;padding:0 3px}
+.detached-workspace .masthead,.detached-workspace .intro,.detached-workspace .workbench,.detached-workspace footer,.detached-workspace .window-controls,.detached-workspace .toolbar-divider{display:none}.detached-workspace main{max-width:none;padding:0}.detached-workspace .browser{height:100vh;border:0;border-radius:0;box-shadow:none;display:flex;flex-direction:column}.detached-workspace .browser-toolbar{flex-shrink:0}.detached-workspace .page-stack{flex:1;min-height:0;height:auto}.detached-workspace .demo-page{min-height:100%;height:auto}.detached-workspace .browser-status{flex-shrink:0}.window-recovery{padding:40px}
+/*$vite$:1*/
+#pie-tab-bar-inline { background: transparent; color: light-dark(#2b2c27, #deded7); }
+#pie-tab-bar-inline main { max-width: none; padding: 0; }
+#pie-tab-bar-inline .masthead,
+#pie-tab-bar-inline .intro > div:first-child,
+#pie-tab-bar-inline footer { display: none; }
+#pie-tab-bar-inline .intro { padding: 0 0 12px; justify-content: flex-end; }
+#pie-tab-bar-inline .browser { box-shadow: none; }
+#pie-tab-bar-inline .workbench { padding: 22px 0 0; border: 0; gap: 22px; }
+#pie-tab-bar-inline .scenario-panel p { display: none; }
+#pie-tab-bar-inline .scenarios { margin-top: 14px; }
+#pie-tab-bar-inline .control-heading h2 { color: light-dark(#343d2e, #deded7); }
+#pie-tab-bar-inline .scenarios button:not([aria-pressed=true]),
+#pie-tab-bar-inline .effect-control,
+#pie-tab-bar-inline .motion-control,
+#pie-tab-bar-inline .motion-control select,
+#pie-tab-bar-inline .text-button { color: light-dark(#626b57, #bbc3af); }
+#pie-tab-bar-inline .motion-control select { background-color: light-dark(#efeee9, #272a25); }
+#pie-tab-bar-inline .page-stack { height: auto; overflow: visible; }
+#pie-tab-bar-inline .demo-page { height: auto; }
+@media (max-width: 380px) {
+  #pie-tab-bar-inline .editorial-grid { grid-template-columns: 1fr; }
+  #pie-tab-bar-inline .object-scene { display: none; }
+  #pie-tab-bar-inline .effect-switches { gap: 18px; }
+  #pie-tab-bar-inline .motion-control { flex-wrap: wrap; gap: 10px; }
+  #pie-tab-bar-inline .status-hint { display: none; }
+}
+</style>
+<script>
+(function() {
+	//#region src/tabs/geometry.ts
+	var geometry = {
+		min: 120,
+		max: 240,
+		pin: 36,
+		gap: 4,
+		height: 36,
+		threshold: 4,
+		hysteresis: 10
+	};
+	var clamp = (value, low, high) => Math.min(high, Math.max(low, value));
+	function restingWidths(available, count, selected, empty = false) {
+		if (!count) return [];
+		if (count === 1) return [Math.min(280, Math.max(120, available))];
+		if (count === 2 && empty) {
+			const total = Math.min(520, Math.max(240, available));
+			const active = Math.min(280, total - 120);
+			return [0, 1].map((i) => i === selected ? active : total - active);
+		}
+		if (count === 2) {
+			const neighbor = clamp(available / 2, 120, 240);
+			const active = Math.min(280, Math.max(neighbor, available - neighbor));
+			return [0, 1].map((i) => i === selected ? active : neighbor);
+		}
+		return Array(count).fill(clamp((available - (count - 1) * 4) / count, 120, 240));
+	}
+	function layoutTabs(tabs, selected, available, lock, mode = "fixed") {
+		const pins = tabs.filter((t) => t.pinned);
+		const normals = tabs.filter((t) => !t.pinned);
+		const selectedTab = tabs.find((t) => t.id === selected);
+		const empty = mode === "address" && !selectedTab?.address;
+		const natural = restingWidths(available, tabs.length, tabs.findIndex((t) => t.id === selected), empty);
+		let pinX = 0;
+		const slots = pins.map((tab) => {
+			const width = tab.id === selected ? natural[tabs.indexOf(tab)] ?? 240 : 36;
+			const slot = {
+				id: tab.id,
+				x: pinX,
+				width,
+				pinned: true
+			};
+			pinX += width + 1;
+			return slot;
+		});
+		const pinExtent = pins.length ? pinX - 1 + (normals.length ? 4 : 0) : 0;
+		const room = Math.max(0, available - pinExtent);
+		const widths = selectedTab?.pinned ? Array(normals.length).fill(clamp((room - Math.max(0, normals.length - 1) * 4) / Math.max(1, normals.length), 120, 240)) : restingWidths(room, normals.length, normals.findIndex((t) => t.id === selected), empty);
+		const gap = lock?.gap ?? (normals.length <= 2 ? 0 : 4);
+		const resolved = normals.map((t, i) => lock?.widths.get(t.id) ?? widths[i]);
+		const total = resolved.reduce((sum, width) => sum + width, 0) + Math.max(0, normals.length - 1) * gap;
+		const origin = lock?.origin ?? (normals.length <= 2 && !selectedTab?.pinned ? Math.max(0, (room - total) / 2) : 0);
+		let x = pinExtent + origin;
+		normals.forEach((tab, i) => {
+			slots.push({
+				id: tab.id,
+				x,
+				width: resolved[i],
+				pinned: false
+			});
+			x += resolved[i] + gap;
+		});
+		return {
+			slots,
+			pins: pinExtent,
+			normalOrigin: origin,
+			normalWidth: total,
+			maxScroll: Math.max(0, Math.max(total + origin, lock?.extent ?? 0) - room)
+		};
+	}
+	function destination(center, index, slots) {
+		let next = clamp(index, 0, slots.length - 1);
+		const midpoint = (i) => slots[i].x + slots[i].width / 2;
+		while (next + 1 < slots.length && center > (midpoint(next) + midpoint(next + 1)) / 2 + 10) next++;
+		while (next > 0 && center < (midpoint(next - 1) + midpoint(next)) / 2 - 10) next--;
+		return next;
+	}
+	function advanceSpring(axis, dt, omega = 2 * Math.PI / .25, damping = .85) {
+		const x = axis.value - axis.target;
+		const v = axis.velocity;
+		if (damping >= 1) {
+			const c = v + omega * x;
+			const decay = Math.exp(-omega * dt);
+			axis.value = axis.target + (x + c * dt) * decay;
+			axis.velocity = (v - omega * c * dt) * decay;
+		} else {
+			const a = damping * omega;
+			const b = omega * Math.sqrt(1 - damping * damping);
+			const c = (v + a * x) / b;
+			const cos = Math.cos(b * dt), sin = Math.sin(b * dt), decay = Math.exp(-a * dt);
+			axis.value = axis.target + decay * (x * cos + c * sin);
+			axis.velocity = decay * (v * cos - (a * c + b * x) * sin);
+		}
+		if (Math.abs(axis.value - axis.target) < .015 && Math.abs(axis.velocity) < .08) {
+			axis.value = axis.target;
+			axis.velocity = 0;
+		}
+	}
+	//#endregion
+	//#region src/tabs/icons.ts
+	var escapeXML = (value) => value.replace(/[&<>"']/g, (c) => ({
+		"&": "&amp;",
+		"<": "&lt;",
+		">": "&gt;",
+		"\"": "&quot;",
+		"'": "&apos;"
+	})[c]);
+	var symbols = {
+		plus: "<path d=\"M8 2v12M2 8h12\"/>",
+		close: "<circle cx=\"8\" cy=\"8\" r=\"7\" fill=\"currentColor\" stroke=\"none\"/><path d=\"m5.7 5.7 4.6 4.6m0-4.6-4.6 4.6\" stroke=\"var(--close-cutout, #505050)\" stroke-width=\"1.5\"/>",
+		reload: "<path d=\"M13 5a6 6 0 1 0 1 5M13 1v4H9\"/>",
+		actions: "<rect x=\"2\" y=\"1.5\" width=\"12\" height=\"7\" rx=\"1.5\"/><path d=\"M2 11.5h12M2 15h9\"/>",
+		search: "<circle cx=\"6.5\" cy=\"6.5\" r=\"4.7\"/><path d=\"m10 10 4.5 4.5\"/>",
+		pin: "<path d=\"m5 1 6 0-1 5 3 3v1H3V9l3-3-1-5ZM8 10v5\"/>",
+		check: "<path d=\"m3 8 3 3 7-7\"/>",
+		left: "<path d=\"m10 3-5 5 5 5\"/>",
+		right: "<path d=\"m6 3 5 5-5 5\"/>",
+		sun: "<circle cx=\"8\" cy=\"8\" r=\"3\"/><path d=\"M8 0v2m0 12v2M0 8h2m12 0h2M2 2l1.5 1.5m9 9L14 14M2 14l1.5-1.5m9-9L14 2\"/>",
+		moon: "<path d=\"M13.8 10.1A6.5 6.5 0 0 1 5.9 2.2a6.5 6.5 0 1 0 7.9 7.9Z\"/>"
+	};
+	function symbol(name) {
+		return `<svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round">${symbols[name]}</svg>`;
+	}
+	function iconMarkup(icon) {
+		let face = `<text x="8" y="11.8" text-anchor="middle" fill="${escapeXML(icon.color)}" font-family="-apple-system,BlinkMacSystemFont,Arial,sans-serif" font-size="${icon.glyph.length > 1 ? 6.3 : 11.5}" font-weight="750">${escapeXML(icon.glyph)}</text>`;
+		if (icon.kind === "engadget") face = "<path d=\"M4 4h8v5H5.5v2H12v1.5H4V4Zm1.5 1.5v2H10.5v-2Z\" fill=\"#111\"/>";
+		if (icon.kind === "stack") face = "<path d=\"M3 11v3h10v-3M5 11h6M5 8.5l6 .5M6 6l5 1.5M8 3.5l4 3M11 1l2.5 4\" fill=\"none\" stroke=\"#f48024\" stroke-width=\"1.6\"/>";
+		return `<svg viewBox="0 0 16 16" aria-hidden="true"><rect x=".2" y=".2" width="15.6" height="15.6" rx="2.4" fill="${escapeXML(icon.background)}"/>${face}</svg>`;
+	}
+	//#endregion
+	//#region src/tabs/presentation.ts
+	function tabLabel(tab, selected, mode) {
+		return selected && mode === "address" ? tab.address || "Search or enter an address" : tab.title;
+	}
+	//#endregion
+	//#region src/tabs/glass.ts
+	var NS = "http://www.w3.org/2000/svg";
+	var nextID = 0;
+	/** A tab-sized optical layer. It mirrors only intersecting tab faces, never pages.
+	* The same SVG/filter/pool is reused for a complete gesture. This works without
+	* SVG-in-backdrop-filter support, which differs between browser engines. */
+	var GlassLens = class {
+		element;
+		id = `tab-lens-${++nextID}`;
+		map;
+		blur;
+		displacement;
+		faces;
+		pool = /* @__PURE__ */ new Map();
+		mapBucket = 0;
+		maps = /* @__PURE__ */ new Map();
+		measure = document.createElement("canvas").getContext("2d");
+		textCache = /* @__PURE__ */ new Map();
+		constructor() {
+			this.element = document.createElementNS(NS, "svg");
+			this.element.classList.add("glass-lens");
+			this.element.setAttribute("aria-hidden", "true");
+			this.element.innerHTML = `<defs>
+      <filter id="${this.id}" x="-10%" y="-40%" width="120%" height="180%" color-interpolation-filters="sRGB">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="0.65" result="soft"/>
+        <feImage x="0" y="0" width="280" height="36" preserveAspectRatio="none" result="field"/>
+        <feDisplacementMap in="soft" in2="field" scale="18" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+      <clipPath id="${this.id}-clip"><rect x="0" y="0" width="280" height="36" rx="18"/></clipPath>
+    </defs><g clip-path="url(#${this.id}-clip)"><g filter="url(#${this.id})" class="lens-faces"></g></g>`;
+			this.map = this.element.querySelector("feImage");
+			this.blur = this.element.querySelector("feGaussianBlur");
+			this.displacement = this.element.querySelector("feDisplacementMap");
+			this.faces = this.element.querySelector(".lens-faces");
+			this.measure.font = "13px -apple-system, BlinkMacSystemFont, Arial, sans-serif";
+		}
+		field(width) {
+			const cached = this.maps.get(width);
+			if (cached) return cached;
+			const canvas = document.createElement("canvas");
+			canvas.width = width * 2;
+			canvas.height = 72;
+			const context = canvas.getContext("2d");
+			const pixels = context.createImageData(canvas.width, canvas.height);
+			for (let y = 0; y < canvas.height; y++) for (let x = 0; x < canvas.width; x++) {
+				const px = (x + .5) / 2, py = (y + .5) / 2;
+				const qx = px - Math.max(18, Math.min(width - 18, px));
+				const qy = py - 18;
+				const length = Math.hypot(qx, qy);
+				const distance = 18 - length;
+				const edge = Math.pow(Math.max(0, 1 - Math.max(0, distance) / 11), 1.65);
+				const nx = length ? qx / length : 0, ny = length ? qy / length : 0;
+				const p = (y * canvas.width + x) * 4;
+				pixels.data[p] = Math.round(128 + nx * edge * 100 + (px / width - .5) * 17);
+				pixels.data[p + 1] = Math.round(128 + ny * edge * 100);
+				pixels.data[p + 2] = 128;
+				pixels.data[p + 3] = 255;
+			}
+			context.putImageData(pixels, 0, 0);
+			const url = canvas.toDataURL();
+			if (this.maps.size >= 12) this.maps.delete(this.maps.keys().next().value);
+			this.maps.set(width, url);
+			return url;
+		}
+		truncate(text, width) {
+			const key = `${text}:${Math.round(width)}`;
+			const cached = this.textCache.get(key);
+			if (cached !== void 0) return cached;
+			let result = text;
+			if (this.measure.measureText(text).width > width) {
+				let low = 0, high = text.length;
+				while (low < high) {
+					const mid = Math.ceil((low + high) / 2);
+					if (this.measure.measureText(text.slice(0, mid) + "…").width <= width) low = mid;
+					else high = mid - 1;
+				}
+				result = text.slice(0, low) + "…";
+			}
+			if (this.textCache.size > 256) this.textCache.clear();
+			this.textCache.set(key, result);
+			return result;
+		}
+		render(samples, x, width, effects, dark, mode) {
+			this.element.style.display = effects.glass ? "" : "none";
+			if (!effects.glass) return;
+			this.element.setAttribute("viewBox", `0 0 ${width} 36`);
+			this.element.querySelector("clipPath rect").setAttribute("width", String(width));
+			this.map.setAttribute("width", String(width));
+			const bucket = Math.max(36, Math.round(width / 16) * 16);
+			if (bucket !== this.mapBucket) {
+				this.mapBucket = bucket;
+				this.map.setAttribute("href", this.field(bucket));
+			}
+			this.blur.setAttribute("stdDeviation", effects.blur ? "0.65" : "0");
+			this.displacement.setAttribute("scale", effects.refraction ? "18" : "0");
+			const visible = /* @__PURE__ */ new Set();
+			for (const sample of samples) {
+				if (sample.x + sample.width < x - 10 || sample.x > x + width + 10) continue;
+				visible.add(sample.tab.id);
+				let face = this.pool.get(sample.tab.id);
+				if (!face) {
+					const group = document.createElementNS(NS, "g");
+					this.faces.append(group);
+					face = {
+						group,
+						signature: ""
+					};
+					this.pool.set(sample.tab.id, face);
+				}
+				face.group.style.display = "";
+				face.group.setAttribute("transform", `translate(${sample.x - x},0)`);
+				const w = Math.round(sample.width * 2) / 2;
+				const signature = `${sample.tab.title}|${sample.tab.address}|${w}|${sample.selected}|${sample.tab.pinned}|${dark}|${mode}|${JSON.stringify(sample.tab.icon)}`;
+				if (face.signature === signature) continue;
+				face.signature = signature;
+				const pin = sample.tab.pinned && !sample.selected;
+				const text = pin ? "" : this.truncate(tabLabel(sample.tab, sample.selected, mode), Math.max(0, w - 64));
+				const textWidth = this.measure.measureText(text).width;
+				const groupWidth = pin ? 16 : 22 + textWidth;
+				const start = Math.max(pin ? 10 : 27, (w - groupWidth) / 2);
+				face.group.innerHTML = `${sample.selected ? `<rect x="3.5" y="3.5" width="${Math.max(0, w - 7)}" height="29" rx="14.5" fill="${dark ? "#ffffff" : "#ffffff"}" fill-opacity="${dark ? ".15" : ".7"}"/>` : ""}
+        <svg x="${start}" y="10" width="16" height="16" viewBox="0 0 16 16">${iconMarkup(sample.tab.icon)}</svg>
+        <text x="${start + 22}" y="22.5" fill="${dark ? "#eeeeef" : "#252526"}" font-family="-apple-system,BlinkMacSystemFont,Arial,sans-serif" font-size="13">${escapeXML(text)}</text>`;
+			}
+			for (const [id, face] of this.pool) if (!visible.has(id)) face.group.style.display = "none";
+		}
+		clear() {
+			this.element.remove();
+			this.faces.replaceChildren();
+			this.pool.clear();
+		}
+	};
+	//#endregion
+	//#region src/tabs/tear-off.ts
+	/** One inert visual copy per lift. The original page and actual tab stay mounted.
+	* The tab enters the browser's top layer without being reparented. */
+	var TearOffPreview = class {
+		node;
+		thumbnail;
+		page = document.createElement("div");
+		content = document.createElement("div");
+		sourceWidth;
+		sourceHeight;
+		blend = 0;
+		target = 0;
+		from = 0;
+		began = 0;
+		rect;
+		constructor(node, source, rect) {
+			this.node = node;
+			this.rect = { ...rect };
+			const bounds = source?.getBoundingClientRect();
+			this.sourceWidth = Math.max(1, bounds?.width || 800);
+			this.sourceHeight = Math.max(1, bounds?.height || 500);
+			const scale = Math.min(110 / this.sourceWidth, 150 / this.sourceHeight);
+			this.thumbnail = {
+				width: this.sourceWidth * scale,
+				height: this.sourceHeight * scale
+			};
+			this.page.className = "tab-page-preview";
+			this.page.inert = true;
+			this.page.setAttribute("aria-hidden", "true");
+			this.content.className = "tab-preview-content";
+			this.content.style.width = `${this.sourceWidth}px`;
+			this.content.style.height = `${this.sourceHeight}px`;
+			if (source) {
+				const copy = source.cloneNode(true);
+				const originals = [source, ...source.querySelectorAll("*")];
+				[copy, ...copy.querySelectorAll("*")].forEach((element, index) => {
+					element.removeAttribute("id");
+					element.removeAttribute("autofocus");
+					element.removeAttribute("name");
+					const original = originals[index];
+					if (element instanceof HTMLElement && original instanceof HTMLElement) {
+						const style = getComputedStyle(original);
+						element.style.cssText = Array.from(style, (property) => `${property}:${style.getPropertyValue(property)};`).join("");
+					}
+					if (element instanceof HTMLTextAreaElement && original instanceof HTMLTextAreaElement) element.value = original.value;
+					if (element instanceof HTMLInputElement && original instanceof HTMLInputElement) {
+						element.value = original.value;
+						element.checked = original.checked;
+					}
+					if (element instanceof HTMLCanvasElement && original instanceof HTMLCanvasElement) element.getContext("2d")?.drawImage(original, 0, 0);
+					if (element.matches("script,iframe,object,embed,audio,video")) element.remove();
+				});
+				copy.hidden = false;
+				copy.inert = true;
+				copy.style.width = `${this.sourceWidth}px`;
+				copy.style.height = `${this.sourceHeight}px`;
+				copy.style.margin = "0";
+				copy.style.overflow = "hidden";
+				this.content.append(copy);
+			}
+			this.page.append(this.content);
+			node.append(this.page);
+			node.setAttribute("popover", "manual");
+			node.showPopover();
+			this.paint(rect, rect.width);
+		}
+		setDetached(detached, now) {
+			const target = detached ? 1 : 0;
+			if (target === this.target) return;
+			this.from = this.blend;
+			this.target = target;
+			this.began = now;
+		}
+		advance(now, animate) {
+			const t = animate ? clamp((now - this.began) / 250, 0, 1) : 1;
+			this.blend = this.from + (this.target - this.from) * t * t * (3 - 2 * t);
+		}
+		paint(rect, inlineWidth) {
+			this.rect = { ...rect };
+			const radius = 18 - 15 * this.blend;
+			this.node.style.setProperty("--tear-blend", String(this.blend));
+			this.node.style.setProperty("--tear-radius", `${radius}px`);
+			this.node.style.setProperty("--foreground-width", `${inlineWidth}px`);
+			this.node.style.setProperty("--foreground-scale", String(Math.min(1, rect.width / inlineWidth)));
+			this.node.style.transform = `translate3d(${rect.x}px,${rect.y}px,0)`;
+			this.node.style.width = `${rect.width}px`;
+			this.node.style.height = `${rect.height}px`;
+			const scale = Math.max(rect.width / this.sourceWidth, rect.height / this.sourceHeight);
+			this.content.style.transform = `translateX(${(rect.width - this.sourceWidth * scale) / 2}px) scale(${scale})`;
+		}
+		destroy() {
+			this.node.hidePopover();
+			this.node.removeAttribute("popover");
+			this.page.remove();
+			for (const property of [
+				"--tear-blend",
+				"--tear-radius",
+				"--foreground-width",
+				"--foreground-scale",
+				"height"
+			]) this.node.style.removeProperty(property);
+		}
+	};
+	//#endregion
+	//#region src/tabs/types.ts
+	var fullEffects = {
+		glass: true,
+		refraction: true,
+		blur: true,
+		shadows: true,
+		motion: "full"
+	};
+	//#endregion
+	//#region src/tabs/identity.ts
+	/** Works on localhost and ordinary HTTP demo hosts, without randomUUID's secure-context requirement. */
+	function createTabId() {
+		return Array.from(crypto.getRandomValues(/* @__PURE__ */ new Uint32Array(4)), (n) => n.toString(16).padStart(8, "0")).join("");
+	}
+	//#endregion
+	//#region src/tabs/hover-preview.ts
+	/** A noninteractive caption below the tab, after the pointer stops moving. */
+	var TabHoverPreview = class {
+		options;
+		resolve;
+		canShow;
+		card;
+		anchor;
+		id;
+		point = {
+			x: 0,
+			y: 0
+		};
+		timer;
+		visible = false;
+		constructor(root, options, resolve, canShow) {
+			this.options = options;
+			this.resolve = resolve;
+			this.canShow = canShow;
+			this.card = document.createElement("div");
+			this.card.className = "pie-tab-hover";
+			this.card.id = `tab-hover-${createTabId()}`;
+			this.card.setAttribute("role", "tooltip");
+			this.card.hidden = true;
+			root.append(this.card);
+		}
+		get snapshot() {
+			return {
+				visible: this.visible,
+				tabId: this.id ?? null
+			};
+		}
+		setOptions(options) {
+			this.hide();
+			this.options = options;
+		}
+		move(anchor, id, event) {
+			if (event.pointerType !== "mouse" || this.options === false || !this.canShow()) {
+				this.hide();
+				return;
+			}
+			if (this.anchor === anchor && Math.hypot(event.clientX - this.point.x, event.clientY - this.point.y) <= 2) return;
+			this.hide();
+			this.anchor = anchor;
+			this.id = id;
+			this.point = {
+				x: event.clientX,
+				y: event.clientY
+			};
+			const delay = this.options?.delayMs ?? 650;
+			this.timer = setTimeout(() => {
+				this.timer = void 0;
+				this.show();
+			}, Number.isFinite(delay) ? Math.max(0, delay) : 650);
+		}
+		leave(anchor) {
+			if (this.anchor === anchor) this.hide();
+		}
+		refresh() {
+			if (this.visible) this.show();
+		}
+		hide() {
+			if (this.timer !== void 0) clearTimeout(this.timer);
+			this.timer = void 0;
+			if (typeof this.card.hidePopover === "function" && this.card.matches(":popover-open")) this.card.hidePopover();
+			this.card.removeAttribute("popover");
+			this.card.hidden = true;
+			if (this.anchor) {
+				const tab = this.anchor.querySelector("[role=tab]");
+				const ids = tab?.getAttribute("aria-describedby")?.split(/\s+/).filter((id) => id !== this.card.id);
+				if (ids?.length) tab?.setAttribute("aria-describedby", ids.join(" "));
+				else tab?.removeAttribute("aria-describedby");
+			}
+			this.anchor = void 0;
+			this.id = void 0;
+			this.visible = false;
+		}
+		show() {
+			const tab = this.id ? this.resolve(this.id) : void 0;
+			if (!tab || !this.anchor?.isConnected || this.options === false || !this.canShow()) {
+				this.hide();
+				return;
+			}
+			const content = this.options?.content ? this.options.content(tab) : tab.hoverContent ?? {
+				title: tab.title,
+				subtitle: tab.address && tab.address !== tab.title ? tab.address : void 0
+			};
+			if (!content) {
+				this.hide();
+				return;
+			}
+			this.card.replaceChildren();
+			for (const name of [
+				"title",
+				"subtitle",
+				"detail"
+			]) {
+				const text = content[name];
+				if (!text) continue;
+				const line = document.createElement(name === "title" ? "strong" : "span");
+				line.className = `tab-hover-${name}`;
+				line.textContent = text;
+				this.card.append(line);
+			}
+			const desired = this.options?.maximumWidth ?? 280;
+			const width = Math.min(Math.max(140, Number.isFinite(desired) ? desired : 280), Math.max(140, innerWidth - 16));
+			this.card.style.width = `${width}px`;
+			this.card.hidden = false;
+			if (typeof this.card.showPopover === "function") {
+				this.card.setAttribute("popover", "manual");
+				if (!this.card.matches(":popover-open")) this.card.showPopover();
+			}
+			const rect = this.anchor.getBoundingClientRect(), height = this.card.getBoundingClientRect().height;
+			const x = Math.max(8, Math.min(rect.left, innerWidth - width - 8));
+			const below = rect.bottom + 8;
+			const y = below + height <= innerHeight - 8 ? below : Math.max(8, rect.top - height - 8);
+			this.card.style.left = `${x}px`;
+			this.card.style.top = `${y}px`;
+			const button = this.anchor.querySelector("[role=tab]");
+			const descriptions = button?.getAttribute("aria-describedby")?.split(/\s+/).filter(Boolean) ?? [];
+			if (!descriptions.includes(this.card.id)) descriptions.push(this.card.id);
+			button?.setAttribute("aria-describedby", descriptions.join(" "));
+			this.visible = true;
+		}
+		destroy() {
+			this.hide();
+			this.card.remove();
+		}
+	};
+	//#endregion
+	//#region src/tabs/tab-strip.ts
+	var axis = (value) => ({
+		value,
+		target: value,
+		velocity: 0
+	});
+	var stationary = (a) => a.value === a.target && a.velocity === 0;
+	var assign = (a, value) => {
+		a.value = a.target = value;
+		a.velocity = 0;
+	};
+	var fallbackTab = () => ({
+		id: createTabId(),
+		title: "New Tab",
+		address: "",
+		icon: {
+			glyph: "P",
+			background: "#526941",
+			color: "#fff"
+		}
+	});
+	/** Framework-independent DOM component. Tab and page identity survive every
+	* reorder. One rAF loop owns geometry; no overlay replacement occurs on drop. */
+	var TabStrip = class {
+		root;
+		options;
+		tabs;
+		selected;
+		labelMode;
+		hover;
+		effects;
+		stage;
+		track;
+		live;
+		cells = /* @__PURE__ */ new Map();
+		resize;
+		abort = new AbortController();
+		lens = new GlassLens();
+		layout = {
+			slots: [],
+			pins: 0,
+			normalOrigin: 0,
+			normalWidth: 0,
+			maxScroll: 0
+		};
+		available = 0;
+		left = 0;
+		top = 0;
+		scroll = 0;
+		inside = false;
+		widthLock;
+		press;
+		drag;
+		menu;
+		menuAnchor;
+		frame = null;
+		inFrame = false;
+		lastTime = 0;
+		dark = true;
+		destroyed = false;
+		frameCosts = [];
+		mutation = 0;
+		detaching;
+		constructor(root, options) {
+			this.root = root;
+			this.options = options;
+			this.labelMode = options.labelMode ?? "fixed";
+			this.tabs = this.normalize(options.tabs.length ? options.tabs : [fallbackTab()]);
+			this.selected = options.selectedId && this.tabs.some((t) => t.id === options.selectedId) ? options.selectedId : this.tabs[0].id;
+			this.effects = {
+				...fullEffects,
+				...options.effects
+			};
+			root.classList.add("pie-tab-strip");
+			root.innerHTML = `<div class="tab-stage" role="tablist" aria-label="Workspace tabs"><div class="tab-track" aria-hidden="true"></div></div>
+      <button class="add-tab" type="button" aria-label="New tab" title="New tab">${symbol("plus")}</button><div class="tab-announcer" aria-live="polite"></div>`;
+			this.stage = root.querySelector(".tab-stage");
+			this.track = root.querySelector(".tab-track");
+			this.live = root.querySelector(".tab-announcer");
+			root.dataset.labelMode = this.labelMode;
+			this.hover = new TabHoverPreview(root, options.hoverPreview, (id) => this.tabs.find((t) => t.id === id), () => !this.destroyed && !this.drag && !this.press && !this.menu && !document.hidden && ![...this.cells.values()].some((cell) => document.activeElement === cell.address));
+			const signal = this.abort.signal;
+			root.querySelector(".add-tab").addEventListener("click", () => this.add(), { signal });
+			this.stage.addEventListener("pointerdown", this.pointerDown, { signal });
+			this.stage.addEventListener("pointermove", this.pointerMove, { signal });
+			this.stage.addEventListener("pointerup", this.pointerUp, { signal });
+			this.stage.addEventListener("pointercancel", () => this.returnDrag(true), { signal });
+			this.stage.addEventListener("lostpointercapture", () => {
+				if (this.press) this.returnDrag(true);
+			}, { signal });
+			root.addEventListener("pointerenter", () => {
+				this.inside = true;
+			}, { signal });
+			root.addEventListener("pointerleave", () => {
+				this.inside = false;
+				if (this.widthLock) {
+					this.widthLock = void 0;
+					this.compute();
+					this.schedule();
+				}
+			}, { signal });
+			this.stage.addEventListener("wheel", this.wheel, {
+				signal,
+				passive: false
+			});
+			this.stage.addEventListener("contextmenu", this.contextMenu, { signal });
+			this.stage.addEventListener("keydown", this.keyDown, { signal });
+			document.addEventListener("pointerdown", (event) => {
+				this.hover.hide();
+				root.dataset.keyboard = "false";
+				if (this.menu && !this.menu.contains(event.target)) this.closeMenu();
+				for (const cell of this.cells.values()) if (document.activeElement === cell.address && !cell.node.contains(event.target)) cell.address.blur();
+			}, {
+				signal,
+				capture: true
+			});
+			document.addEventListener("keydown", (event) => {
+				this.hover.hide();
+				root.dataset.keyboard = "true";
+				if (event.key === "Escape") {
+					this.closeMenu(true);
+					this.detaching?.abort();
+					this.returnDrag(true);
+				}
+			}, { signal });
+			window.addEventListener("blur", () => {
+				this.hover.hide();
+				if (!this.detaching) this.returnDrag(true);
+				this.closeMenu();
+			}, { signal });
+			document.addEventListener("visibilitychange", () => {
+				if (document.hidden) {
+					this.hover.hide();
+					if (!this.detaching) this.cancelDrag();
+				}
+			}, { signal });
+			window.addEventListener("scroll", () => {
+				this.hover.hide();
+				this.readOrigin();
+			}, {
+				signal,
+				capture: true
+			});
+			this.syncCells();
+			this.available = this.stage.clientWidth;
+			this.readOrigin();
+			this.compute();
+			this.paintImmediately();
+			this.setEffects(this.effects);
+			this.resize = new ResizeObserver((entries) => {
+				const width = entries[0]?.contentRect.width ?? 0;
+				if (Math.abs(width - this.available) < .1) return;
+				this.hover.hide();
+				this.cancelDrag();
+				this.widthLock = void 0;
+				this.available = width;
+				this.readOrigin();
+				this.compute();
+				this.reveal(this.selected);
+				this.schedule();
+			});
+			this.resize.observe(this.stage);
+			this.options.onChange?.(this.tabs);
+			this.options.onSelect?.(this.current);
+		}
+		get current() {
+			return this.tabs.find((t) => t.id === this.selected);
+		}
+		get configuration() {
+			return { ...this.effects };
+		}
+		get items() {
+			return this.tabs.map((t) => ({ ...t }));
+		}
+		/** Invoke from a trusted click for a menu/API detach. No window is opened by
+		* the component itself; the host's synchronous callback owns that policy. */
+		detach(id, point = {
+			screenX: window.screenX + window.outerWidth / 2,
+			screenY: window.screenY + 100
+		}, trigger = "api") {
+			const tab = this.tabs.find((t) => t.id === id), handler = this.options.onDetach;
+			if (!tab || this.tabs.length < 2 || !handler || this.detaching) return Promise.resolve(false);
+			const controller = new AbortController();
+			this.detaching = controller;
+			if (this.drag?.id === id) this.drag.phase = "opening";
+			let result;
+			try {
+				result = handler({
+					tab: { ...tab },
+					...point,
+					trigger,
+					signal: controller.signal
+				});
+			} catch {
+				result = false;
+			}
+			return Promise.resolve(result).catch(() => false).then((accepted) => {
+				if (this.detaching !== controller || this.destroyed) return false;
+				this.detaching = void 0;
+				if (accepted && !controller.signal.aborted) {
+					this.cancelDrag();
+					this.inside = false;
+					this.widthLock = void 0;
+					this.close(id, true);
+					this.paintImmediately();
+					this.announce(`${tab.title} moved to a new window`);
+					return true;
+				}
+				if (this.drag?.phase === "opening") this.drag.phase = "detached";
+				this.returnDrag(false);
+				this.announce(`${tab.title} remains in this window`);
+				return false;
+			});
+		}
+		normalize(tabs) {
+			if (new Set(tabs.map((t) => t.id)).size !== tabs.length) throw new Error("Tab IDs must be unique");
+			return [...tabs.filter((t) => t.pinned), ...tabs.filter((t) => !t.pinned)].map((t) => ({ ...t }));
+		}
+		setTabs(tabs, selectedId) {
+			this.hover.hide();
+			this.cancelDrag();
+			this.closeMenu();
+			this.widthLock = void 0;
+			this.scroll = 0;
+			this.tabs = this.normalize(tabs.length ? tabs : [fallbackTab()]);
+			this.selected = selectedId && this.tabs.some((t) => t.id === selectedId) ? selectedId : this.tabs[0].id;
+			this.changed(true);
+		}
+		select(id, reveal = true) {
+			if (!this.cells.has(id) || id === this.selected) return;
+			this.cells.get(this.selected)?.address.blur();
+			this.selected = id;
+			this.syncCells();
+			this.compute();
+			if (reveal && !this.drag) this.reveal(id);
+			this.schedule();
+			this.options.onSelect?.(this.current);
+		}
+		add(tab = this.options.onNewTab?.() ?? fallbackTab()) {
+			this.finishSettle();
+			this.cancelDrag();
+			this.widthLock = void 0;
+			if (this.tabs.some((t) => t.id === tab.id)) throw new Error("Tab IDs must be unique");
+			const pins = this.tabs.filter((t) => t.pinned).length;
+			const index = tab.pinned ? pins : Math.max(pins, this.tabs.findIndex((t) => t.id === this.selected) + 1);
+			const previous = this.cells.get(this.selected);
+			const origin = previous ? previous.x.value + previous.width.value : 0;
+			this.tabs.splice(index, 0, { ...tab });
+			this.selected = tab.id;
+			this.syncCells();
+			this.compute();
+			const cell = this.cells.get(tab.id);
+			assign(cell.x, origin);
+			assign(cell.width, .01);
+			this.compute();
+			this.reveal(tab.id);
+			this.changed(true);
+			if (this.labelMode === "address" && !tab.address) cell.address.focus({ preventScroll: true });
+			this.announce("New tab");
+		}
+		close(id, explicit = false) {
+			const index = this.tabs.findIndex((t) => t.id === id);
+			if (index < 0) return;
+			const tab = this.tabs[index];
+			if (tab.pinned && !explicit) {
+				const normal = this.tabs.find((t) => !t.pinned);
+				if (normal) this.select(normal.id);
+				else this.add();
+				return;
+			}
+			this.cancelDrag();
+			const hadFocus = this.cells.get(id)?.node.contains(document.activeElement);
+			if (this.inside && !tab.pinned) this.widthLock ??= this.captureWidths();
+			else this.widthLock = void 0;
+			this.tabs.splice(index, 1);
+			if (!this.tabs.length) this.tabs = [this.options.onNewTab?.() ?? fallbackTab()];
+			const selectionChanged = this.selected === id;
+			if (selectionChanged) this.selected = this.tabs[Math.min(index, this.tabs.length - 1)].id;
+			this.changed(selectionChanged);
+			if (hadFocus) this.cells.get(this.selected)?.activate.focus({ preventScroll: true });
+			this.announce(`${tab.title} closed`);
+		}
+		pin(id, pinned = !this.tabs.find((t) => t.id === id)?.pinned) {
+			this.cancelDrag();
+			this.widthLock = void 0;
+			const index = this.tabs.findIndex((t) => t.id === id);
+			if (index < 0 || !!this.tabs[index].pinned === pinned) return;
+			const [tab] = this.tabs.splice(index, 1);
+			tab.pinned = pinned;
+			this.tabs.splice(this.tabs.filter((t) => t.pinned).length, 0, tab);
+			this.changed(false);
+			this.reveal(id);
+			this.announce(`${tab.title} ${pinned ? "pinned" : "unpinned"}`);
+		}
+		update(id, update) {
+			const tab = this.tabs.find((t) => t.id === id);
+			if (tab) {
+				Object.assign(tab, update);
+				this.changed(false);
+			}
+		}
+		setEffects(effects) {
+			this.effects = {
+				...this.effects,
+				...effects
+			};
+			for (const name of [
+				"glass",
+				"refraction",
+				"blur",
+				"shadows"
+			]) this.root.dataset[name] = String(this.effects[name]);
+			this.root.dataset.motion = this.effects.motion;
+			this.schedule();
+		}
+		setTheme(theme) {
+			this.dark = theme === "dark";
+			this.root.dataset.theme = theme;
+			this.schedule();
+		}
+		setLabelMode(mode) {
+			if (mode === this.labelMode) return;
+			this.hover.hide();
+			this.cancelDrag();
+			this.widthLock = void 0;
+			for (const cell of this.cells.values()) cell.address.blur();
+			this.labelMode = mode;
+			this.options.labelMode = mode;
+			this.root.dataset.labelMode = mode;
+			this.syncCells();
+			this.compute();
+			this.schedule();
+		}
+		setHoverPreview(options) {
+			this.options.hoverPreview = options;
+			this.hover.setOptions(options);
+		}
+		changed(selectionChanged) {
+			this.mutation++;
+			this.syncCells();
+			this.compute();
+			this.schedule();
+			this.options.onChange?.(this.items);
+			if (selectionChanged) this.options.onSelect?.(this.current);
+		}
+		syncCells() {
+			for (const [id, cell] of this.cells) if (!this.tabs.some((t) => t.id === id)) {
+				this.hover.leave(cell.node);
+				cell.node.remove();
+				this.cells.delete(id);
+			}
+			this.root.dataset.single = String(this.tabs.length === 1);
+			for (const tab of this.tabs) {
+				let cell = this.cells.get(tab.id);
+				if (!cell) {
+					const node = document.createElement("div");
+					node.className = "pie-tab";
+					node.dataset.tabId = tab.id;
+					node.innerHTML = `<div class="tab-surface" aria-hidden="true"></div><div class="tab-focus-ring" aria-hidden="true"></div>
+          <div class="tab-foreground">
+          <button type="button" class="tab-activate" role="tab"><span class="tab-label"><span class="tab-icon" aria-hidden="true"></span><span class="tab-title"></span></span></button>
+          <button type="button" class="tab-close" aria-label="Close tab" title="Close tab">${symbol("close")}</button>
+          <input class="tab-address" type="text" spellcheck="false" autocomplete="off" aria-label="Tab address and search" placeholder="Search or enter an address" tabindex="-1" />
+          <button type="button" class="tab-reload" aria-label="Reload tab" title="Reload">${symbol("reload")}</button>
+          <button type="button" class="tab-actions" aria-label="Tab actions" title="Tab actions">${symbol("actions")}</button></div>`;
+					const close = node.querySelector(".tab-close");
+					const actions = node.querySelector(".tab-actions");
+					const reload = node.querySelector(".tab-reload");
+					const address = node.querySelector(".tab-address");
+					const activate = node.querySelector(".tab-activate");
+					activate.id = `tab-${tab.id}`;
+					const signal = this.abort.signal;
+					const hover = (event) => {
+						if (event.target.closest("button:not(.tab-activate),input")) this.hover.hide();
+						else this.hover.move(node, tab.id, event);
+					};
+					node.addEventListener("pointerenter", hover, { signal });
+					node.addEventListener("pointermove", hover, { signal });
+					node.addEventListener("pointerleave", () => this.hover.leave(node), { signal });
+					node.addEventListener("click", (event) => {
+						if (!this.drag && !event.target.closest("button:not(.tab-activate),input")) this.select(tab.id);
+					}, { signal });
+					close.addEventListener("click", (e) => {
+						e.stopPropagation();
+						this.close(tab.id);
+					}, { signal });
+					actions.addEventListener("click", () => {
+						const rect = actions.getBoundingClientRect();
+						this.showMenu(tab.id, rect.right, rect.bottom + 5, actions);
+					}, { signal });
+					reload.addEventListener("click", () => {
+						if (this.effects.motion !== "off") reload.animate([{ transform: "rotate(0)" }, { transform: "rotate(360deg)" }], { duration: 380 });
+						this.announce(`${this.tabs.find((t) => t.id === tab.id)?.title} refreshed`);
+					}, { signal });
+					address.addEventListener("focus", () => {
+						if (this.labelMode !== "address") {
+							address.blur();
+							return;
+						}
+						this.hover.hide();
+						node.classList.add("editing");
+						address.value = this.tabs.find((t) => t.id === tab.id)?.address ?? "";
+						address.setSelectionRange(address.value.length, address.value.length);
+					}, { signal });
+					address.addEventListener("blur", () => {
+						node.classList.remove("editing");
+					}, { signal });
+					address.addEventListener("keydown", (e) => {
+						if (e.key === "Enter") {
+							const current = this.tabs.find((t) => t.id === tab.id);
+							this.options.onNavigate?.(current, address.value.trim());
+							address.blur();
+						} else if (e.key === "Escape") {
+							address.blur();
+							activate.focus({ preventScroll: true });
+						}
+						e.stopPropagation();
+					}, { signal });
+					this.stage.append(node);
+					cell = {
+						node,
+						activate,
+						close,
+						actions,
+						reload,
+						address,
+						icon: node.querySelector(".tab-icon"),
+						title: node.querySelector(".tab-title"),
+						x: axis(0),
+						width: axis(0),
+						drawnX: NaN,
+						drawnWidth: NaN
+					};
+					this.cells.set(tab.id, cell);
+				}
+				const selected = tab.id === this.selected;
+				cell.node.dataset.selected = String(selected);
+				cell.node.dataset.pinned = String(!!tab.pinned);
+				const next = this.tabs[this.tabs.indexOf(tab) + 1];
+				cell.node.dataset.separator = String(!tab.pinned && !!next && !next.pinned && next.id !== this.selected);
+				cell.node.dataset.empty = String(this.labelMode === "address" && !tab.address);
+				cell.activate.tabIndex = selected ? 0 : -1;
+				cell.activate.setAttribute("aria-selected", String(selected));
+				cell.activate.setAttribute("aria-label", `${tab.title}${tab.pinned ? ", pinned" : ""}`);
+				cell.activate.setAttribute("aria-controls", `panel-${tab.id}`);
+				cell.node.removeAttribute("title");
+				cell.icon.innerHTML = selected && this.labelMode === "address" && !tab.address ? symbol("search") : iconMarkup(tab.icon);
+				cell.title.textContent = tabLabel(tab, selected, this.labelMode);
+				cell.close.hidden = !!tab.pinned || this.tabs.length === 1;
+				cell.actions.hidden = !selected || this.labelMode === "address" && !tab.address;
+				cell.reload.hidden = !selected || !tab.address;
+				const editable = selected && this.labelMode === "address";
+				cell.address.tabIndex = editable ? 0 : -1;
+				cell.address.hidden = !editable;
+				cell.address.disabled = !editable;
+				if (!editable && document.activeElement === cell.address) cell.address.blur();
+			}
+			this.hover.refresh();
+		}
+		ordered() {
+			return this.drag ? this.drag.order.filter((id) => !["detached", "opening"].includes(this.drag.phase) || id !== this.drag.id).map((id) => this.tabs.find((t) => t.id === id)).filter(Boolean) : this.tabs;
+		}
+		readOrigin() {
+			const bounds = this.stage.getBoundingClientRect();
+			this.left = bounds.left;
+			this.top = bounds.top;
+		}
+		compute() {
+			this.layout = layoutTabs(this.ordered(), this.selected, this.available, this.drag && ["detached", "opening"].includes(this.drag.phase) ? void 0 : this.drag?.lock ?? this.widthLock, this.labelMode);
+			this.scroll = clamp(this.scroll, 0, this.layout.maxScroll);
+			for (const slot of this.layout.slots) {
+				const cell = this.cells.get(slot.id);
+				const target = slot.x - (slot.pinned ? 0 : this.scroll);
+				if (this.drag && target !== cell.x.target) cell.x.velocity = 0;
+				cell.x.target = target;
+				cell.width.target = slot.width;
+				if (cell.width.value === 0) {
+					assign(cell.width, slot.width);
+					assign(cell.x, cell.x.target);
+				}
+			}
+		}
+		captureWidths() {
+			const normalSlots = this.layout.slots.filter((s) => !s.pinned);
+			return {
+				widths: new Map(this.layout.slots.map((s) => [s.id, s.width])),
+				origin: this.layout.normalOrigin,
+				gap: normalSlots.length > 1 ? normalSlots[1].x - normalSlots[0].x - normalSlots[0].width : 0,
+				extent: this.layout.normalWidth + this.layout.normalOrigin
+			};
+		}
+		reveal(id) {
+			const slot = this.layout.slots.find((s) => s.id === id);
+			if (!slot || slot.pinned) return;
+			if (slot.x - this.scroll < this.layout.pins) this.scroll = slot.x - this.layout.pins;
+			if (slot.x + slot.width - this.scroll > this.available) this.scroll = slot.x + slot.width - this.available;
+			this.compute();
+			this.schedule();
+		}
+		schedule() {
+			if (this.destroyed || this.inFrame || this.frame !== null) return;
+			this.lastTime = performance.now();
+			this.frame = requestAnimationFrame(this.tick);
+		}
+		tick = (now) => {
+			this.frame = null;
+			this.inFrame = true;
+			const started = performance.now();
+			const dt = Math.min(.05, Math.max(0, (now - this.lastTime) / 1e3));
+			this.lastTime = now;
+			if (this.drag?.phase === "dragging") {
+				if (!this.tabs.find((t) => t.id === this.drag.id)?.pinned && this.layout.maxScroll > 0) {
+					const local = this.drag.cursor - this.left;
+					const speed = local > this.available - 32 ? 320 : local < this.layout.pins + 32 ? -320 : 0;
+					const next = clamp(this.scroll + speed * dt, 0, this.layout.maxScroll);
+					if (next !== this.scroll) {
+						this.scroll = next;
+						this.compute();
+						this.updateSlot();
+					}
+				}
+			}
+			let moving = false;
+			for (const [id, cell] of this.cells) {
+				const held = this.drag?.id === id && this.drag.phase !== "settling";
+				const settling = this.drag?.id === id && this.drag.phase === "settling";
+				if (this.drag?.id === id && this.drag.flight) continue;
+				if (this.effects.motion === "off" || this.effects.motion === "reduced" && !held) {
+					assign(cell.x, cell.x.target);
+					assign(cell.width, cell.width.target);
+				} else {
+					if (!held) advanceSpring(cell.x, dt, settling ? 30 : void 0, settling ? 1 : void 0);
+					advanceSpring(cell.width, dt, settling ? 30 : void 0, settling ? 1 : void 0);
+				}
+				if (held) {
+					cell.x.value = this.drag.cursor - this.left - cell.width.value * this.drag.fraction;
+					cell.x.velocity = 0;
+				}
+				moving ||= !stationary(cell.x) || !stationary(cell.width);
+			}
+			this.paintFlight(now);
+			if (this.drag?.phase === "settling" && (now - this.drag.began >= 300 || this.effects.motion !== "full")) this.finishSettle();
+			this.paint();
+			this.frameCosts.push(performance.now() - started);
+			if (this.frameCosts.length > 360) this.frameCosts.shift();
+			this.inFrame = false;
+			if (moving || this.drag) this.frame = requestAnimationFrame(this.tick);
+		};
+		paintImmediately() {
+			for (const cell of this.cells.values()) {
+				assign(cell.x, cell.x.target);
+				assign(cell.width, cell.width.target);
+			}
+			this.paint();
+		}
+		paint() {
+			const left = Math.max(this.layout.pins, this.layout.pins + this.layout.normalOrigin - this.scroll);
+			const right = Math.min(this.available, this.layout.pins + this.layout.normalOrigin + this.layout.normalWidth - this.scroll);
+			this.track.style.transform = `translateX(${left}px)`;
+			this.track.style.width = `${Math.max(0, right - left)}px`;
+			for (const [id, cell] of this.cells) {
+				if (this.drag?.id === id && this.drag.flight) continue;
+				const { value: x } = cell.x, { value: width } = cell.width;
+				if (x !== cell.drawnX) {
+					cell.node.style.transform = `translate3d(${x}px,0,0)`;
+					cell.drawnX = x;
+				}
+				if (width !== cell.drawnWidth) {
+					cell.node.style.width = `${Math.max(.01, width)}px`;
+					cell.drawnWidth = width;
+				}
+				const pin = this.tabs.find((t) => t.id === id)?.pinned;
+				const raised = this.drag?.id === id;
+				const clipLeft = raised || pin ? 0 : Math.max(0, this.layout.pins - x);
+				const clipRight = raised ? 0 : Math.max(0, x + width - this.available);
+				cell.node.style.clipPath = clipLeft || clipRight ? `inset(-30px ${clipRight}px -30px ${clipLeft}px)` : "";
+				cell.node.style.pointerEvents = width < 1 || clipLeft + clipRight >= width ? "none" : "";
+				cell.node.dataset.clipped = String(clipLeft + clipRight >= width);
+			}
+			if (this.drag) {
+				const cell = this.cells.get(this.drag.id);
+				this.lens.render(this.tabs.filter((t) => t.id !== this.drag.id).map((tab) => {
+					const c = this.cells.get(tab.id);
+					return {
+						tab,
+						x: c.x.value,
+						width: c.width.value,
+						selected: tab.id === this.selected
+					};
+				}), cell.x.value, cell.width.value, this.effects, this.dark, this.labelMode);
+			}
+		}
+		pointerDown = (event) => {
+			if (event.button !== 0 || this.detaching) return;
+			if (this.drag?.flight && this.drag.phase === "settling") return;
+			const target = event.target;
+			if (target.closest("button:not(.tab-activate)") || target.matches("input")) return;
+			const node = target.closest("[data-tab-id]");
+			if (!node) return;
+			this.closeMenu();
+			this.finishSettle(true);
+			const id = node.dataset.tabId;
+			const cell = this.cells.get(id);
+			cell.address.blur();
+			this.readOrigin();
+			this.press = {
+				id,
+				pointer: event.pointerId,
+				startX: event.clientX,
+				startY: event.clientY,
+				fraction: clamp((event.clientX - this.left - cell.x.value) / cell.width.value, 0, 1),
+				grabY: clamp((event.clientY - this.top) / 36, 0, 1),
+				wasSelected: id === this.selected
+			};
+			this.select(id, false);
+			this.stage.setPointerCapture(event.pointerId);
+			cell.activate.focus({ preventScroll: true });
+			event.preventDefault();
+		};
+		pointerMove = (event) => {
+			if (!this.press || event.pointerId !== this.press.pointer || this.tabs.length < 2) return;
+			if (!this.drag && Math.hypot(event.clientX - this.press.startX, event.clientY - this.press.startY) < geometry.threshold) return;
+			if (!this.drag) {
+				const cell = this.cells.get(this.press.id);
+				cell.address.blur();
+				this.widthLock = void 0;
+				this.drag = {
+					id: this.press.id,
+					phase: "dragging",
+					order: this.tabs.map((t) => t.id),
+					fraction: this.press.fraction,
+					grabY: this.press.grabY,
+					cursor: event.clientX,
+					cursorY: event.clientY,
+					horizontal: Math.abs(event.clientX - this.press.startX) >= Math.abs(event.clientY - this.press.startY),
+					inlineWidth: cell.width.target,
+					began: performance.now(),
+					lock: this.captureWidths()
+				};
+				cell.node.classList.add("lifted");
+				this.root.classList.add("is-dragging");
+				cell.node.prepend(this.lens.element);
+				if (!this.drag.horizontal) this.beginFlight(performance.now());
+			}
+			this.moveDrag(event.clientX, event.clientY);
+			this.schedule();
+			event.preventDefault();
+		};
+		beginFlight(now) {
+			const drag = this.drag;
+			if (drag.flight) return;
+			const cell = this.cells.get(drag.id);
+			const source = this.options.previewContent?.(this.current) ?? document.getElementById(`panel-${drag.id}`);
+			cell.node.style.clipPath = "";
+			cell.node.style.pointerEvents = "";
+			drag.flight = new TearOffPreview(cell.node, source, {
+				x: this.left + cell.x.value,
+				y: this.top,
+				width: cell.width.value,
+				height: 36
+			});
+			drag.recenterBegan = now;
+		}
+		moveDrag(x, y) {
+			const drag = this.drag;
+			if (!drag || drag.phase === "settling") return;
+			drag.cursor = x;
+			drag.cursorY = y;
+			const band = drag.horizontal && !drag.flight ? 100 : 0;
+			const attached = x >= this.left && x <= this.left + this.available && y >= this.top - band && y <= this.top + 36 + band;
+			if (attached !== (drag.phase === "dragging")) {
+				const now = performance.now();
+				if (!attached) {
+					drag.resumeScroll = this.scroll;
+					this.beginFlight(now);
+				} else if (drag.resumeScroll !== void 0) this.scroll = drag.resumeScroll;
+				drag.phase = attached ? "dragging" : "detached";
+				drag.flight?.setDetached(!attached, now);
+				this.cells.get(drag.id).node.dataset.flight = drag.phase;
+				this.compute();
+			}
+			if (attached) this.updateSlot();
+		}
+		grabFraction(now) {
+			const drag = this.drag;
+			if (drag.recenterBegan === void 0) return drag.fraction;
+			const t = clamp((now - drag.recenterBegan) / 120, 0, 1);
+			return drag.fraction + (.5 - drag.fraction) * (1 - (1 - t) ** 3);
+		}
+		paintFlight(now) {
+			const drag = this.drag, flight = drag?.flight;
+			if (!drag || !flight) return;
+			let rect;
+			const cell = this.cells.get(drag.id);
+			if (drag.phase === "settling" && drag.settleFrom) {
+				const phase = Math.max(0, (now - drag.began) / 1e3) * 30;
+				const progress = this.effects.motion === "full" ? 1 - (1 + phase) * Math.exp(-phase) : 1;
+				const from = drag.settleFrom;
+				const mix = (a, b) => a + (b - a) * progress;
+				rect = {
+					x: mix(from.x, this.left + cell.x.target),
+					y: mix(from.y, this.top),
+					width: mix(from.width, cell.width.target),
+					height: mix(from.height, 36)
+				};
+				flight.blend = (drag.settleBlend ?? 0) * (1 - progress);
+			} else {
+				flight.advance(now, this.effects.motion === "full");
+				const blend = flight.blend;
+				const width = drag.inlineWidth + (flight.thumbnail.width - drag.inlineWidth) * blend;
+				const height = 36 + (flight.thumbnail.height - 36) * blend;
+				const inlineY = drag.horizontal ? this.top : drag.cursorY - 36 * drag.grabY;
+				const freeY = drag.cursorY - height * drag.grabY;
+				rect = {
+					x: drag.cursor - width * this.grabFraction(now),
+					y: inlineY + (freeY - inlineY) * blend,
+					width,
+					height
+				};
+			}
+			flight.paint(rect, drag.inlineWidth);
+			cell.x.value = rect.x - this.left;
+			cell.width.value = rect.width;
+		}
+		updateSlot() {
+			const drag = this.drag;
+			if (!drag || drag.phase !== "dragging") return;
+			const tab = this.tabs.find((t) => t.id === drag.id);
+			const group = this.layout.slots.filter((s) => s.pinned === !!tab.pinned).map((s) => ({
+				...s,
+				x: s.x - (s.pinned ? 0 : this.scroll)
+			}));
+			const localIndex = group.findIndex((s) => s.id === drag.id);
+			const next = destination(drag.cursor - this.left + (.5 - this.grabFraction(performance.now())) * drag.inlineWidth, localIndex, group);
+			if (next === localIndex) return;
+			const groupOffset = tab.pinned ? 0 : this.tabs.filter((t) => t.pinned).length;
+			drag.order.splice(drag.order.indexOf(drag.id), 1);
+			drag.order.splice(groupOffset + next, 0, drag.id);
+			this.compute();
+		}
+		pointerUp = (event) => {
+			if (!this.press || event.pointerId !== this.press.pointer) return;
+			const press = this.press;
+			if (!this.drag) {
+				this.press = void 0;
+				if (this.stage.hasPointerCapture(event.pointerId)) this.stage.releasePointerCapture(event.pointerId);
+				if (press.wasSelected && this.labelMode === "address") this.cells.get(press.id)?.address.focus({ preventScroll: true });
+				return;
+			}
+			this.moveDrag(event.clientX, event.clientY);
+			if (this.drag.phase === "detached" && this.options.onDetach) {
+				this.press = void 0;
+				if (this.stage.hasPointerCapture(event.pointerId)) this.stage.releasePointerCapture(event.pointerId);
+				this.detach(this.drag.id, {
+					screenX: event.screenX,
+					screenY: event.screenY
+				}, "drag");
+			} else this.returnDrag(false);
+		};
+		returnDrag(cancelled) {
+			const pointer = this.press?.pointer;
+			this.press = void 0;
+			if (pointer !== void 0 && this.stage.hasPointerCapture(pointer)) this.stage.releasePointerCapture(pointer);
+			const drag = this.drag;
+			if (!drag || drag.phase === "settling") return;
+			if (cancelled) drag.order = this.tabs.map((t) => t.id);
+			const now = performance.now(), cell = this.cells.get(drag.id);
+			if (drag.flight) {
+				this.paintFlight(now);
+				drag.settleFrom = { ...drag.flight.rect };
+				drag.settleBlend = drag.flight.blend;
+				drag.flight.setDetached(false, now);
+			} else cell.x.value = drag.cursor - this.left - cell.width.value * drag.fraction;
+			if (drag.phase === "detached" && drag.resumeScroll !== void 0) this.scroll = drag.resumeScroll;
+			cell.x.velocity = 0;
+			drag.phase = "settling";
+			drag.began = now;
+			cell.node.dataset.flight = "settling";
+			this.compute();
+			this.schedule();
+		}
+		finishSettle(preservePosition = false) {
+			if (!this.drag || this.drag.phase !== "settling") return;
+			const { id, order } = this.drag;
+			const cell = this.cells.get(id);
+			this.drag.flight?.destroy();
+			delete cell.node.dataset.flight;
+			cell.drawnX = cell.drawnWidth = NaN;
+			if (!preservePosition) {
+				assign(cell.x, cell.x.target);
+				assign(cell.width, cell.width.target);
+			}
+			this.tabs = order.map((id) => this.tabs.find((t) => t.id === id));
+			this.drag = void 0;
+			cell.node.classList.remove("lifted");
+			this.root.classList.remove("is-dragging");
+			this.lens.clear();
+			this.changed(false);
+			this.paint();
+			this.announce(`${this.current.title}, tab ${this.tabs.findIndex((t) => t.id === id) + 1} of ${this.tabs.length}`);
+		}
+		cancelDrag() {
+			this.detaching?.abort();
+			this.detaching = void 0;
+			const pointer = this.press?.pointer;
+			this.press = void 0;
+			if (pointer !== void 0 && this.stage.hasPointerCapture(pointer)) this.stage.releasePointerCapture(pointer);
+			if (this.drag) {
+				const cell = this.cells.get(this.drag.id);
+				this.drag.flight?.destroy();
+				if (cell) {
+					cell.node.classList.remove("lifted");
+					delete cell.node.dataset.flight;
+					cell.drawnX = cell.drawnWidth = NaN;
+				}
+				this.drag = void 0;
+				this.root.classList.remove("is-dragging");
+				this.lens.clear();
+				this.compute();
+				this.schedule();
+			}
+		}
+		wheel = (event) => {
+			if (!this.layout.maxScroll || this.drag) return;
+			this.scroll = clamp(this.scroll + (Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY), 0, this.layout.maxScroll);
+			this.compute();
+			this.paintImmediately();
+			event.preventDefault();
+		};
+		keyDown = (event) => {
+			if (event.target.matches("input")) return;
+			const index = this.tabs.findIndex((t) => t.id === this.selected);
+			let next = index;
+			if (event.key === "ArrowRight") next = (index + 1) % this.tabs.length;
+			else if (event.key === "ArrowLeft") next = (index - 1 + this.tabs.length) % this.tabs.length;
+			else if (event.key === "Home") next = 0;
+			else if (event.key === "End") next = this.tabs.length - 1;
+			else if (event.key === "Delete" || event.key === "Backspace") {
+				this.close(this.selected);
+				event.preventDefault();
+				return;
+			} else if (event.key === "F2" && this.labelMode === "address") {
+				this.cells.get(this.selected)?.address.focus({ preventScroll: true });
+				event.preventDefault();
+				return;
+			} else if (event.key === "ContextMenu" || event.shiftKey && event.key === "F10") {
+				const node = this.cells.get(this.selected).activate, rect = node.getBoundingClientRect();
+				this.showMenu(this.selected, rect.left + 12, rect.bottom + 4, node);
+				event.preventDefault();
+				return;
+			} else return;
+			event.preventDefault();
+			this.cancelDrag();
+			if ((event.metaKey || event.ctrlKey) && event.shiftKey && next !== index) {
+				const tab = this.tabs[index], neighbor = this.tabs[next];
+				if (!!tab.pinned === !!neighbor.pinned) {
+					this.tabs.splice(index, 1);
+					this.tabs.splice(next, 0, tab);
+					this.changed(false);
+				}
+			} else this.select(this.tabs[next].id);
+			this.cells.get(this.selected)?.activate.focus({ preventScroll: true });
+		};
+		contextMenu = (event) => {
+			const node = event.target.closest("[data-tab-id]");
+			if (!node || event.target.matches("input")) return;
+			event.preventDefault();
+			this.showMenu(node.dataset.tabId, event.clientX, event.clientY, this.cells.get(node.dataset.tabId).activate);
+		};
+		showMenu(id, x, y, anchor) {
+			this.closeMenu();
+			this.cancelDrag();
+			const tab = this.tabs.find((t) => t.id === id);
+			const menu = document.createElement("div");
+			menu.className = "tab-menu";
+			menu.role = "menu";
+			menu.dataset.theme = this.dark ? "dark" : "light";
+			this.menu = menu;
+			this.menuAnchor = anchor;
+			const add = (label, action, icon) => {
+				const button = document.createElement("button");
+				button.type = "button";
+				button.role = "menuitem";
+				button.innerHTML = `${icon ?? "<span></span>"}<span></span>`;
+				button.lastElementChild.textContent = label;
+				button.addEventListener("click", () => {
+					this.closeMenu(true);
+					action();
+				});
+				menu.append(button);
+			};
+			add(tab.pinned ? "Unpin Tab" : "Pin Tab", () => this.pin(id), symbol("pin"));
+			add("Duplicate Tab", () => this.add({
+				...tab,
+				id: createTabId(),
+				pinned: false
+			}));
+			if (this.options.onDetach && this.tabs.length > 1) add("Move Tab to New Window", () => {
+				this.detach(id, void 0, "menu");
+			});
+			menu.append(document.createElement("hr"));
+			add("Close Tab", () => this.close(id, true), symbol("close"));
+			add("Close Other Tabs", () => {
+				this.widthLock = void 0;
+				this.tabs = this.tabs.filter((t) => t.id === id || t.pinned);
+				this.selected = id;
+				this.changed(true);
+			});
+			menu.addEventListener("keydown", (event) => {
+				const buttons = [...menu.querySelectorAll("button")];
+				const index = buttons.indexOf(document.activeElement);
+				if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+					event.preventDefault();
+					buttons[(index + (event.key === "ArrowDown" ? 1 : -1) + buttons.length) % buttons.length].focus();
+				} else if (event.key === "Tab") this.closeMenu(true);
+			});
+			document.body.append(menu);
+			const rect = menu.getBoundingClientRect();
+			menu.style.left = `${clamp(x, 8, window.innerWidth - rect.width - 8)}px`;
+			menu.style.top = `${clamp(y, 8, window.innerHeight - rect.height - 8)}px`;
+			menu.querySelector("button").focus({ preventScroll: true });
+		}
+		closeMenu(restore = false) {
+			this.menu?.remove();
+			this.menu = void 0;
+			if (restore && this.menuAnchor?.isConnected) this.menuAnchor.focus({ preventScroll: true });
+			this.menuAnchor = void 0;
+		}
+		announce(message) {
+			this.live.textContent = message;
+		}
+		/** Read-only diagnostics for deterministic gesture tests and performance review. */
+		snapshot() {
+			const costs = [...this.frameCosts].sort((a, b) => a - b);
+			return {
+				selected: this.selected,
+				order: this.tabs.map((t) => t.id),
+				visualOrder: this.drag?.order ?? this.tabs.map((t) => t.id),
+				phase: this.drag?.phase ?? "idle",
+				scroll: this.scroll,
+				maxScroll: this.layout.maxScroll,
+				running: this.frame !== null,
+				mutation: this.mutation,
+				effects: this.configuration,
+				labelMode: this.labelMode,
+				hoverPreview: this.hover.snapshot,
+				frameCostP95: costs[Math.floor(costs.length * .95)] ?? 0,
+				flight: this.drag?.flight ? {
+					...this.drag.flight.rect,
+					blend: this.drag.flight.blend,
+					target: this.drag.flight.target
+				} : null,
+				cells: [...this.cells].map(([id, c]) => ({
+					id,
+					x: c.x.value,
+					width: c.width.value,
+					velocity: c.x.velocity,
+					targetX: c.x.target,
+					targetWidth: c.width.target
+				}))
+			};
+		}
+		destroy() {
+			this.hover.destroy();
+			this.destroyed = true;
+			this.abort.abort();
+			this.resize.disconnect();
+			this.closeMenu();
+			this.cancelDrag();
+			if (this.frame !== null) cancelAnimationFrame(this.frame);
+			this.frame = null;
+			this.root.replaceChildren();
+			this.cells.clear();
+		}
+	};
+	//#endregion
+	//#region src/tabs/window-detach.ts
+	var channel = "pie-tab-window-v1";
+	var detachedWindowParameter = "pie-window";
+	/** Calls window.open synchronously, before returning its promise. Only reports
+	* success after the receiving app explicitly acknowledges a completed mount. */
+	function openTabWindow(request, options) {
+		const url = new URL(options.url, location.href);
+		if (url.origin !== location.origin) throw new Error("Tab windows must use the same origin");
+		const token = createTabId();
+		url.searchParams.set(detachedWindowParameter, token);
+		const width = Math.round(options.width ?? 960), height = Math.round(options.height ?? 680);
+		return new Promise((resolve) => {
+			let child = null, finished = false;
+			let timeout, closed;
+			const finish = (result) => {
+				if (finished) return;
+				finished = true;
+				clearTimeout(timeout);
+				clearInterval(closed);
+				window.removeEventListener("message", message);
+				request.signal.removeEventListener("abort", abort);
+				if (!result.opened && child && !child.closed) child.close();
+				resolve(result);
+			};
+			const abort = () => finish({
+				opened: false,
+				reason: "cancelled"
+			});
+			const message = (event) => {
+				if (event.origin !== url.origin || event.source !== child || event.data?.channel !== channel || event.data?.token !== token) return;
+				if (event.data.type === "ready") try {
+					child.postMessage({
+						channel,
+						token,
+						type: "payload",
+						data: options.data
+					}, url.origin);
+				} catch {
+					finish({
+						opened: false,
+						reason: "failed"
+					});
+				}
+				else if (event.data.type === "mounted") finish({
+					opened: true,
+					window: child
+				});
+				else if (event.data.type === "rejected") finish({
+					opened: false,
+					reason: "failed"
+				});
+			};
+			if (request.signal.aborted) {
+				abort();
+				return;
+			}
+			window.addEventListener("message", message);
+			request.signal.addEventListener("abort", abort, { once: true });
+			try {
+				child = window.open(url.href, `pie-tab-${token}`, `popup=yes,width=${width},height=${height},left=${Math.round(request.screenX - width / 2)},top=${Math.round(request.screenY - 28)}`);
+			} catch {
+				finish({
+					opened: false,
+					reason: "failed"
+				});
+				return;
+			}
+			if (!child) {
+				finish({
+					opened: false,
+					reason: "blocked"
+				});
+				return;
+			}
+			if (child.closed) {
+				finish({
+					opened: false,
+					reason: "failed"
+				});
+				return;
+			}
+			timeout = setTimeout(() => finish({
+				opened: false,
+				reason: "timeout"
+			}), options.timeout ?? 8e3);
+			closed = setInterval(() => {
+				if (child.closed) finish({
+					opened: false,
+					reason: "closed"
+				});
+			}, 150);
+		});
+	}
+	/** Child-side handshake. Call accept only after the tab and its content exist.
+	* This protocol transfers application data, never HTML or code to execute. */
+	function receiveTabWindow(timeout = 8e3) {
+		const token = new URL(location.href).searchParams.get(detachedWindowParameter);
+		if (!token || !window.opener) return Promise.resolve(null);
+		const opener = window.opener, origin = location.origin;
+		return new Promise((resolve) => {
+			const timer = setTimeout(() => {
+				window.removeEventListener("message", message);
+				resolve(null);
+			}, timeout);
+			const message = (event) => {
+				if (event.origin !== origin || event.source !== opener || event.data?.channel !== channel || event.data?.token !== token || event.data.type !== "payload") return;
+				clearTimeout(timer);
+				window.removeEventListener("message", message);
+				let answered = false;
+				const answer = (type) => {
+					if (answered) return;
+					answered = true;
+					if (!opener.closed) opener.postMessage({
+						channel,
+						token,
+						type
+					}, origin);
+				};
+				resolve({
+					data: event.data.data,
+					accept: () => answer("mounted"),
+					reject: () => answer("rejected")
+				});
+			};
+			window.addEventListener("message", message);
+			opener.postMessage({
+				channel,
+				token,
+				type: "ready"
+			}, origin);
+		});
+	}
+	//#endregion
+	//#region src/main.ts
+	async function start() {
+		const windowToken = new URL(location.href).searchParams.get(detachedWindowParameter);
+		const windowStorage = `pie-web-tabs-window-${windowToken}`;
+		let saved = null;
+		if (windowToken) {
+			document.getElementById("pie-tab-bar-inline").textContent = "Opening your tab…";
+			try {
+				saved = JSON.parse(sessionStorage.getItem(windowStorage) || "null");
+			} catch {}
+		}
+		const incoming = windowToken && !saved ? await receiveTabWindow() : null;
+		const boot = saved ?? incoming?.data;
+		if (windowToken && (!boot || boot.version !== 1 || !Array.isArray(boot.tabs) || !boot.tabs.length)) {
+			incoming?.reject();
+			document.getElementById("pie-tab-bar-inline").innerHTML = "<main class=\"window-recovery\"><h1>This tab could not be opened.</h1><p>Your original tab stays in its window.</p><a href=\"./\">Open Pie Web Tabs</a></main>";
+			return;
+		}
+		if (windowToken) document.body.classList.add("detached-workspace");
+		const icons = {
+			engadget: {
+				glyph: "e",
+				background: "#fff",
+				color: "#111",
+				kind: "engadget"
+			},
+			aol: {
+				glyph: "AOL",
+				background: "#ffda28",
+				color: "#101010"
+			},
+			stack: {
+				glyph: "",
+				background: "#fff",
+				color: "#f48024",
+				kind: "stack"
+			},
+			field: {
+				glyph: "F",
+				background: "#b4ca87",
+				color: "#263a22"
+			},
+			blank: {
+				glyph: "P",
+				background: "#526941",
+				color: "#f0f5e9"
+			}
+		};
+		let next = 0;
+		const blank = () => ({
+			id: `new-${createTabId()}`,
+			title: "New Tab",
+			address: "",
+			icon: icons.blank
+		});
+		const samples = () => [
+			{
+				id: `engadget-${++next}`,
+				title: "Engadget — Technology news and reviews",
+				address: "engadget.com",
+				icon: icons.engadget
+			},
+			{
+				id: `aol-${++next}`,
+				title: "News, Politics, Sports, Mail & Latest Headlines",
+				address: "aol.com",
+				icon: icons.aol
+			},
+			{
+				id: `field-${++next}`,
+				title: "Field Notes — a place for your thoughts",
+				address: "fieldnotes.local",
+				icon: icons.field
+			},
+			{
+				id: `stack-${++next}`,
+				title: "Stack Overflow — Questions and answers",
+				address: "stackoverflow.com",
+				icon: icons.stack
+			}
+		];
+		document.getElementById("pie-tab-bar-inline").innerHTML = `
+  <header class="masthead"><a class="brand" href="./" aria-label="Pie web tabs home"><span class="brand-mark">p</span><span>Pie <span class="brand-divider">/</span> <span class="brand-subtitle">Web Tabs</span></span></a><span class="edition">INTERACTION STUDY <span>01</span></span></header>
+  <main>
+    <section class="intro"><div><span class="eyebrow">NATIVE FEEL. WEB CANVAS.</span><h1>A little more fluid.</h1><p>Pick a tab. Move it around. Feel it settle.</p></div>
+      <div class="appearance" aria-label="Preview appearance"><button type="button" data-theme-button="light" aria-pressed="false">${symbol("sun")}Light</button><button type="button" data-theme-button="dark" aria-pressed="true">${symbol("moon")}Dark</button></div>
+    </section>
+    <section class="browser" data-theme="dark" aria-label="Interactive tab preview">
+      <div class="browser-toolbar"><div class="window-controls" aria-hidden="true"><i></i><i></i><i></i></div><div class="toolbar-divider"></div><div id="tabs"></div><button type="button" class="toolbar-button" id="all-tabs" aria-label="Show tab list" title="Show tab list">${symbol("actions")}</button></div>
+      <div class="page-stack" id="pages"></div>
+      <div class="browser-status"><span class="status-dot"></span><span id="page-status">Local demo</span><span class="status-hint">Right-click a tab to pin it</span></div>
+    </section>
+    <section class="workbench" aria-label="Demo configuration">
+      <div class="scenario-panel"><div class="control-heading"><span class="section-number">01</span><h2>Set the scene</h2></div><p>A few starting points to explore.</p><div class="scenarios"><button type="button" data-scene="one">One tab</button><button type="button" data-scene="two" aria-pressed="true">Two tabs</button><button type="button" data-scene="pinned">Pinned tabs</button><button type="button" data-scene="many">Many tabs</button></div><div class="keyboard-hint"><span><kbd>←</kbd><kbd>→</kbd> switch tabs</span><span><kbd>esc</kbd> cancel drag</span></div></div>
+      <div class="effects-panel"><div class="control-heading"><span class="section-number">02</span><h2>Make it yours</h2><button type="button" class="text-button" id="restore-effects">Restore full effects</button></div>
+        <div class="effect-switches">${[
+			"glass",
+			"refraction",
+			"blur",
+			"shadows"
+		].map((key) => `<label class="effect-control"><span>${key[0].toUpperCase() + key.slice(1)}</span><input type="checkbox" data-effect="${key}" checked role="switch" aria-label="${key[0].toUpperCase() + key.slice(1)}"/><span class="toggle-track" aria-hidden="true"></span></label>`).join("")}</div>
+        <label class="motion-control"><span>Motion</span><select id="motion" aria-label="Motion"><option value="full">Full animation</option><option value="reduced">Reduced motion</option><option value="off">Off</option></select><span id="quality-status">All effects on</span></label>
+        <label class="motion-control"><span>Tab labels</span><select id="label-mode" aria-label="Tab labels"><option value="fixed">Application titles</option><option value="address">Editable addresses</option></select></label>
+        <label class="detach-mode"><input id="window-detach" type="checkbox" role="switch" checked />Open windows on drop</label>
+      </div>
+    </section>
+    <footer><span>Built for the details.</span><span>Standalone · Demo pages stay local</span></footer>
+  </main><div class="window-notice" id="window-notice" role="status" hidden><span></span><button type="button" id="retry-window">Open window</button><button type="button" id="dismiss-window" aria-label="Dismiss window message">×</button></div>`;
+		const pages = document.querySelector("#pages");
+		const panels = /* @__PURE__ */ new Map();
+		const initial = boot?.tabs ?? samples().slice(0, 2);
+		const pageStates = new Map(Object.entries(boot?.pages ?? {}));
+		const defaults = /* @__PURE__ */ new Map();
+		let mounted = false;
+		let theme = boot?.theme ?? "dark";
+		let labelMode = boot?.labelMode === "fixed" ? "fixed" : "address";
+		if (!boot) try {
+			const savedMode = localStorage.getItem("pie-web-tabs-label-mode");
+			if (savedMode === "fixed" || savedMode === "address") labelMode = savedMode;
+		} catch {}
+		let failedTab;
+		const notice = document.querySelector("#window-notice");
+		const windowToggle = document.querySelector("#window-detach");
+		try {
+			windowToggle.checked = localStorage.getItem("pie-web-tabs-detach-windows") !== "false";
+		} catch {}
+		windowToggle.addEventListener("change", () => {
+			try {
+				localStorage.setItem("pie-web-tabs-detach-windows", String(windowToggle.checked));
+			} catch {}
+		});
+		function pageState(id) {
+			const panel = panels.get(id);
+			const heading = panel.querySelector("h2"), description = panel.querySelector("p");
+			return {
+				kind: panel.dataset.pageKind,
+				...heading?.innerHTML !== defaults.get(id)?.heading ? { heading: heading?.textContent ?? "" } : {},
+				...description?.innerHTML !== defaults.get(id)?.description ? { description: description?.textContent ?? "" } : {},
+				...panel.querySelector("textarea") ? { notes: panel.querySelector("textarea").value } : {}
+			};
+		}
+		function workspaceState(tabs = strip.items) {
+			return {
+				version: 1,
+				tabs: [...tabs],
+				selectedId: tabs.some((t) => t.id === strip.current.id) ? strip.current.id : tabs[0].id,
+				pages: Object.fromEntries(tabs.map((tab) => [tab.id, pageState(tab.id)])),
+				effects: strip.configuration,
+				theme,
+				labelMode
+			};
+		}
+		function saveWorkspace() {
+			if (!mounted || !windowToken) return;
+			try {
+				sessionStorage.setItem(windowStorage, JSON.stringify(workspaceState()));
+			} catch {}
+		}
+		function ensurePages(tabs) {
+			for (const [id, panel] of panels) if (!tabs.some((t) => t.id === id)) {
+				panel.remove();
+				panels.delete(id);
+				defaults.delete(id);
+				pageStates.delete(id);
+			}
+			for (const tab of tabs) {
+				if (panels.has(tab.id)) continue;
+				const panel = document.createElement("article");
+				panel.id = `panel-${tab.id}`;
+				panel.className = "demo-page";
+				panel.role = "tabpanel";
+				panel.setAttribute("aria-labelledby", `tab-${tab.id}`);
+				panel.hidden = true;
+				const memory = pageStates.get(tab.id);
+				const kind = memory?.kind ?? (tab.icon.kind === "engadget" ? "editorial" : tab.address === "aol.com" ? "news" : !tab.address ? "start" : "notes");
+				panel.dataset.pageKind = kind;
+				if (kind === "editorial") {
+					panel.classList.add("editorial-page");
+					panel.innerHTML = `<div class="editorial-nav"><div class="editorial-wordmark">engadget<span>·</span></div><span>TECHNOLOGY & THE EVERYDAY</span></div><div class="editorial-grid"><div class="editorial-copy"><span class="article-category">THE DESIGN EDIT</span><h2>The details<br>make the difference.</h2><p>Small interactions. Considered movement.<br>A space that feels good to spend time in.</p><button type="button" class="read-link">Keep reading <span>↗</span></button></div><div class="object-scene" aria-label="Sculptural silver speaker illustration"><div class="scene-shadow"></div><div class="speaker"><div class="speaker-top"></div><div class="speaker-grille"></div><div class="speaker-light"></div></div><span class="scene-label">FORM / FUNCTION</span><span class="scene-index">2026 — 09</span></div></div><div class="editorial-bottom"><span>01 / OBJECTS OF INTEREST</span><span>Thoughtfully put together.</span></div>`;
+					panel.querySelector(".read-link").addEventListener("click", () => {
+						const copy = panel.querySelector(".editorial-copy p");
+						copy.textContent = "You can switch, reorder, and pin tabs without losing your place. This page stays exactly where you left it.";
+						saveWorkspace();
+					});
+				} else if (kind === "news") {
+					panel.classList.add("news-page");
+					panel.innerHTML = `<div class="news-nav"><strong>AOL<span>.</span></strong><span>News&nbsp;&nbsp; Life&nbsp;&nbsp; Entertainment&nbsp;&nbsp; Finance</span></div><div class="news-content"><span class="article-category">A FRESH PERSPECTIVE</span><h2>Make room<br>for something good.</h2><p>Your daily collection of ideas, discoveries,<br>and things worth a closer look.</p><div class="news-cards"><div><span>01</span><strong>A slower morning</strong></div><div><span>02</span><strong>Out of the ordinary</strong></div><div><span>03</span><strong>The week ahead</strong></div></div></div>`;
+				} else if (kind === "start") {
+					panel.classList.add("start-page");
+					panel.innerHTML = `<span class="start-eyebrow">A NEW BEGINNING</span><h2>Where to next?</h2><p>A little room for your next idea.</p><div class="favorites">${samples().slice(0, 3).map((t) => `<button type="button" data-destination="${t.address}"><span>${iconMarkup(t.icon)}</span><strong>${t.address.split(".")[0]}</strong></button>`).join("")}</div>`;
+					panel.querySelectorAll("[data-destination]").forEach((button) => button.addEventListener("click", () => {
+						const address = button.dataset.destination;
+						strip.update(tab.id, {
+							address,
+							title: address
+						});
+						panel.querySelector("h2").textContent = address;
+						panel.querySelector("p").textContent = "Your demo workspace is ready.";
+						saveWorkspace();
+					}));
+				} else {
+					panel.classList.add("notes-page");
+					panel.innerHTML = `<span class="article-category">FIELD NOTES</span><h2>A place to leave a thought.</h2><p>Your writing stays here as you move between tabs.</p><textarea aria-label="Notes" placeholder="Start with a thought…" spellcheck="false"></textarea><span class="notes-footer">YOURS TO REARRANGE.</span>`;
+				}
+				defaults.set(tab.id, {
+					heading: panel.querySelector("h2")?.innerHTML,
+					description: panel.querySelector("p")?.innerHTML
+				});
+				if (memory?.heading !== void 0 && panel.querySelector("h2")) panel.querySelector("h2").textContent = memory.heading;
+				if (memory?.description !== void 0 && panel.querySelector("p")) panel.querySelector("p").textContent = memory.description;
+				if (memory?.notes !== void 0 && panel.querySelector("textarea")) panel.querySelector("textarea").value = memory.notes;
+				panels.set(tab.id, panel);
+				pages.append(panel);
+			}
+			if (mounted) queueMicrotask(saveWorkspace);
+		}
+		function selectPage(tab) {
+			for (const [id, panel] of panels) {
+				panel.hidden = id !== tab.id;
+				panel.inert = id !== tab.id;
+			}
+			document.querySelector("#page-status").textContent = tab.address || "New tab";
+			if (windowToken) document.title = `${tab.title} — Pie`;
+			saveWorkspace();
+		}
+		const strip = new TabStrip(document.querySelector("#tabs"), {
+			labelMode,
+			tabs: initial,
+			selectedId: boot?.selectedId ?? initial[0].id,
+			onNewTab: blank,
+			onChange: ensurePages,
+			onSelect: selectPage,
+			onDetach: async (request) => {
+				if (request.trigger === "drag" && !windowToggle.checked) return false;
+				notice.hidden = true;
+				const result = await openTabWindow(request, {
+					url: location.href,
+					data: workspaceState([request.tab])
+				});
+				if (!result.opened && result.reason !== "cancelled") {
+					failedTab = request.tab.id;
+					notice.querySelector("span").textContent = result.reason === "blocked" ? "Your browser blocked the new window. The tab stayed here." : "The new window did not finish opening. Your tab stayed here.";
+					notice.hidden = false;
+				}
+				return result.opened;
+			},
+			onNavigate: (tab, address) => {
+				if (!address) return;
+				strip.update(tab.id, {
+					address,
+					title: address
+				});
+				const title = panels.get(tab.id).querySelector("h2");
+				if (title) title.textContent = address;
+				selectPage(strip.current);
+				saveWorkspace();
+			}
+		});
+		mounted = true;
+		const labelControl = document.querySelector("#label-mode");
+		labelControl.value = labelMode;
+		labelControl.addEventListener("change", () => {
+			labelMode = labelControl.value;
+			strip.setLabelMode(labelMode);
+			try {
+				localStorage.setItem("pie-web-tabs-label-mode", labelMode);
+			} catch {}
+			saveWorkspace();
+		});
+		pages.addEventListener("input", saveWorkspace);
+		window.addEventListener("pagehide", saveWorkspace);
+		document.querySelector("#retry-window").addEventListener("click", () => {
+			if (failedTab && strip.items.some((tab) => tab.id === failedTab)) strip.detach(failedTab);
+		});
+		document.querySelector("#dismiss-window").addEventListener("click", () => {
+			notice.hidden = true;
+		});
+		function scene(name) {
+			const set = samples();
+			let tabs;
+			if (name === "one") tabs = [set[0]];
+			else if (name === "pinned") {
+				set[2].pinned = true;
+				tabs = [
+					set[2],
+					set[0],
+					set[1]
+				];
+			} else if (name === "many") tabs = [...set, ...Array.from({ length: 8 }, (_, i) => ({
+				...set[i % 4],
+				id: `extra-${++next}`,
+				title: `${set[i % 4].title} ${i + 1}`
+			}))];
+			else tabs = set.slice(0, 2);
+			strip.setTabs(tabs, set[0].id);
+			document.querySelectorAll("[data-scene]").forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.scene === name)));
+		}
+		document.querySelectorAll("[data-scene]").forEach((button) => button.addEventListener("click", () => scene(button.dataset.scene)));
+		document.querySelectorAll("[data-theme-button]").forEach((button) => button.addEventListener("click", () => {
+			theme = button.dataset.themeButton;
+			strip.setTheme(theme);
+			document.querySelector(".browser").dataset.theme = theme;
+			document.querySelectorAll("[data-theme-button]").forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
+			saveWorkspace();
+		}));
+		const storageKey = "pie-web-tabs-effects-v1";
+		function applyEffects(effects, save = true) {
+			strip.setEffects(effects);
+			const configuration = strip.configuration;
+			document.querySelectorAll("[data-effect]").forEach((input) => {
+				input.checked = configuration[input.dataset.effect];
+			});
+			document.querySelector("#motion").value = configuration.motion;
+			const enabled = [
+				"glass",
+				"refraction",
+				"blur",
+				"shadows"
+			].filter((key) => configuration[key]).length;
+			document.querySelector("#quality-status").textContent = enabled === 4 && configuration.motion === "full" ? "All effects on" : "Custom settings";
+			if (save) try {
+				localStorage.setItem(storageKey, JSON.stringify(configuration));
+			} catch {}
+			saveWorkspace();
+		}
+		document.querySelectorAll("[data-effect]").forEach((input) => input.addEventListener("change", () => applyEffects({ [input.dataset.effect]: input.checked })));
+		document.querySelector("#motion").addEventListener("change", (event) => applyEffects({ motion: event.target.value }));
+		document.querySelector("#restore-effects").addEventListener("click", () => applyEffects(fullEffects));
+		try {
+			const saved = JSON.parse(localStorage.getItem(storageKey) || "null");
+			if (saved) {
+				const checked = {};
+				for (const key of [
+					"glass",
+					"refraction",
+					"blur",
+					"shadows"
+				]) if (typeof saved[key] === "boolean") checked[key] = saved[key];
+				if ([
+					"full",
+					"reduced",
+					"off"
+				].includes(saved.motion)) checked.motion = saved.motion;
+				applyEffects(checked, false);
+			}
+		} catch {}
+		document.querySelector("#all-tabs").addEventListener("click", () => {
+			const existing = document.querySelector(".tab-overview");
+			if (existing) {
+				existing.remove();
+				return;
+			}
+			const overlay = document.createElement("div");
+			overlay.className = "tab-overview";
+			overlay.role = "dialog";
+			overlay.setAttribute("aria-label", "Open tabs");
+			const heading = document.createElement("div");
+			heading.className = "overview-heading";
+			heading.innerHTML = "<h2>Open tabs</h2><button type=\"button\" aria-label=\"Close tab list\">×</button>";
+			heading.querySelector("button").onclick = () => overlay.remove();
+			overlay.append(heading);
+			for (const tab of strip.items) {
+				const button = document.createElement("button");
+				button.type = "button";
+				button.className = "overview-tab";
+				button.innerHTML = `<span>${iconMarkup(tab.icon)}</span><strong></strong><small></small>`;
+				button.querySelector("strong").textContent = tab.title;
+				button.querySelector("small").textContent = tab.pinned ? "Pinned" : tab.address;
+				button.onclick = () => {
+					strip.select(tab.id);
+					overlay.remove();
+				};
+				overlay.append(button);
+			}
+			overlay.addEventListener("keydown", (e) => {
+				if (e.key === "Escape") overlay.remove();
+			});
+			document.querySelector(".browser").append(overlay);
+			heading.querySelector("button").focus();
+		});
+		Object.assign(window, { tabDemo: {
+			strip,
+			scene
+		} });
+		if (boot) applyEffects(boot.effects, false);
+		strip.setTheme(theme);
+		document.querySelector(".browser").dataset.theme = theme;
+		document.querySelectorAll("[data-theme-button]").forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.themeButton === theme)));
+		saveWorkspace();
+		incoming?.accept();
+	}
+	start();
+	//#endregion
+})();
+
+(() => {
+  const root = document.getElementById('pie-tab-bar-inline');
+  const { strip, scene } = window.tabDemo;
+  let restoring = false;
+  let lastState = '';
+  function restore(snapshot) {
+    const state = snapshot?.privateContent;
+    if (!state) return;
+    const serialized = JSON.stringify(state);
+    if (serialized === lastState) return;
+    lastState = serialized;
+    restoring = true;
+    if (['one', 'two', 'pinned', 'many'].includes(state.scene)) scene(state.scene);
+    if (['light', 'dark'].includes(state.theme)) root.querySelector(`[data-theme-button="${state.theme}"]`).click();
+    if (['fixed', 'address'].includes(state.labelMode)) {
+      const labels = root.querySelector('#label-mode');
+      labels.value = state.labelMode;
+      labels.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+    if (state.effects) {
+      for (const input of root.querySelectorAll('[data-effect]')) {
+        const value = state.effects[input.dataset.effect];
+        if (typeof value === 'boolean' && input.checked !== value) input.click();
+      }
+      if (['full', 'reduced', 'off'].includes(state.effects.motion)) {
+        const motion = root.querySelector('#motion');
+        motion.value = state.effects.motion;
+        motion.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+    }
+    restoring = false;
+  }
+  const appearance = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  root.querySelector(`[data-theme-button="${appearance}"]`).click();
+  restore(window.openai?.widgetState);
+  window.addEventListener('openai:set_globals', event => restore(event.detail?.globals?.widgetState));
+  function save() {
+    if (restoring || !window.openai?.setWidgetState) return;
+    const state = {
+      scene: root.querySelector('[data-scene][aria-pressed="true"]')?.dataset.scene || 'two',
+      theme: root.querySelector('.browser').dataset.theme,
+      labelMode: root.querySelector('#label-mode').value,
+      effects: strip.configuration,
+    };
+    lastState = JSON.stringify(state);
+    window.openai.setWidgetState({ modelContent: { preview: 'Pie tab bar', ...state }, privateContent: state }).catch(() => {});
+  }
+  root.addEventListener('click', save);
+  root.addEventListener('change', save);
+})();
+</script>

@@ -1,0 +1,24 @@
+.DS_Store
+*/.DS_Store
+
+# Swift / SPM
+.build/
+swift/.build/
+Packages/
+*.xcodeproj
+*.xcworkspace
+
+# Node / Web
+node_modules/
+web/node_modules/
+dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS / Editor
+*.swp
+*~
+.idea/
+.vscode/

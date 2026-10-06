@@ -3,19 +3,23 @@
 
 # Swift / SPM
 .build/
-swift/.build/
+**/.build/
 Packages/
 *.xcodeproj
 *.xcworkspace
+.swiftpm/
 
 # Node / Web
 node_modules/
 web/node_modules/
-dist/
+web/.gif-frames/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+
+# Generated bundles (rebuild with `npm run build`)
+web/dist/
 
 # OS / Editor
 *.swp

@@ -367,15 +367,18 @@ final class CompactTabStripView: NSView {
         let resized = lastLayoutWidth != bounds.width
         lastLayoutWidth = bounds.width
         add.frame = NSRect(x: bounds.width - 28, y: (bounds.height - 26) / 2, width: 26, height: 26)
-        let excluded = reservedID ?? (dragPanel != nil ? dragID : nil)
-        let remaining = items.filter { $0.id != excluded }
-        var order = remaining.map(\.id)
-        if let insertionIndex, let excluded { order.insert(excluded, at: min(insertionIndex, order.count)) }
-        slotIDs = order
         pinnedIDs = Set(items.filter(\.isPinned).map(\.id))
         if let reservedID {
             if reservedIsPinned { pinnedIDs.insert(reservedID) } else { pinnedIDs.remove(reservedID) }
         }
+        let excluded = reservedID ?? (dragPanel != nil ? dragID : nil)
+        let remaining = items.filter { $0.id != excluded }
+        // Visual order matches Safari: pinned run first, then regular tabs.
+        // slotFrames / natural widths are also pin-first, so slotIDs must be too.
+        var order = remaining.filter { pinnedIDs.contains($0.id) }.map(\.id)
+            + remaining.filter { !pinnedIDs.contains($0.id) }.map(\.id)
+        if let insertionIndex, let excluded { order.insert(excluded, at: min(insertionIndex, order.count)) }
+        slotIDs = order
         let count = order.count
         // Entering a different window reserves space without deselecting its
         // current tab. The incoming pill becomes active only when released.
@@ -450,13 +453,13 @@ final class CompactTabStripView: NSView {
         for item in remaining {
             guard let slot = order.firstIndex(of: item.id) else { continue }
             let rect = cellFrame(forSlot: slot)
-            guard let cell = cells[item.id] else { continue }
+            guard let cell = cells[item.id], let parent = cell.superview else { continue }
             let visuallySelected = item.id == visualSelection
             if cell.selected != visuallySelected { cell.configure(item: item, selected: visuallySelected) }
             cell.iconsOnly = item.isPinned && !visuallySelected
-            if cell.frame != rect || previousModelFrames[item.id] != cell.superview!.convert(rect, to: self) {
+            if cell.frame != rect || previousModelFrames[item.id] != parent.convert(rect, to: self) {
                 let wasLaidOut = cell.frame.width > 0
-                let previous = cell.superview!.convert(previousFrames[item.id] ?? rect, from: self)
+                let previous = parent.convert(previousFrames[item.id] ?? rect, from: self)
                 let anchor = cell.layer?.anchorPoint ?? .zero
                 let old = NSPoint(x: previous.minX + previous.width * anchor.x, y: previous.minY + previous.height * anchor.y)
                 let oldBounds = cell.layer?.presentation()?.bounds ?? cell.layer?.bounds
@@ -470,8 +473,7 @@ final class CompactTabStripView: NSView {
                     spring.duration = spring.settlingDuration
                     spring.beginTime = CACurrentMediaTime()
                     layer.add(spring, forKey: "tab-position")
-                    if let oldBounds, oldBounds != layer.bounds {
-                        let sizeSpring = spring.copy() as! CASpringAnimation
+                    if let oldBounds, oldBounds != layer.bounds, let sizeSpring = spring.copy() as? CASpringAnimation {
                         sizeSpring.keyPath = "bounds"
                         sizeSpring.fromValue = NSValue(rect: oldBounds); sizeSpring.toValue = NSValue(rect: layer.bounds)
                         layer.add(sizeSpring, forKey: "tab-bounds")
@@ -570,7 +572,8 @@ final class CompactTabStripView: NSView {
         let remaining = items.filter { $0.id != id }
         let pins = remaining.filter(\.isPinned).count
         let allowed = reservedIsPinned ? 0...pins : pins...remaining.count
-        let localPoint = convert(window!.convertPoint(fromScreen: point), from: nil)
+        guard let window else { return }
+        let localPoint = convert(window.convertPoint(fromScreen: point), from: nil)
         let localX = localPoint.x + (reservedIsPinned ? 0 : scroll.contentView.bounds.minX)
         if firstEntry {
             insertionIndex = self === source ? (items.firstIndex { $0.id == id } ?? 0)
@@ -626,8 +629,8 @@ final class CompactTabStripView: NSView {
         if destination !== dropTarget { dropTarget?.clearReservation(); dropTarget = destination }
         destination?.reserve(id, at: point, source: self)
         if destination !== self { reservedID = nil; insertionIndex = nil; needsLayout = true; layoutSubtreeIfNeeded() }
-        if let destination, !destination.reservedIsPinned {
-            let x = destination.scroll.convert(destination.window!.convertPoint(fromScreen: point), from: nil).x
+        if let destination, !destination.reservedIsPinned, let destinationWindow = destination.window {
+            let x = destination.scroll.convert(destinationWindow.convertPoint(fromScreen: point), from: nil).x
             let maxScroll = max(0, destination.document.bounds.width - destination.scroll.bounds.width)
             let delta: CGFloat = x < 20 ? -12 : (x > destination.scroll.bounds.width - 20 ? 12 : 0)
             destination.scroll.contentView.scroll(to: NSPoint(x: min(max(0, destination.scroll.contentView.bounds.minX + delta), maxScroll), y: 0))
@@ -702,9 +705,10 @@ final class CompactTabStripView: NSView {
             preview.backdropImage = nil; return
         }
         let samples = target.items.compactMap { item -> TabDragBackdrop.Sample? in
-            guard item.id != dragID, let cell = target.cells[item.id], !cell.isHidden else { return nil }
+            guard item.id != dragID, let cell = target.cells[item.id], !cell.isHidden,
+                  let parent = cell.superview else { return nil }
             let frame = cell.layer?.presentation()?.frame ?? cell.frame
-            let screen = targetWindow.convertToScreen(cell.superview!.convert(frame, to: nil))
+            let screen = targetWindow.convertToScreen(parent.convert(frame, to: nil))
             guard screen.intersects(panel.frame) else { return nil }
             return TabDragBackdrop.Sample(cell: cell, screenFrame: screen)
         }
@@ -756,7 +760,8 @@ final class CompactTabStripView: NSView {
         var committedAt: TimeInterval?
         // One clock owns position, size and the reverse morph. A quick re-entry
         // cannot reveal the resting cell while its thumbnail is still fading.
-        let timer = Timer(timeInterval: 1 / 120, repeats: true) { [self] timer in
+        let timer = Timer(timeInterval: 1 / 120, repeats: true) { [weak self] timer in
+            guard let self else { timer.invalidate(); return }
             let elapsed = ProcessInfo.processInfo.systemUptime - began
             if elapsed >= 0.3 {
                 // Moving an NSHostingView can occupy the main thread.
@@ -833,9 +838,14 @@ final class CompactTabStripView: NSView {
         let dragGuard = windowDragGuard
         let stripID = ObjectIdentifier(self)
         Task { @MainActor in dragGuard?.detach(stripID) }
+        previewAnimation?.invalidate()
+        liftAnimation?.invalidate()
+        settlingAnimation?.invalidate()
         if let eventMonitor { NSEvent.removeMonitor(eventMonitor) }
         if let focusDismissMonitor { NSEvent.removeMonitor(focusDismissMonitor) }
         if let windowObserver { NotificationCenter.default.removeObserver(windowObserver) }
+        // Tear-down mid-drag must not leave a floating overlay on screen.
+        dragPanel?.orderOut(nil)
     }
 }
 
@@ -1322,7 +1332,7 @@ final class CompactAddressField: NSTextField {
         let size = text.size(withAttributes: attributes)
         let clipped = size.width > bounds.width - 4
         let x = clipped ? bounds.width - size.width - 2 : (bounds.width - size.width) / 2
-        let context = NSGraphicsContext.current!.cgContext
+        guard let context = NSGraphicsContext.current?.cgContext else { super.draw(dirtyRect); return }
         context.saveGState(); context.clip(to: bounds); context.beginTransparencyLayer(auxiliaryInfo: nil)
         text.draw(at: NSPoint(x: x, y: (bounds.height - size.height) / 2 + (isFlipped ? -1.5 : 1.5)), withAttributes: attributes)
         if clipped, let gradient = CGGradient(colorsSpace: CGColorSpaceCreateDeviceRGB(), colors: [NSColor.clear.cgColor, NSColor.white.cgColor] as CFArray, locations: [0, 1]) {

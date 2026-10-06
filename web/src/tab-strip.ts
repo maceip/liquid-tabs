@@ -103,7 +103,12 @@ export class TabStrip {
     document.addEventListener('keydown', event => {
       this.hover.hide();
       root.dataset.keyboard = 'true';
-      if (event.key === 'Escape') { this.closeMenu(true); this.detaching?.abort(); this.returnDrag(true); }
+      if (event.key === 'Escape') {
+        this.closeMenu(true);
+        this.detaching?.abort();
+        this.detaching = undefined;
+        this.returnDrag(true);
+      }
     }, { signal });
     window.addEventListener('blur', () => { this.hover.hide(); if (!this.detaching) this.returnDrag(true); this.closeMenu(); }, { signal });
     document.addEventListener('visibilitychange', () => { if (document.hidden) { this.hover.hide(); if (!this.detaching) this.cancelDrag(); } }, { signal });
@@ -120,12 +125,24 @@ export class TabStrip {
       this.compute(); this.reveal(this.selected); this.schedule();
     });
     this.resize.observe(this.stage);
-    this.options.onChange?.(this.tabs); this.options.onSelect?.(this.current);
+    this.options.onChange?.(this.items); this.options.onSelect?.(this.current);
   }
 
-  get current(): Tab { return this.tabs.find(t => t.id === this.selected)!; }
+  /** Defensive copy — hosts must not mutate library-owned tab objects. */
+  get current(): Tab { return { ...this.tabs.find(t => t.id === this.selected)! }; }
   get configuration(): Effects { return { ...this.effects }; }
   get items(): readonly Tab[] { return this.tabs.map(t => ({ ...t })); }
+  get size(): number { return this.tabs.length; }
+  get selectedId(): string { return this.selected; }
+  get isDragging(): boolean { return !!this.drag; }
+  get theme(): 'dark' | 'light' { return this.dark ? 'dark' : 'light'; }
+  get labelModeValue(): TabLabelMode { return this.labelMode; }
+
+  indexOf(id: string): number { return this.tabs.findIndex(t => t.id === id); }
+  getTab(id: string): Tab | undefined {
+    const tab = this.tabs.find(t => t.id === id);
+    return tab ? { ...tab } : undefined;
+  }
 
   /** Invoke from a trusted click for a menu/API detach. No window is opened by
    * the component itself; the host's synchronous callback owns that policy. */
@@ -174,6 +191,40 @@ export class TabStrip {
     this.schedule(); this.options.onSelect?.(this.current);
   }
 
+  selectNext(reveal = true): void {
+    const index = this.tabs.findIndex(t => t.id === this.selected);
+    this.select(this.tabs[(index + 1) % this.tabs.length].id, reveal);
+  }
+
+  selectPrevious(reveal = true): void {
+    const index = this.tabs.findIndex(t => t.id === this.selected);
+    this.select(this.tabs[(index - 1 + this.tabs.length) % this.tabs.length].id, reveal);
+  }
+
+  selectFirst(reveal = true): void {
+    if (this.tabs[0]) this.select(this.tabs[0].id, reveal);
+  }
+
+  selectLast(reveal = true): void {
+    const last = this.tabs[this.tabs.length - 1];
+    if (last) this.select(last.id, reveal);
+  }
+
+  /** Programmatic reorder with the same pin grouping as drag-and-drop. */
+  move(id: string, index: number): void {
+    const from = this.tabs.findIndex(t => t.id === id);
+    if (from < 0) return;
+    this.cancelDrag(); this.widthLock = undefined;
+    const [tab] = this.tabs.splice(from, 1);
+    const pins = this.tabs.filter(t => t.pinned).length;
+    const clamped = Math.max(0, Math.min(index, this.tabs.length));
+    const destination = tab.pinned ? Math.min(clamped, pins) : Math.max(clamped, pins);
+    this.tabs.splice(Math.min(destination, this.tabs.length), 0, tab);
+    this.changed(false); this.reveal(id);
+    this.options.onMove?.(id, this.tabs.findIndex(t => t.id === id));
+    this.announce(`${tab.title} moved`);
+  }
+
   add(tab = this.options.onNewTab?.() ?? fallbackTab()): void {
     this.finishSettle(); this.cancelDrag(); this.widthLock = undefined;
     if (this.tabs.some(t => t.id === tab.id)) throw new Error('Tab IDs must be unique');
@@ -209,6 +260,7 @@ export class TabStrip {
     if (selectionChanged) this.selected = this.tabs[Math.min(index, this.tabs.length - 1)].id;
     this.changed(selectionChanged);
     if (hadFocus) this.cells.get(this.selected)?.activate.focus({ preventScroll: true });
+    this.options.onClose?.(id);
     this.announce(`${tab.title} closed`);
   }
 
@@ -219,7 +271,14 @@ export class TabStrip {
     const [tab] = this.tabs.splice(index, 1); tab.pinned = pinned;
     this.tabs.splice(this.tabs.filter(t => t.pinned).length, 0, tab);
     this.changed(false); this.reveal(id);
+    this.options.onPinChange?.(id, pinned);
     this.announce(`${tab.title} ${pinned ? 'pinned' : 'unpinned'}`);
+  }
+
+  /** Toggle pin state for the given tab. */
+  togglePin(id: string): void {
+    const tab = this.tabs.find(t => t.id === id);
+    if (tab) this.pin(id, !tab.pinned);
   }
 
   update(id: string, update: Partial<Pick<Tab, 'title' | 'address' | 'icon' | 'hoverContent'>>): void {
@@ -298,7 +357,9 @@ export class TabStrip {
         }, { signal });
         reload.addEventListener('click', () => {
           if (this.effects.motion !== 'off') reload.animate([{ transform: 'rotate(0)' }, { transform: 'rotate(360deg)' }], { duration: 380 });
-          this.announce(`${this.tabs.find(t => t.id === tab.id)?.title} refreshed`);
+          const reloaded = this.tabs.find(t => t.id === tab.id);
+          if (reloaded) this.options.onReload?.({ ...reloaded });
+          this.announce(`${reloaded?.title} refreshed`);
         }, { signal });
         address.addEventListener('focus', () => {
           if (this.labelMode !== 'address') { address.blur(); return; }
@@ -333,6 +394,10 @@ export class TabStrip {
       cell.close.hidden = !!tab.pinned || this.tabs.length === 1;
       cell.actions.hidden = !selected || (this.labelMode === 'address' && !tab.address);
       cell.reload.hidden = !selected || !tab.address;
+      // Keep hidden chrome out of the tab order on inactive tabs.
+      cell.close.tabIndex = cell.close.hidden ? -1 : 0;
+      cell.actions.tabIndex = cell.actions.hidden ? -1 : 0;
+      cell.reload.tabIndex = cell.reload.hidden ? -1 : 0;
       const editable = selected && this.labelMode === 'address';
       cell.address.tabIndex = editable ? 0 : -1;
       cell.address.hidden = !editable; cell.address.disabled = !editable;
@@ -479,7 +544,8 @@ export class TabStrip {
     const drag = this.drag!;
     if (drag.flight) return;
     const cell = this.cells.get(drag.id)!;
-    const source = this.options.previewContent?.(this.current) ?? document.getElementById(`panel-${drag.id}`);
+    const dragged = this.tabs.find(t => t.id === drag.id) ?? this.current;
+    const source = this.options.previewContent?.(dragged) ?? document.getElementById(`panel-${drag.id}`);
     // A clipped, overflowing source tab still needs its complete lifted face.
     cell.node.style.clipPath = ''; cell.node.style.pointerEvents = '';
     drag.flight = new TearOffPreview(cell.node, source, { x: this.left + cell.x.value, y: this.top, width: cell.width.value, height: 36 });
@@ -591,10 +657,13 @@ export class TabStrip {
     delete cell.node.dataset.flight;
     cell.drawnX = cell.drawnWidth = NaN;
     if (!preservePosition) { assign(cell.x, cell.x.target); assign(cell.width, cell.width.target); }
-    this.tabs = order.map(id => this.tabs.find(t => t.id === id)!);
+    this.tabs = order
+      .map(tabId => this.tabs.find(t => t.id === tabId))
+      .filter((t): t is Tab => !!t);
     this.drag = undefined; cell.node.classList.remove('lifted'); this.root.classList.remove('is-dragging'); this.lens.clear();
     this.changed(false); this.paint();
-    this.announce(`${this.current.title}, tab ${this.tabs.findIndex(t => t.id === id) + 1} of ${this.tabs.length}`);
+    const settled = this.tabs.find(t => t.id === id);
+    if (settled) this.announce(`${settled.title}, tab ${this.tabs.findIndex(t => t.id === id) + 1} of ${this.tabs.length}`);
   }
   private cancelDrag(): void {
     this.detaching?.abort(); this.detaching = undefined;
@@ -621,7 +690,11 @@ export class TabStrip {
     else if (event.key === 'ArrowLeft') next = (index - 1 + this.tabs.length) % this.tabs.length;
     else if (event.key === 'Home') next = 0;
     else if (event.key === 'End') next = this.tabs.length - 1;
-    else if (event.key === 'Delete' || event.key === 'Backspace') { this.close(this.selected); event.preventDefault(); return; }
+    else if (event.key === 'Delete' || event.key === 'Backspace') {
+      // Close button is hidden for the sole tab — keep keyboard consistent.
+      if (this.tabs.length > 1) this.close(this.selected);
+      event.preventDefault(); return;
+    }
     else if (event.key === 'F2' && this.labelMode === 'address') { this.cells.get(this.selected)?.address.focus({ preventScroll: true }); event.preventDefault(); return; }
     else if (event.key === 'ContextMenu' || (event.shiftKey && event.key === 'F10')) {
       const node = this.cells.get(this.selected)!.activate, rect = node.getBoundingClientRect();

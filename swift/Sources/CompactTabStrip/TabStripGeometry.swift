@@ -39,7 +39,8 @@ enum TabStripGeometry {
     static func x(_ index: Int, width: CGFloat) -> CGFloat { CGFloat(index) * (width + gap) }
     static func extent(width: CGFloat, count: Int) -> CGFloat { max(0, CGFloat(count) * width + CGFloat(count - 1) * gap) }
     static func nearestSlot(center: CGFloat, width: CGFloat, count: Int) -> Int {
-        min(count, max(0, Int(((center - width / 2) / (width + gap)).rounded())))
+        guard count > 0 else { return 0 }
+        return min(count - 1, max(0, Int(((center - width / 2) / (width + gap)).rounded())))
     }
     static func destination(center: CGFloat, slot: Int, width: CGFloat, remainingCount: Int) -> Int {
         let frames = (0...max(0, remainingCount)).map { index in

@@ -1,9 +1,9 @@
-import { TabStrip } from './tabs/tab-strip.ts';
-import { fullEffects } from './tabs/types.ts';
-import type { Tab, Effects, TabLabelMode } from './tabs/types.ts';
-import { iconMarkup, symbol } from './tabs/icons.ts';
+import { TabStrip } from './tab-strip.ts';
+import { fullEffects } from './types.ts';
+import type { Tab, Effects, TabLabelMode } from './types.ts';
+import { iconMarkup, symbol } from './icons.ts';
 import './style.css';
-import { createTabId, detachedWindowParameter, openTabWindow, receiveTabWindow } from './tabs/index.ts';
+import { createTabId, detachedWindowParameter, openTabWindow, receiveTabWindow } from './index.ts';
 
 type PageKind = 'editorial' | 'news' | 'start' | 'notes';
 interface PageState { kind: PageKind; heading?: string; description?: string; notes?: string }

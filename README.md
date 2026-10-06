@@ -1,4 +1,4 @@
-# Compact Tab Strip (`compact-tab-strip`)
+# liquid tabs
 
 A high-performance, cross-platform Safari-style compact glass tab strip for **macOS (SwiftUI/AppKit)** and the **Web (HTML/TypeScript)**.
 
